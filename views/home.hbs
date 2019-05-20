@@ -1,0 +1,57 @@
+<div id="dbtree"></div>
+
+<script>
+    //require(['infinite-tree']);
+    function parseTree(data){
+        data.forEach(function(node){
+            node.text = node.name;
+            if('subsystems' in node && node.subsystems.length!=0){
+                node.nodes = node.subsystems;
+                parseTree(node.nodes);
+            }
+            else if ('groups' in node && node.groups.length!=0){
+                node.nodes = node.groups;
+                parseTree(node.nodes);
+            }
+            else if ('channels' in node && node.channels.length!=0){
+                node.nodes = node.channels;
+                parseTree(node.nodes);
+            }
+        });
+        return data;
+    };
+
+    function refreshTree(data) {
+        $('#dbtree').treeview(
+            {
+                data: parseTree(data),
+                levels: 1
+            })
+    };
+    
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+    var connection = new WebSocket('ws://127.0.0.1:1337');
+
+    connection.onopen = function () {
+        // connection is opened and ready to use
+    };
+
+    connection.onerror = function (error) {
+        // an error occurred when sending/receiving data
+    };
+
+    connection.onmessage = function (message) {
+        // try to decode json (I assume that each message
+        // from server is json)
+        try {
+            var json = JSON.parse(message.data);
+            console.log(json);
+            refreshTree(json);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        // handle incoming message
+    };
+</script>

@@ -1,0 +1,6 @@
+Toinstall:
+- nodejs
+- npm
+- pg
+- express
+- express-handlebars

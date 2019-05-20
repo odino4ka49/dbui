@@ -1,0 +1,30 @@
+{
+  "name": "oidin",
+  "version": "1.0.0",
+  "description": "Toinstall: - nodejs - npm - pg",
+  "main": "main.js",
+  "dependencies": {
+    "async": "^2.6.2",
+    "bootstrap": "^4.3.1",
+    "express-handlebars": "^3.0.2",
+    "infinite-tree": "^1.16.2",
+    "jquery": "^3.4.1",
+    "pg": "^7.8.0",
+    "popper": "^1.0.1",
+    "websocket": "^1.0.28"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "oidin",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odino4ka49/dbui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/odino4ka49/dbui/issues"
+  },
+  "homepage": "https://github.com/odino4ka49/dbui#readme"
+}
