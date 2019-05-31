@@ -56,7 +56,6 @@ function parseChannels(data){
         if(ss&&ch.gr_id){
             group = ss.groups.find(o => o.id === ch.gr_id);
             group.appendChannel(channel);
-            console.log(group);
         }
         else if(ss){
             ss.appendChannel(channel);
@@ -150,7 +149,6 @@ function selectChannels(){
         .then(client => {
             return client.query('SELECT * FROM "03_chan"')
                 .then(res => {
-                    console.log(res.rows)
                     parseChannels(res.rows);
                     //parseChannelsTree(res.rows);
                     client.release();
@@ -163,7 +161,6 @@ function selectChannels(){
 }
 
 function getSystemTree(){
-    console.log(systemtree)
     return systemtree;
 }
 
@@ -171,8 +168,14 @@ function getSystems(){
     return systems;
 }
 
+function getSensors(magnet_name){
+    var sensors = systems.find(o => o.name === "Temperature").findAll(magnet_name)
+    return sensors
+}
+
 module.exports = {
     selectSystems: selectSystems,
     systems: systems,
-    systemtree: systemtree
+    systemtree: systemtree,
+    getSensors: getSensors
 }

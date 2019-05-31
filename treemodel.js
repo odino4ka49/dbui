@@ -15,6 +15,20 @@ class System {
     appendChannel(item){
         this.channels.push(item);
     }
+    findAll(regex){
+        var result = [];
+        this.subsystems.forEach(function(ss){
+            result = result.concat(ss.findAll(regex));
+        });
+        this.groups.forEach(function(g){
+            result = result.concat(g.findAll(regex));
+        });
+        this.channels.forEach(function(ch){
+            if(ch.check(regex))
+                result.push(ch);
+        });
+        return result;
+    }
 }
 class Subsystem {
     constructor(id,ssid,name,data_tbl,status){
@@ -32,6 +46,17 @@ class Subsystem {
     appendChannel(item){
         this.channels.push(item);
     }
+    findAll(regex){
+        var result = [];
+        this.groups.forEach(function(g){
+            result = result.concat(g.findAll(regex));
+        });
+        this.channels.forEach(function(ch){
+            if(ch.check(regex))
+                result.push(ch);
+        });
+        return result;
+    }
 }
 class Group {
     constructor(id,name,status){
@@ -43,6 +68,14 @@ class Group {
     appendChannel(item){
         this.channels.push(item);
     }
+    findAll(regex){
+        var result = [];
+        this.channels.forEach(function(ch){
+            if(ch.check(regex))
+                result.push(ch);
+        });
+        return result;
+    }
 }
 class Channel {
     constructor(name,fullname,address,type,unit,divider,status){
@@ -53,6 +86,12 @@ class Channel {
         this.unit = unit;
         this.divider = divider;
         this.status = status;
+    }
+    check(regex){
+        if(this.name.startsWith(regex)){
+            return true;
+        }
+        return false;
     }
 }
 

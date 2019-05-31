@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="297mm" height="210mm" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 297 210"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs id="defs">
+  <font id="FontID0" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="700">
+	<font-face 
+		font-family="Arial">
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="8" horiz-adv-x="556"><path d="M160.156 386.161c-35.4895,14.9952 -61.313,35.6596 -77.3286,61.8516 -16.1574,26.1636 -24.151,54.9918 -24.151,86.1443 0,53.3477 18.4818,97.5112 55.8138,132.349 37.332,34.8376 90.3396,52.3272 159.023,52.3272 67.9744,0 120.812,-17.4897 158.314,-52.3272 37.6722,-34.8376 56.4941,-79.0011 56.4941,-132.349 0,-33.1651 -8.64561,-62.6453 -25.9935,-88.6672 -17.1495,-25.8235 -41.499,-45.6659 -72.6515,-59.3288 39.6564,-15.8172 69.8169,-39.1746 90.4813,-69.8169 20.6644,-30.5006 31.0108,-65.8484 31.0108,-105.845 0,-66.1602 -21.0046,-119.82 -63.1555,-161.177 -42.1793,-41.3289 -98.1915,-61.9933 -168.178,-61.9933 -65.1681,0 -119.338,17.0078 -162.679,51.165 -51.165,40.5068 -76.6483,95.8388 -76.6483,166.166 0,38.6643 9.66608,74.1822 28.8282,106.667 19.1621,32.3431 49.4926,57.3445 90.8215,74.8342zm28.3463 138.16c0,-27.3258 7.6535,-48.6422 23.1589,-63.8075 15.5054,-15.3353 35.9998,-23.0172 61.8516,-23.0172 25.9935,0 46.8281,7.68184 62.4752,23.1589 15.5054,15.5054 23.3573,36.8502 23.3573,64.176 0,25.8235 -7.68184,46.3462 -23.1873,61.8232 -15.5054,15.5054 -35.8297,23.1873 -61.313,23.1873 -26.3337,0 -47.3383,-7.85192 -63.0138,-23.329 -15.5054,-15.6755 -23.329,-36.3399 -23.329,-62.1917zm-12.6708 -306.48c0,-37.8423 9.66608,-67.3508 28.9982,-88.4971 19.3322,-21.1747 43.5115,-31.6911 72.5098,-31.6911 28.3179,0 51.817,10.1763 70.3271,30.5006 18.5101,20.3526 27.836,49.691 27.836,88.1853 0,33.5053 -9.496,60.491 -28.3463,80.8152 -18.8219,20.3526 -42.8312,30.5006 -71.8295,30.5006 -33.5053,0 -58.5067,-11.6503 -74.8342,-34.6675 -16.4975,-23.1589 -24.6613,-48.1603 -24.6613,-75.146z"/></glyph>
+   <glyph unicode="9" horiz-adv-x="556"><path d="M45.3257 165.514l132.831 14.655c3.34486,-27.014 11.8487,-46.9981 25.5117,-60.0091 13.6629,-12.9826 31.6628,-19.5022 54.1697,-19.5022 28.3179,0 52.3272,13.0109 72.1696,39.0045 19.9841,25.9935 32.6549,79.9932 38.1541,162.169 -34.4974,-40.1667 -77.6688,-60.1508 -129.316,-60.1508 -56.3524,0 -105.023,21.8266 -145.842,65.1397 -40.847,43.5115 -61.3413,100.006 -61.3413,169.681 0,72.6799 21.6566,131.158 64.8279,175.662 43.0013,44.3336 98.0214,66.6704 164.664,66.6704 72.6799,0 132.179,-28.1762 178.837,-84.3302 46.5162,-56.1823 69.8452,-148.506 69.8452,-277 0,-131.016 -24.3495,-225.325 -72.8499,-283.349 -48.4721,-57.8264 -111.656,-86.8246 -189.495,-86.8246 -55.9839,0 -101.168,14.8251 -135.665,44.6737 -34.4974,29.8203 -56.6642,74.3239 -66.5004,133.511zm310.675 299.819c0,44.3336 -10.1763,78.6609 -30.5006,103.01 -20.3243,24.4912 -43.9934,36.6517 -70.6673,36.6517 -25.3416,0 -46.4879,-10.0062 -63.1555,-29.9904 -16.8377,-20.0125 -25.1715,-52.8375 -25.1715,-98.5033 0,-46.1761 9.15585,-80.1633 27.3258,-101.678 18.17,-21.6566 40.9887,-32.4848 68.3429,-32.4848 26.3337,0 48.6706,10.318 66.6704,31.1526 18.1416,20.8345 27.1557,51.5052 27.1557,91.8419z"/></glyph>
+   <glyph unicode="0" horiz-adv-x="556"><path d="M274.335 718.833c69.5051,0 123.675,-24.8313 162.651,-74.3239 46.5162,-58.5067 69.8452,-155.678 69.8452,-291.513 0,-135.325 -23.4991,-232.666 -70.3271,-291.995 -38.6643,-48.8406 -92.664,-73.1617 -162.169,-73.1617 -69.5051,0 -125.659,26.6738 -168.349,80.3334 -42.6611,53.4894 -63.9775,148.988 -63.9775,286.326 0,134.843 23.4991,231.844 70.3271,291.003 38.6643,48.8406 92.664,73.3318 161.999,73.3318zm0 -113.839c-16.4975,0 -31.3226,-5.3291 -44.3336,-15.8172 -13.0109,-10.6865 -23.1589,-29.6786 -30.3305,-57.0044 -9.32593,-35.5179 -14.1731,-95.1868 -14.1731,-179.177 0,-83.99 4.33698,-141.675 12.6708,-172.997 8.50388,-31.4927 19.1621,-52.3272 32.0029,-62.8437 12.9826,-10.318 27.666,-15.6471 44.1635,-15.6471 16.6676,0 31.4927,5.3291 44.5037,15.9873 12.9826,10.5165 23.1589,29.5085 30.3305,56.8343 9.32593,35.1777 14.1731,94.6766 14.1731,178.667 0,83.99 -4.33698,141.675 -12.6708,173.167 -8.50388,31.3226 -19.1621,52.3272 -32.0029,63.0138 -13.0109,10.4881 -27.666,15.8172 -44.3336,15.8172z"/></glyph>
+   <glyph unicode="6" horiz-adv-x="556"><path d="M507.342 540.507l-132.831 -14.6834c-3.17478,27.3542 -11.6787,47.5084 -25.3416,60.6894 -13.6629,12.9826 -31.4927,19.4739 -53.3477,19.4739 -28.8282,0 -53.3193,-12.9826 -73.5019,-39.1462 -19.9841,-25.9935 -32.4848,-80.1633 -37.8139,-162.509 34.3273,40.3368 76.6483,60.491 127.502,60.491 57.3162,0 106.327,-21.8266 147.146,-65.4799 40.847,-43.5115 61.3413,-99.8356 61.3413,-168.83 0,-73.3318 -21.4865,-132.009 -64.4878,-176.342 -42.8312,-44.1635 -98.1632,-66.3303 -165.514,-66.3303 -72.1696,0 -131.668,28.0061 -178.156,84.1601 -46.5162,56.154 -69.8452,148.166 -69.8452,276.178 0,131.158 24.1794,225.665 72.6799,283.661 48.5005,57.9965 111.486,86.9947 188.985,86.9947 54.3398,0 99.3537,-15.3353 135.013,-45.6659 35.6596,-30.5006 58.3366,-74.6641 68.1728,-132.661zm-311.015 -299.337c0,-44.5037 10.1763,-79.0011 30.6707,-103.18 20.4944,-24.3211 43.9934,-36.4817 70.3271,-36.4817 25.5117,0 46.5162,9.97789 63.4957,29.8203 17.0078,19.8424 25.3416,52.4973 25.3416,97.6813 0,46.4879 -8.98577,80.6452 -27.3258,102.33 -18.17,21.6566 -40.9887,32.4848 -68.3429,32.4848 -26.3337,0 -48.6706,-10.318 -66.8122,-30.9825 -18.34,-20.6644 -27.3542,-51.3351 -27.3542,-91.6719z"/></glyph>
+   <glyph unicode="5" horiz-adv-x="556"><path d="M44.5037 184.166l136.657 14.0031c3.82675,-30.8408 15.5054,-55.3319 34.6675,-73.3318 19.1621,-18.17 41.3289,-27.1841 66.3303,-27.1841 28.6864,0 53.0075,11.6787 72.8499,34.8376 19.814,23.329 29.8203,58.5067 29.8203,105.335 0,43.8517 -9.83616,76.8468 -29.6502,98.8435 -19.6723,21.9967 -45.354,32.9951 -76.8468,32.9951 -39.3446,0 -74.6641,-17.4897 -105.987,-52.3272l-111.344 16.1574 70.3271 372.498 362.832 0 0 -128.324 -258.83 0 -21.4865 -121.662c30.6423,15.3353 61.8232,22.9888 93.8262,22.9888 60.8311,0 112.506,-22.1668 154.657,-66.3303 42.3493,-44.3336 63.4957,-101.82 63.4957,-172.487 0,-58.8469 -16.9794,-111.514 -51.165,-157.69 -46.658,-63.1555 -111.146,-94.6482 -193.832,-94.6482 -66.1602,0 -119.99,17.6597 -161.659,53.1493 -41.669,35.5179 -66.6704,83.168 -74.6641,143.177z"/></glyph>
+   <glyph unicode="7" horiz-adv-x="556"><path d="M42.4911 578.661l0 127.331 469.188 0 0 -99.4954c-38.6927,-38.1541 -78.009,-92.8341 -118.176,-164.153 -39.9966,-71.1775 -70.4972,-147.004 -91.5018,-227.167 -21.0046,-80.3334 -31.3226,-152.021 -31.0108,-215.177l-132.32 0c2.32439,99.0135 22.677,199.841 61.3413,302.653 38.4942,103.01 89.9994,194.852 154.487,276.008l-312.007 0z"/></glyph>
+   <glyph unicode="3" horiz-adv-x="556"><path d="M37.6722 190.005l132.661 15.9873c4.33698,-33.8171 15.6755,-59.6689 34.3273,-77.4987 18.5101,-17.9999 41.0171,-26.9857 67.3508,-26.9857 28.3179,0 52.1572,10.8283 71.4893,32.3148 19.3322,21.5148 28.9982,50.343 28.9982,86.853 0,34.4974 -9.15585,61.8232 -27.836,81.9774 -18.4818,20.3526 -41.1588,30.3589 -67.8326,30.3589 -17.4897,0 -38.4942,-3.34486 -62.9854,-10.1763l15.1653 111.656c37.162,-0.822042 65.4799,7.17161 84.9821,24.1794 19.5022,17.1495 29.3384,39.8265 29.3384,68.1728 0,24.151 -7.17161,43.3131 -21.4865,57.6563 -14.3432,14.3432 -33.5053,21.4865 -57.1744,21.4865 -23.4991,0 -43.5115,-8.16373 -60.0091,-24.4912 -16.6676,-16.1574 -26.8156,-39.9966 -30.3305,-71.1492l-126.509 21.3164c8.84404,43.3415 22.0251,78.009 39.8549,103.832 17.6597,25.8518 42.4911,46.1761 74.1539,61.0012 31.8329,14.8251 67.3508,22.3369 106.667,22.3369 67.4925,0 121.492,-21.4865 162.169,-64.4878 33.5053,-35.1777 50.343,-74.8342 50.343,-119.168 0,-62.8437 -34.3273,-113.017 -103.01,-150.349 40.9887,-8.81569 73.672,-28.488 98.3332,-59.1587 24.4912,-30.5006 36.8218,-67.4925 36.8218,-110.834 0,-62.8437 -22.9888,-116.333 -68.8248,-160.667 -45.8359,-44.1635 -102.982,-66.3303 -171.325,-66.3303 -64.8279,0 -118.516,18.6519 -161.177,55.8138 -42.6611,37.3604 -67.3224,86.0026 -74.1539,146.352z"/></glyph>
+   <glyph unicode="4" horiz-adv-x="556"><path d="M311.497 0l0 143.999 -292.987 0 0 120.16 310.647 454.674 115.171 0 0 -454.164 88.8372 0 0 -120.67 -88.8372 0 0 -143.999 -132.831 0zm0 264.669l0 244.657 -164.493 -244.657 164.493 0z"/></glyph>
+   <glyph unicode="2" horiz-adv-x="556"><path d="M505.839 127.502l0 -127.502 -481.008 0c5.3291,48.1603 20.8345,93.8262 46.9981,136.998 25.9935,43.1714 77.4987,100.346 154.175,171.665 61.9933,57.5146 99.8356,96.6608 113.839,117.184 18.8219,28.3179 28.3179,56.3241 28.3179,83.99 0,30.5006 -8.16373,53.9997 -24.6613,70.4972 -16.4975,16.4975 -39.1746,24.6613 -68.1728,24.6613 -28.6581,0 -51.3351,-8.67396 -68.3145,-25.8235 -16.8377,-17.3479 -26.6738,-46.006 -29.3384,-86.0026l-136.686 13.6629c8.19207,75.5145 33.6754,129.656 76.6767,162.679 43.0013,32.825 96.6608,49.3225 161.177,49.3225 70.6673,0 126.169,-19.1621 166.478,-57.1744 40.3368,-38.1541 60.5193,-85.4924 60.5193,-142.157 0,-32.173 -5.83933,-62.8437 -17.3479,-92.012 -11.4802,-29.1683 -29.8203,-59.6689 -54.8217,-91.5018 -16.6676,-21.1463 -46.658,-51.6469 -89.8294,-91.3317 -43.3415,-39.6564 -70.8373,-66.1602 -82.3459,-79.1428 -11.4802,-13.0109 -21.0046,-25.6817 -28.1479,-38.0124l272.493 0z"/></glyph>
+   <glyph unicode="1" horiz-adv-x="556"><path d="M393.503 0l-137.168 0 0 517.178c-50.1729,-46.9981 -109.162,-81.6656 -177.164,-104.002l0 124.497c35.6596,11.6503 74.6641,33.8171 116.673,66.5004 41.9808,32.825 70.809,71.0074 86.3144,114.661l111.344 0 0 -718.833z"/></glyph>
+   <glyph unicode="H" horiz-adv-x="722"><path d="M73.1617 0l0 715.829 144.679 0 0 -281.649 283.151 0 0 281.649 144.509 0 0 -715.829 -144.509 0 0 313 -283.151 0 0 -313 -144.679 0z"/></glyph>
+   <glyph unicode="A" horiz-adv-x="722"><path d="M718.331 0l-157.323 0 -62.5197 162.677 -286.142 0 -59.0236 -162.677 -153.323 0 278.835 715.843 152.819 0 286.677 -715.843zm-266.173 283.181l-98.6457 265.638 -96.6929 -265.638 195.339 0z"/></glyph>
+   <glyph unicode="C" horiz-adv-x="722"><path d="M530.835 263.181l140 -44.3465c-21.5118,-78.1732 -57.1654,-136.157 -107.181,-174.173 -49.8268,-37.8268 -113.323,-56.8189 -190.142,-56.8189 -95.0236,0 -173.165,32.5039 -234.331,97.3228 -61.1654,65.0079 -91.8425,153.827 -91.8425,266.331 0,119.181 30.8346,211.685 92.315,277.669 61.5118,65.8268 142.362,98.8346 242.677,98.8346 87.4961,0 158.677,-25.8268 213.323,-77.6693 32.6929,-30.4882 57.0079,-74.4882 73.3543,-131.843l-143.181 -34.1417c-8.31496,37.1654 -25.9843,66.4882 -53.0079,88 -26.8031,21.4803 -59.4961,32.1575 -97.8268,32.1575 -52.9764,0 -96.1575,-18.9921 -129.165,-57.1654 -33.0079,-38.0157 -49.4803,-99.685 -49.4803,-185.008 0,-90.4882 16.1575,-154.992 48.8189,-193.323 32.5039,-38.5197 74.8346,-57.6693 126.835,-57.6693 38.4882,0 71.4961,12.1575 99.1811,36.6614 27.6535,24.3465 47.4961,62.8346 59.6535,115.181z"/></glyph>
+   <glyph unicode="K" horiz-adv-x="722"><path d="M74.6772 0l0 715.843 144.504 0 0 -317.827 292 317.827 194.331 0 -269.512 -278.835 284.157 -437.008 -186.992 0 -196.661 336 -117.323 -119.654 0 -216.346 -144.504 0z"/></glyph>
+   <glyph unicode="I" horiz-adv-x="277"><path d="M68.3429 0l0 715.829 144.481 0 0 -715.829 -144.481 0z"/></glyph>
+   <glyph unicode="D" horiz-adv-x="722"><path d="M72.3397 715.829l264.159 0c59.4988,0 104.825,-4.50706 136.176,-13.6629 41.9808,-12.3306 77.9806,-34.3273 107.829,-65.9901 29.9904,-31.5211 52.8375,-70.1854 68.4846,-115.851 15.5054,-45.8359 23.3573,-102.16 23.3573,-169.312 0,-58.8469 -7.34169,-109.672 -22.0251,-152.333 -17.8298,-52.0154 -43.3131,-94.1663 -76.6483,-126.339 -25.0014,-24.5195 -58.8469,-43.5115 -101.508,-57.1744 -31.8329,-10.1763 -74.494,-15.1653 -127.983,-15.1653l-271.841 0 0 715.829zm144.481 -121.152l0 -474.006 107.858 0c40.3084,0 69.4767,2.15432 87.4766,6.83145 23.3573,5.83933 42.8312,15.6755 58.3366,29.6786 15.5054,13.9747 28.0061,37.162 37.8423,69.1649 9.66608,31.9746 14.655,75.8263 14.655,131.158 0,55.3319 -4.98894,97.6529 -14.655,127.331 -9.83616,29.6786 -23.4991,52.8375 -40.9887,69.335 -17.6881,16.6676 -40.0249,27.836 -67.0106,33.6754 -20.1542,4.64879 -59.6689,6.83145 -118.658,6.83145l-64.8563 0z"/></glyph>
+   <glyph unicode="F" horiz-adv-x="610"><path d="M73.672 0l0 715.829 490.816 0 0 -121.152 -346.165 0 0 -169.341 298.855 0 0 -121.18 -298.855 0 0 -304.156 -144.651 0z"/></glyph>
+   <glyph unicode="M" horiz-adv-x="833"><path d="M70.8373 0l0 715.829 216.339 0 129.826 -488.321 128.324 488.321 216.849 0 0 -715.829 -134.163 0 0 563.496 -142.185 -563.496 -139.152 0 -141.675 563.496 0 -563.496 -134.163 0z"/></glyph>
+   <glyph unicode="L" horiz-adv-x="610"><path d="M76.6767 0l0 709.989 144.481 0 0 -589.319 359.346 0 0 -120.67 -503.827 0z"/></glyph>
+   <glyph unicode="E" horiz-adv-x="666"><path d="M72.8216 0l0 715.829 530.671 0 0 -121.152 -386.161 0 0 -158.682 359.346 0 0 -120.5 -359.346 0 0 -194.824 399.824 0 0 -120.67 -544.334 0z"/></glyph>
+   <glyph unicode="N" horiz-adv-x="722"><path d="M74.1539 0l0 715.829 140.683 0 292.987 -478.003 0 478.003 134.333 0 0 -715.829 -145.161 0 -288.508 466.835 0 -466.835 -134.333 0z"/></glyph>
+   <glyph unicode="X" horiz-adv-x="666"><path d="M0 0l244.657 373.491 -221.668 342.338 168.83 0 143.687 -230.002 140.484 230.002 167.498 0 -222.66 -347.667 244.685 -368.161 -174.358 0 -158.654 247.491 -159.164 -247.491 -173.337 0z"/></glyph>
+   <glyph unicode="Q" horiz-adv-x="777"><path d="M648.988 90.8215c35.3478,-25.3132 74.0121,-45.6659 115.681,-60.491l-53.1776 -102.16c-21.8266,6.4913 -43.1714,15.5054 -63.9775,26.8156 -4.67714,2.35274 -36.6801,23.5274 -96.1789,63.524 -46.9981,-20.5227 -98.8435,-30.6707 -155.848,-30.6707 -109.984,0 -196.156,32.3148 -258.49,97.171 -62.3335,64.6579 -93.486,155.649 -93.486,272.833 0,116.985 31.1526,207.835 93.6561,272.833 62.5035,64.8279 147.344,97.3128 254.493,97.3128 106.015,0 190.175,-32.4848 252.339,-97.3128 62.1634,-64.998 93.3443,-155.848 93.3443,-272.833 0,-61.8516 -8.67396,-116.163 -25.8518,-163.019 -13.1527,-35.8297 -33.9872,-70.4972 -62.5035,-104.002zm-116.333 81.5239c18.6802,21.8266 32.5132,48.1603 41.8391,79.1428 9.18419,30.8408 13.833,66.3586 13.833,106.355 0,82.8278 -18.17,144.481 -54.6516,185.328 -36.51,40.8186 -84.1884,61.3413 -143.007,61.3413 -58.9886,0 -106.667,-20.5227 -143.347,-61.5114 -36.6517,-40.9887 -54.9918,-102.67 -54.9918,-185.158 0,-83.5081 18.34,-146.182 54.9918,-187.681 36.6801,-41.499 82.8562,-62.3335 138.84,-62.3335 20.8345,0 40.6769,3.51494 59.1587,10.3464 -29.3101,19.1621 -59.1587,34.1573 -89.3191,44.9855l40.5068 82.516c47.48,-16.3558 93.0041,-40.6769 136.147,-73.3318z"/></glyph>
+   <glyph unicode="V" horiz-adv-x="666"><path d="M255.339 0l-255.843 715.843 156.85 0 180.976 -529.827 175.339 529.827 153.354 0 -256.346 -715.843 -154.331 0z"/></glyph>
+   <glyph unicode="W" horiz-adv-x="943"><path d="M174.33 0l-170.843 715.829 147.854 0 107.999 -491.666 130.818 491.666 171.835 0 125.517 -500 109.813 500 145.501 0 -173.819 -715.829 -153.353 0 -142.497 535.178 -142.157 -535.178 -156.67 0z"/></glyph>
+   <glyph unicode="R" horiz-adv-x="722"><path d="M73.1654 0l0 715.843 304.346 0c76.5039,0 132,-6.51969 166.646,-19.3386 34.6772,-12.8504 62.5197,-35.685 83.3386,-68.5039 20.8504,-33.0079 31.1811,-70.4882 31.1811,-112.819 0,-53.6693 -15.8425,-98.1732 -47.3386,-133.165 -31.4961,-34.8346 -78.8346,-57.0079 -141.669,-66.0157 31.3386,-18.3307 57.1654,-38.3307 77.5118,-60.1575 20.315,-21.8268 47.6535,-60.5039 82.1417,-116.189l87.4961 -139.654 -172.819 0 -104.504 155.843c-37.1654,55.6535 -62.4882,90.6457 -76.1575,105.165 -13.6693,14.4882 -28.1575,24.315 -43.4961,29.8268 -15.3386,5.32283 -39.4961,8 -72.8504,8l-29.1654 0 0 -298.835 -144.661 0zm144.661 413.165l106.835 0c69.3543,0 112.661,2.83465 130.016,8.66142 17.1654,5.82677 30.6457,16 40.5039,30.3307 9.6378,14.3307 14.6457,32.189 14.6457,53.6693 0,24.189 -6.48819,43.4961 -19.3386,58.3307 -12.8189,14.8346 -30.9921,24.189 -54.4882,28.189 -11.6535,1.48031 -46.8346,2.33071 -105.512,2.33071l-112.661 0 0 -181.512z"/></glyph>
+   <glyph unicode="T" horiz-adv-x="610"><path d="M233.828 0l0 594.677 -212.342 0 0 121.152 568.853 0 0 -121.152 -211.832 0 0 -594.677 -144.679 0z"/></glyph>
+   <glyph unicode="Z" horiz-adv-x="610"><path d="M10.6582 0l0 130.336 376.013 464.34 -333.494 0 0 121.152 523.981 0 0 -112.336 -392.171 -482.822 407.336 0 0 -120.67 -581.666 0z"/></glyph>
+   <glyph unicode="S" horiz-adv-x="666"><path d="M36.1699 232.836l140.654 13.833c8.33381,-47.3383 25.5117,-82.0058 51.5052,-104.173 25.8235,-21.9967 60.661,-33.1651 104.683,-33.1651 46.4879,0 81.6656,9.83616 105.165,29.6786 23.6691,19.644 35.4895,42.6611 35.4895,68.9948 0,17.0078 -4.98894,31.3226 -14.9952,43.1714 -9.83616,11.9905 -27.1841,22.3369 -52.0154,30.9825 -16.8093,6.00941 -55.502,16.3275 -115.653,31.351 -77.4987,19.1621 -131.839,42.8312 -162.991,70.8373 -44.0218,39.3163 -66.0185,87.3065 -66.0185,143.999 0,36.4817 10.3464,70.4972 31.0108,102.33 20.6644,31.6628 50.4847,55.8138 89.3191,72.4814 39.0045,16.4975 85.8325,24.8313 140.853,24.8313 89.9994,0 157.492,-19.644 202.988,-58.9886 45.3257,-39.4864 69.1649,-92.012 71.4893,-157.832l-144.481 -6.32122c-6.17949,36.8218 -19.5022,63.3256 -39.8265,79.3129 -20.3526,16.1857 -50.8532,24.1794 -91.5018,24.1794 -42.0092,0 -75.0043,-8.50388 -98.6734,-25.8518 -15.3353,-10.9984 -23.0172,-25.8235 -23.0172,-44.3336 0,-16.9794 7.17161,-31.4927 21.5148,-43.4832 18.17,-15.3353 62.5035,-31.351 132.831,-47.8485 70.3271,-16.6676 122.343,-33.8171 155.99,-51.4768 33.6754,-17.8582 60.0091,-42.0092 79.1712,-72.8499 19.0204,-30.8408 28.5164,-68.8248 28.5164,-114.009 0,-40.9887 -11.3385,-79.483 -34.1856,-115.143 -22.8188,-35.858 -54.9918,-62.5035 -96.6608,-79.8515 -41.669,-17.4897 -93.6561,-26.1636 -155.819,-26.1636 -90.5097,0 -160.015,20.8345 -208.515,62.6736 -48.5005,41.8391 -77.4987,102.84 -86.8246,182.833z"/></glyph>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Arial";src:url("#FontID0") format(svg)}
+    .str3 {stroke:#1F1A17;stroke-width:0.0762}
+    .str1 {stroke:#1F1A17;stroke-width:0.1}
+    .str0 {stroke:#1F1A17;stroke-width:0.13}
+    .str2 {stroke:#1F1A17;stroke-width:0.1764}
+    .str4 {stroke:#1F1A17;stroke-width:0.3528}
+    .fil2 {fill:none}
+    .fil7 {fill:#1F1A17}
+    .fil16 {fill:#00923F}
+    .fil21 {fill:#009240}
+    .fil57 {fill:#151718}
+    .fil10 {fill:#192761}
+    .fil1 {fill:#838281}
+    .fil4 {fill:#9B231C}
+    .fil0 {fill:url(#id0)}
+    .fil6 {fill:url(#id1)}
+    .fil5 {fill:url(#id2)}
+    .fil25 {fill:url(#id3)}
+    .fil80 {fill:url(#id4)}
+    .fil79 {fill:url(#id5)}
+    .fil48 {fill:url(#id6)}
+    .fil3 {fill:url(#id7)}
+    .fil58 {fill:url(#id8)}
+    .fil23 {fill:url(#id9)}
+    .fil46 {fill:url(#id10)}
+    .fil45 {fill:url(#id11)}
+    .fil22 {fill:url(#id12)}
+    .fil83 {fill:url(#id13)}
+    .fil17 {fill:url(#id14)}
+    .fil19 {fill:url(#id15)}
+    .fil43 {fill:url(#id16)}
+    .fil44 {fill:url(#id17)}
+    .fil93 {fill:url(#id18)}
+    .fil56 {fill:url(#id19)}
+    .fil92 {fill:url(#id20)}
+    .fil18 {fill:url(#id21)}
+    .fil20 {fill:url(#id22)}
+    .fil82 {fill:url(#id23)}
+    .fil81 {fill:url(#id24)}
+    .fil24 {fill:url(#id25)}
+    .fil47 {fill:url(#id26)}
+    .fil84 {fill:url(#id27)}
+    .fil15 {fill:url(#id28)}
+    .fil59 {fill:url(#id29)}
+    .fil8 {fill:url(#id30)}
+    .fil9 {fill:url(#id31)}
+    .fil77 {fill:url(#id32)}
+    .fil78 {fill:url(#id33)}
+    .fil49 {fill:url(#id34)}
+    .fil91 {fill:url(#id35)}
+    .fil66 {fill:url(#id36)}
+    .fil26 {fill:url(#id37)}
+    .fil55 {fill:url(#id38)}
+    .fil32 {fill:url(#id39)}
+    .fil41 {fill:url(#id40)}
+    .fil42 {fill:url(#id41)}
+    .fil90 {fill:url(#id42)}
+    .fil65 {fill:url(#id43)}
+    .fil67 {fill:url(#id44)}
+    .fil68 {fill:url(#id45)}
+    .fil85 {fill:url(#id46)}
+    .fil54 {fill:url(#id47)}
+    .fil31 {fill:url(#id48)}
+    .fil60 {fill:url(#id49)}
+    .fil75 {fill:url(#id50)}
+    .fil76 {fill:url(#id51)}
+    .fil33 {fill:url(#id52)}
+    .fil34 {fill:url(#id53)}
+    .fil50 {fill:url(#id54)}
+    .fil89 {fill:url(#id55)}
+    .fil64 {fill:url(#id56)}
+    .fil14 {fill:url(#id57)}
+    .fil27 {fill:url(#id58)}
+    .fil11 {fill:url(#id59)}
+    .fil39 {fill:url(#id60)}
+    .fil40 {fill:url(#id61)}
+    .fil13 {fill:url(#id62)}
+    .fil12 {fill:url(#id63)}
+    .fil86 {fill:url(#id64)}
+    .fil53 {fill:url(#id65)}
+    .fil30 {fill:url(#id66)}
+    .fil61 {fill:url(#id67)}
+    .fil69 {fill:url(#id68)}
+    .fil73 {fill:url(#id69)}
+    .fil74 {fill:url(#id70)}
+    .fil70 {fill:url(#id71)}
+    .fil51 {fill:url(#id72)}
+    .fil87 {fill:url(#id73)}
+    .fil52 {fill:url(#id74)}
+    .fil88 {fill:url(#id75)}
+    .fil63 {fill:url(#id76)}
+    .fil29 {fill:url(#id77)}
+    .fil62 {fill:url(#id78)}
+    .fil28 {fill:url(#id79)}
+    .fil35 {fill:url(#id80)}
+    .fil71 {fill:url(#id81)}
+    .fil37 {fill:url(#id82)}
+    .fil38 {fill:url(#id83)}
+    .fil72 {fill:url(#id84)}
+    .fil36 {fill:url(#id85)}
+    .fnt2 {font-weight:bold;font-size:3.175px;font-family:'Arial'}
+    .fnt0 {font-weight:bold;font-size:3.5278px;font-family:'Arial'}
+    .fnt1 {font-weight:bold;font-size:3.9429px;font-family:'Arial'}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="106.254" y1="113.617" x2="192.411" y2="75.9037">
+   <stop offset="0" style="stop-color:white"/>
+   <stop offset="1" style="stop-color:white"/>
+  </linearGradient>
+  <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="178.383" y1="16.5465" x2="178.383" y2="6.4839">
+   <stop offset="0" style="stop-color:#F8C300"/>
+   <stop offset="1" style="stop-color:#F8C300"/>
+  </linearGradient>
+  <linearGradient id="id2" gradientUnits="userSpaceOnUse" xlink:href="#id1" x1="119.962" y1="16.5465" x2="119.962" y2="6.4839">
+  </linearGradient>
+  <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="17.9348" y1="61.4126" x2="22.514" y2="61.3378">
+   <stop offset="0" style="stop-color:#20327F"/>
+   <stop offset="1" style="stop-color:#192761"/>
+  </linearGradient>
+  <linearGradient id="id4" gradientUnits="userSpaceOnUse" x1="233.811" y1="173.532" x2="233.897" y2="168.948">
+   <stop offset="0" style="stop-color:#9B231C"/>
+   <stop offset="1" style="stop-color:#9B231C"/>
+  </linearGradient>
+  <linearGradient id="id5" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="64.3516" y1="173.532" x2="64.2662" y2="168.948">
+  </linearGradient>
+  <linearGradient id="id6" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="280.616" y1="61.8479" x2="276.037" y2="61.7733">
+  </linearGradient>
+  <linearGradient id="id7" gradientUnits="userSpaceOnUse" x1="158.307" y1="192.714" x2="140.123" y2="186.159">
+   <stop offset="0" style="stop-color:#BB825B"/>
+   <stop offset="1" style="stop-color:#BB825B"/>
+  </linearGradient>
+  <linearGradient id="id8" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="15.6826" y1="67.5056" x2="20.2712" y2="67.0482">
+  </linearGradient>
+  <linearGradient id="id9" gradientUnits="userSpaceOnUse" x1="203.984" y1="180.721" x2="209.487" y2="179.231">
+   <stop offset="0" style="stop-color:#901E78"/>
+   <stop offset="1" style="stop-color:#901E78"/>
+  </linearGradient>
+  <linearGradient id="id10" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="227.689" y1="175.88" x2="228.12" y2="171.315">
+  </linearGradient>
+  <linearGradient id="id11" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="70.4741" y1="175.88" x2="70.0435" y2="171.315">
+  </linearGradient>
+  <linearGradient id="id12" gradientUnits="userSpaceOnUse" xlink:href="#id9" x1="94.3604" y1="180.721" x2="88.8582" y2="179.231">
+  </linearGradient>
+  <linearGradient id="id13" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="282.938" y1="67.7532" x2="278.35" y2="67.2958">
+  </linearGradient>
+  <linearGradient id="id14" gradientUnits="userSpaceOnUse" x1="103.981" y1="12.1577" x2="106.991" y2="10.8403">
+   <stop offset="0" style="stop-color:#192761"/>
+   <stop offset="1" style="stop-color:#192761"/>
+  </linearGradient>
+  <linearGradient id="id15" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="106.764" y1="12.1577" x2="109.774" y2="10.8403">
+  </linearGradient>
+  <linearGradient id="id16" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="58.3537" y1="170.722" x2="58.5737" y2="166.127">
+  </linearGradient>
+  <linearGradient id="id17" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="239.809" y1="170.722" x2="239.589" y2="166.127">
+  </linearGradient>
+  <linearGradient id="id18" gradientUnits="userSpaceOnUse" x1="118.245" y1="89.7692" x2="113.212" y2="85.5494">
+   <stop offset="0" style="stop-color:#00923F"/>
+   <stop offset="1" style="stop-color:#00923F"/>
+  </linearGradient>
+  <linearGradient id="id19" gradientUnits="userSpaceOnUse" xlink:href="#id14" x1="135.321" y1="89.7542" x2="130.324" y2="85.5645">
+  </linearGradient>
+  <linearGradient id="id20" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="152.019" y1="89.7699" x2="146.983" y2="85.5485">
+  </linearGradient>
+  <linearGradient id="id21" gradientUnits="userSpaceOnUse" xlink:href="#id14" x1="191.013" y1="12.1577" x2="194.023" y2="10.8403">
+  </linearGradient>
+  <linearGradient id="id22" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="188.23" y1="12.1577" x2="191.24" y2="10.8403">
+  </linearGradient>
+  <linearGradient id="id23" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="221.603" y1="177.806" x2="222.206" y2="173.292">
+  </linearGradient>
+  <linearGradient id="id24" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="76.5598" y1="177.807" x2="75.9568" y2="173.292">
+  </linearGradient>
+  <linearGradient id="id25" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="13.8045" y1="73.5892" x2="18.2927" y2="72.8806">
+  </linearGradient>
+  <linearGradient id="id26" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="284.786" y1="73.7882" x2="280.297" y2="73.0788">
+  </linearGradient>
+  <linearGradient id="id27" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="277.844" y1="56.004" x2="273.261" y2="56.4044">
+  </linearGradient>
+  <linearGradient id="id28" gradientUnits="userSpaceOnUse" xlink:href="#id9" x1="15.0963" y1="101.591" x2="11.6785" y2="103.002">
+  </linearGradient>
+  <linearGradient id="id29" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="20.7069" y1="55.5686" x2="25.2899" y2="55.969">
+  </linearGradient>
+  <linearGradient id="id30" gradientUnits="userSpaceOnUse" xlink:href="#id9" x1="100.009" y1="13.5251" x2="98.4479" y2="9.3989">
+  </linearGradient>
+  <linearGradient id="id31" gradientUnits="userSpaceOnUse" xlink:href="#id9" x1="200.049" y1="13.5251" x2="198.488" y2="9.3989">
+  </linearGradient>
+  <linearGradient id="id32" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="52.4452" y1="167.417" x2="53.0072" y2="162.825">
+  </linearGradient>
+  <linearGradient id="id33" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="245.718" y1="167.417" x2="245.156" y2="162.825">
+  </linearGradient>
+  <linearGradient id="id34" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="274.682" y1="50.5536" x2="270.078" y2="51.321">
+  </linearGradient>
+  <linearGradient id="id35" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="205.978" y1="9.6116" x2="203.919" y2="13.7518">
+  </linearGradient>
+  <linearGradient id="id36" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="92.694" y1="9.4832" x2="94.7524" y2="13.6234">
+  </linearGradient>
+  <linearGradient id="id37" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="23.8689" y1="50.1185" x2="28.4723" y2="50.8853">
+  </linearGradient>
+  <linearGradient id="id38" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="212.287" y1="10.1192" x2="209.818" y2="14.074">
+  </linearGradient>
+  <linearGradient id="id39" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="86.3016" y1="10.0828" x2="88.7708" y2="14.0376">
+  </linearGradient>
+  <linearGradient id="id40" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="47.0209" y1="163.773" x2="47.8735" y2="159.305">
+  </linearGradient>
+  <linearGradient id="id41" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="251.142" y1="163.773" x2="250.29" y2="159.305">
+  </linearGradient>
+  <linearGradient id="id42" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="218.581" y1="11.4133" x2="215.768" y2="15.0473">
+  </linearGradient>
+  <linearGradient id="id43" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="80.0507" y1="11.3553" x2="82.8633" y2="14.9891">
+  </linearGradient>
+  <linearGradient id="id44" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="13.6228" y1="115.76" x2="17.2708" y2="112.855">
+  </linearGradient>
+  <linearGradient id="id45" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="284.54" y1="115.76" x2="280.892" y2="112.855">
+  </linearGradient>
+  <linearGradient id="id46" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="270.905" y1="45.3784" x2="266.485" y2="46.4692">
+  </linearGradient>
+  <linearGradient id="id47" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="224.6" y1="12.967" x2="221.593" y2="16.5246">
+  </linearGradient>
+  <linearGradient id="id48" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="73.988" y1="12.8963" x2="76.9956" y2="16.4539">
+  </linearGradient>
+  <linearGradient id="id49" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="27.6463" y1="44.9427" x2="32.0661" y2="46.0341">
+  </linearGradient>
+  <linearGradient id="id50" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="41.86" y1="159.828" x2="43.0458" y2="155.353">
+  </linearGradient>
+  <linearGradient id="id51" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="256.303" y1="159.828" x2="255.117" y2="155.353">
+  </linearGradient>
+  <linearGradient id="id52" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="15.4935" y1="122.06" x2="18.9439" y2="118.959">
+  </linearGradient>
+  <linearGradient id="id53" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="282.669" y1="122.06" x2="279.219" y2="118.959">
+  </linearGradient>
+  <linearGradient id="id54" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="266.773" y1="40.3887" x2="262.41" y2="41.8793">
+  </linearGradient>
+  <linearGradient id="id55" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="230.592" y1="15.0218" x2="227.34" y2="18.3372">
+  </linearGradient>
+  <linearGradient id="id56" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="68.0457" y1="14.9145" x2="71.2973" y2="18.2303">
+  </linearGradient>
+  <linearGradient id="id57" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="196.121" y1="181.75" x2="197.574" y2="182.386">
+  </linearGradient>
+  <linearGradient id="id58" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="31.7778" y1="39.9533" x2="36.141" y2="41.4439">
+  </linearGradient>
+  <linearGradient id="id59" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="99.9036" y1="183.73" x2="101.069" y2="183.22">
+  </linearGradient>
+  <linearGradient id="id60" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="36.9582" y1="155.438" x2="38.4914" y2="151.063">
+  </linearGradient>
+  <linearGradient id="id61" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="261.205" y1="155.438" x2="259.672" y2="151.062">
+  </linearGradient>
+  <linearGradient id="id62" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="197.202" y1="183.733" x2="198.368" y2="183.223">
+  </linearGradient>
+  <linearGradient id="id63" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="102.151" y1="181.747" x2="100.698" y2="182.383">
+  </linearGradient>
+  <linearGradient id="id64" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="262.447" y1="35.8443" x2="258.179" y2="37.4807">
+  </linearGradient>
+  <linearGradient id="id65" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="236.482" y1="17.526" x2="233.016" y2="20.6424">
+  </linearGradient>
+  <linearGradient id="id66" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="62.2242" y1="17.246" x2="65.6902" y2="20.3626">
+  </linearGradient>
+  <linearGradient id="id67" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="36.1038" y1="35.4088" x2="40.3722" y2="37.0454">
+  </linearGradient>
+  <linearGradient id="id68" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="17.9643" y1="128.303" x2="21.0815" y2="124.84">
+  </linearGradient>
+  <linearGradient id="id69" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="32.4701" y1="150.717" x2="34.2089" y2="146.435">
+  </linearGradient>
+  <linearGradient id="id70" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="265.693" y1="150.717" x2="263.954" y2="146.435">
+  </linearGradient>
+  <linearGradient id="id71" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="280.199" y1="128.303" x2="277.082" y2="124.84">
+  </linearGradient>
+  <linearGradient id="id72" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="257.769" y1="31.5178" x2="253.626" y2="33.4542">
+  </linearGradient>
+  <linearGradient id="id73" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="252.906" y1="27.3196" x2="248.802" y2="29.4934">
+  </linearGradient>
+  <linearGradient id="id74" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="247.695" y1="23.6367" x2="243.789" y2="26.2223">
+  </linearGradient>
+  <linearGradient id="id75" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="242.293" y1="20.4526" x2="238.518" y2="23.1896">
+  </linearGradient>
+  <linearGradient id="id76" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="56.4599" y1="20.2349" x2="60.2351" y2="22.9721">
+  </linearGradient>
+  <linearGradient id="id77" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="50.9684" y1="23.4368" x2="54.8748" y2="26.0222">
+  </linearGradient>
+  <linearGradient id="id78" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="45.7458" y1="27.0131" x2="49.7648" y2="29.4133">
+  </linearGradient>
+  <linearGradient id="id79" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="40.7815" y1="31.0829" x2="44.9249" y2="33.0183">
+  </linearGradient>
+  <linearGradient id="id80" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="20.9508" y1="134.393" x2="23.7928" y2="130.74">
+  </linearGradient>
+  <linearGradient id="id81" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="24.4168" y1="140.26" x2="26.9324" y2="136.306">
+  </linearGradient>
+  <linearGradient id="id82" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="28.2576" y1="145.648" x2="30.3856" y2="141.533">
+  </linearGradient>
+  <linearGradient id="id83" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="269.905" y1="145.647" x2="267.777" y2="141.532">
+  </linearGradient>
+  <linearGradient id="id84" gradientUnits="userSpaceOnUse" xlink:href="#id4" x1="273.746" y1="140.26" x2="271.231" y2="136.305">
+  </linearGradient>
+  <linearGradient id="id85" gradientUnits="userSpaceOnUse" xlink:href="#id3" x1="277.212" y1="134.393" x2="274.37" y2="130.74">
+  </linearGradient>
+ </defs>
+ <g id="Слой_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <rect class="fil0 str0" x="105.543" y="77.5275" width="87.579" height="34.4655" rx="4.329" ry="4.329"/>
+  <rect class="fil1 str1" x="130.238" y="96.5541" width="5.16943" height="5.83728"/>
+  <rect class="fil1 str1" x="113.144" y="96.5186" width="5.16943" height="5.83728"/>
+  <polyline class="fil2 str2" points="75.497,175.31 86.1528,178.657 120.398,187.99 130.884,189.451 149.172,189.451 "/>
+  <polyline class="fil2 str2" points="222.848,175.31 212.192,178.657 177.947,187.99 167.461,189.451 149.172,189.451 "/>
+  <line class="fil2 str2" x1="206.107" y1="11.4636" x2="149.045" y2= "11.4498" />
+  <line class="fil2 str2" x1="92.2374" y1="11.4636" x2="149.019" y2= "11.4498" />
+  <rect class="fil3" x="140.945" y="183.312" width="16.5409" height="12.2488"/>
+  <polyline class="fil2 str2" points="127.116,11.4 129.42,12.192 131.074,12.9811 "/>
+  <polyline class="fil2 str2" points="171.229,11.4 168.925,12.192 167.271,12.9811 "/>
+  <path class="fil2 str2" d="M74.7955 175.08c-36.7284,-10.9529 -61.7407,-43.4021 -61.7407,-80.093 0,-43.3406 34.6432,-79.5706 79.9061,-83.5665"/>
+  <path class="fil2 str2" d="M223.549 175.08c36.7284,-10.9529 61.7407,-43.4021 61.7407,-80.093 0,-43.3406 -34.6432,-79.5706 -79.9061,-83.5665"/>
+  <rect class="fil4 str3" transform="matrix(-0.27981 -0.960056 -0.960056 0.27981 217.512 178.419)" width="2.9455" height="1.5755"/>
+  <rect class="fil5 str4" x="118.096" y="6.4839" width="3.7329" height="10.0626"/>
+  <rect class="fil6 str4" x="176.516" y="6.4839" width="3.7329" height="10.0626"/>
+  <rect class="fil6 str4" x="181.818" y="6.538" width="3.7329" height="10.0626"/>
+  <rect class="fil5 str4" x="123.776" y="6.3757" width="3.7329" height="10.0626"/>
+  <rect class="fil6 str4" x="170.836" y="6.3757" width="3.7329" height="10.0626"/>
+  <g transform="matrix(2.64845E-014 -1 1 2.64845E-014 37.2083 335.366)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEL1</text>
+  </g>
+  <g transform="matrix(2.64845E-014 -1 1 2.64845E-014 33.8684 335.354)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEL2</text>
+  </g>
+  <g transform="matrix(-7.94536E-014 1 -1 -7.94536E-014 261.445 29.6938)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEL1</text>
+  </g>
+  <g transform="matrix(-7.94536E-014 1 -1 -7.94536E-014 264.812 29.4935)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEL2</text>
+  </g>
+  <g transform="matrix(0.112728 -0.993626 0.993626 0.112728 10.8705 322.241)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEM1</text>
+  </g>
+  <g transform="matrix(0.187914 -0.982185 0.982185 0.187914 -8.61193 311.021)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEM2</text>
+  </g>
+  <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -41.7819 295.064)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEL4</text>
+  </g>
+  <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -33.3326 297.605)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEL3</text>
+  </g>
+  <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -52.2291 292.037)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEM3</text>
+  </g>
+  <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -46.9511 293.485)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEZM</text>
+  </g>
+  <g transform="matrix(0.292393 -0.956298 0.956298 0.292393 -65.7557 284.693)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N17F</text>
+  </g>
+  <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -56.7165 290.737)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NEL5</text>
+  </g>
+  <g transform="matrix(0.340269 -0.940328 0.940328 0.340269 -77.4818 275.059)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N16D</text>
+  </g>
+  <g transform="matrix(0.467345 -0.884075 0.884075 0.467345 -101.529 247.978)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N15D</text>
+  </g>
+  <g transform="matrix(0.393905 -0.919151 0.919151 0.393905 -88.8677 263.787)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N16F</text>
+  </g>
+  <g transform="matrix(0.56864 -0.822586 0.822586 0.56864 -120.849 221.599)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N14D</text>
+  </g>
+  <g transform="matrix(0.517768 -0.855521 0.855521 0.517768 -111.611 235.274)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N15F</text>
+  </g>
+  <g transform="matrix(0.585079 -0.810976 0.810976 0.585079 -126.977 213.889)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N14F</text>
+  </g>
+  <g transform="matrix(0.68373 -0.729735 0.729735 0.68373 -137.657 187.641)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N13D</text>
+  </g>
+  <g transform="matrix(0.715291 -0.698827 0.698827 0.715291 -143.233 175.244)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N13F</text>
+  </g>
+  <g transform="matrix(0.788516 -0.615014 0.615014 0.788516 -149.112 150.442)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N12D</text>
+  </g>
+  <g transform="matrix(0.80069 -0.599079 0.599079 0.80069 -152.561 141.863)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N12F</text>
+  </g>
+  <g transform="matrix(0.888547 -0.458786 0.458786 0.888547 -154.319 106.155)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N11D</text>
+  </g>
+  <g transform="matrix(0.916342 -0.400396 0.400396 0.916342 -154.851 88.9671)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N11F</text>
+  </g>
+  <g transform="matrix(0.937943 -0.34679 0.34679 0.937943 -154.618 73.177)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N10D</text>
+  </g>
+  <g transform="matrix(0.967737 -0.251964 0.251964 0.967737 -150.654 50.2455)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N10F</text>
+  </g>
+  <g transform="matrix(0.982028 -0.188733 0.188733 0.982028 -147.127 35.6935)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIL4</text>
+  </g>
+  <g transform="matrix(0.989848 -0.142129 0.142129 0.989848 -144.17 24.2866)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIM4</text>
+  </g>
+  <g transform="matrix(0.996769 -0.0803225 0.0803225 0.996769 -139.357 7.34439)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIL3</text>
+  </g>
+  <g transform="matrix(0.999753 -0.0222225 0.0222225 0.999753 -134.162 -5.05981)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIM3</text>
+  </g>
+  <g transform="matrix(0.894582 0.0171865 -0.015377 0.999852 -114.422 -14.1969)">
+   <text x="148.5" y="105"  class="fil1 fnt1">NIL2</text>
+  </g>
+  <g transform="matrix(0.997161 0.0753008 -0.0753008 0.997161 -123.295 -26.6461)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIM2</text>
+  </g>
+  <g transform="matrix(0.986615 0.163065 -0.163065 0.986615 -111.987 -44.0301)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIL1</text>
+  </g>
+  <g transform="matrix(0.975463 0.220162 -0.220162 0.975463 -103.717 -54.9117)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NIM1</text>
+  </g>
+  <g transform="matrix(0.958938 0.291989 -0.282549 0.956786 -93.1276 -68.6736)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N9D</text>
+  </g>
+  <g transform="matrix(0.923692 0.383136 -0.383136 0.923692 -75.5177 -84.3488)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N9F</text>
+  </g>
+  <g transform="matrix(0.902942 0.435334 -0.425677 0.90226 -65.2766 -95.8429)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N8D</text>
+  </g>
+  <g transform="matrix(0.854159 0.520012 -0.520012 0.854159 -45.4748 -108.638)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N8F</text>
+  </g>
+  <g transform="matrix(0.84755 0.535238 -0.525565 0.847971 -41.179 -114.895)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N7D</text>
+  </g>
+  <g transform="matrix(0.789449 0.613816 -0.613816 0.789449 -20.0501 -125.354)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N7F</text>
+  </g>
+  <g transform="matrix(0.763664 0.649336 -0.639819 0.765444 -9.99338 -132.126)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N6D</text>
+  </g>
+  <g transform="matrix(0.69507 0.718942 -0.718942 0.69507 12.3986 -139.503)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N6F</text>
+  </g>
+  <g transform="matrix(0.692097 0.725136 -0.715856 0.694855 17.25 -144.744)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N5D</text>
+  </g>
+  <g transform="matrix(0.616644 0.787242 -0.787242 0.616644 40.5803 -149.873)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N5F</text>
+  </g>
+  <g transform="matrix(0.443398 0.89901 -0.89098 0.448807 92.168 -157.895)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N3D</text>
+  </g>
+  <g transform="matrix(0.352819 0.935692 -0.935692 0.352819 114.994 -155.503)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N3F</text>
+  </g>
+  <g transform="matrix(0.532676 0.849162 -0.840624 0.537239 63.5044 -154.395)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N4D</text>
+  </g>
+  <g transform="matrix(0.446305 0.894881 -0.894881 0.446305 87.0784 -154.686)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N4F</text>
+  </g>
+  <g transform="matrix(0.282001 0.961923 -0.954944 0.288712 133.221 -154.665)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N2D</text>
+  </g>
+  <g transform="matrix(0.227934 0.973677 -0.973677 0.227934 148.962 -151.555)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N2F</text>
+  </g>
+  <g transform="matrix(0.16044 0.989484 -0.983393 0.167966 165.885 -149.037)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N1D</text>
+  </g>
+  <g transform="matrix(0.0564226 0.998407 -0.998407 0.0564226 188.579 -139.217)">
+   <text x="148.5" y="105"  class="fil1 fnt0">N1F</text>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 208.756 -134.02)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NTL4</text>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 212.089 -134.02)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NTL3</text>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 243.568 -134.57)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NTL2</text>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 246.901 -134.57)">
+   <text x="148.5" y="105"  class="fil1 fnt0">NTL1</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 54.9045 171.524)">
+   <text x="148.5" y="105"  class="fil1 fnt0">STL2</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 51.3199 171.608)">
+   <text x="148.5" y="105"  class="fil1 fnt0">STL1</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 89.5604 171.839)">
+   <text x="148.5" y="105"  class="fil1 fnt0">STL4</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 86.1561 171.923)">
+   <text x="148.5" y="105"  class="fil1 fnt0">STL3</text>
+  </g>
+  <g transform="matrix(0.0952145 0.995457 -0.995457 0.0952145 255.902 18.9717)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEM1</text>
+  </g>
+  <g transform="matrix(0.16231 0.98674 -0.98674 0.16231 253.42 11.9608)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEM2</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 251.227 2.01873)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEL3</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 259.045 -0.626674)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEL4</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 273.94 -4.89197)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEL5</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 263.736 -2.68927)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEZM</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 269.353 -3.90587)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SEM3</text>
+  </g>
+  <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 279.242 -6.11707)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S17F</text>
+  </g>
+  <g transform="matrix(0.330064 0.943958 -0.943958 0.330064 273.379 -11.9202)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S16D</text>
+  </g>
+  <g transform="matrix(0.354363 0.935108 -0.935108 0.354363 274.194 -15.3954)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S16F</text>
+  </g>
+  <g transform="matrix(0.452408 0.891811 -0.891811 0.452408 259.625 -22.1261)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S15D</text>
+  </g>
+  <g transform="matrix(0.475318 0.879814 -0.879814 0.475318 260.024 -25.6894)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S15F</text>
+  </g>
+  <g transform="matrix(0.553242 0.833021 -0.833021 0.553242 247.853 -29.9238)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S14D</text>
+  </g>
+  <g transform="matrix(0.574598 0.818436 -0.818436 0.574598 247.896 -33.2349)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S14F</text>
+  </g>
+  <g transform="matrix(0.69517 0.718846 -0.718846 0.69517 223.209 -34.7121)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S13D</text>
+  </g>
+  <g transform="matrix(0.713526 0.700629 -0.700629 0.713526 223.002 -37.9248)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S13F</text>
+  </g>
+  <g transform="matrix(0.767933 0.640531 -0.640531 0.767933 212.094 -39.2059)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S12D</text>
+  </g>
+  <g transform="matrix(0.829217 0.558927 -0.558927 0.829217 197.47 -37.7329)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S12F</text>
+  </g>
+  <g transform="matrix(0.834652 0.550778 -0.550778 0.834652 198.883 -43.0771)">
+   <text x="148.5" y="105"  class="fil7 fnt0">S11D</text>
+  </g>
+  <g transform="matrix(0.886441 0.462842 -0.462842 0.886441 184.347 -39.7288)">
+   <text x="148.5" y="105"  class="fil7 fnt0">S11F</text>
+  </g>
+  <g transform="matrix(0.834652 0.550778 -0.550778 0.834652 198.883 -43.0771)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S11D</text>
+  </g>
+  <g transform="matrix(0.886441 0.462842 -0.462842 0.886441 184.347 -39.7288)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S11F</text>
+  </g>
+  <g transform="matrix(0.923436 0.383753 -0.383753 0.923436 172.632 -37.3438)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S10D</text>
+  </g>
+  <g transform="matrix(0.957739 0.287638 -0.287638 0.957739 159.114 -30.7498)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S10F</text>
+  </g>
+  <g transform="matrix(0.984252 0.176774 -0.176774 0.984252 144.818 -19.9455)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIL4</text>
+  </g>
+  <g transform="matrix(0.990791 0.1354 -0.1354 0.990791 139.606 -17.775)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIM4</text>
+  </g>
+  <g transform="matrix(0.999452 0.0331034 -0.0331034 0.999452 128.821 -9.10876)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIL3</text>
+  </g>
+  <g transform="matrix(0.998376 0.0569689 -0.0569689 0.998376 131.035 -15.8122)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIM3</text>
+  </g>
+  <g transform="matrix(0.999996 0.00293904 -0.00293904 0.999996 125.61 -11.9982)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIL2</text>
+  </g>
+  <g transform="matrix(0.998094 -0.0617134 0.0617134 0.998094 118.574 -4.92164)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIM2</text>
+  </g>
+  <g transform="matrix(0.989862 -0.142034 0.142034 0.989862 111.532 2.16501)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIL1</text>
+  </g>
+  <g transform="matrix(0.983045 -0.183363 0.183363 0.983045 106.951 6.44607)">
+   <text x="148.5" y="105"  class="fil1 fnt0">SIM1</text>
+  </g>
+  <g transform="matrix(0.967204 -0.254 0.254 0.967204 101.842 13.4161)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S9D</text>
+  </g>
+  <g transform="matrix(0.95418 -0.299234 0.299234 0.95418 97.5277 16.2259)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S9F</text>
+  </g>
+  <g transform="matrix(0.904179 -0.427154 0.427154 0.904179 89.321 35.4086)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S8D</text>
+  </g>
+  <g transform="matrix(0.883076 -0.46923 0.46923 0.883076 85.5951 38.9624)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S8F</text>
+  </g>
+  <g transform="matrix(0.845225 -0.53441 0.53441 0.845225 81.483 48.4116)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S7D</text>
+  </g>
+  <g transform="matrix(0.81914 -0.573593 0.573593 0.81914 78.5547 51.9744)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S7F</text>
+  </g>
+  <g transform="matrix(0.753504 -0.657443 0.657443 0.753504 76.0477 67.8953)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S6D</text>
+  </g>
+  <g transform="matrix(0.721731 -0.692174 0.692174 0.721731 74.2025 72.1159)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S6F</text>
+  </g>
+  <g transform="matrix(0.638634 -0.769511 0.769511 0.638634 74.0397 88.9267)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S5D</text>
+  </g>
+  <g transform="matrix(0.601714 -0.798711 0.798711 0.601714 72.4788 93.6611)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S5F</text>
+  </g>
+  <g transform="matrix(0.514646 -0.857403 0.857403 0.514646 74.6958 108.034)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S4D</text>
+  </g>
+  <g transform="matrix(0.473728 -0.880671 0.880671 0.473728 73.9626 112.632)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S4F</text>
+  </g>
+  <g transform="matrix(0.386695 -0.922207 0.922207 0.386695 77.0126 125.444)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S3D</text>
+  </g>
+  <g transform="matrix(0.34287 -0.939383 0.939383 0.34287 76.8609 130.099)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S3F</text>
+  </g>
+  <g transform="matrix(0.314968 -0.949102 0.949102 0.314968 74.7054 132.958)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S2D</text>
+  </g>
+  <g transform="matrix(0.28921 -0.957266 0.957266 0.28921 72.9147 135.29)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S2F</text>
+  </g>
+  <g transform="matrix(0.177716 -0.984082 0.984082 0.177716 80.8862 149.821)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S1D</text>
+  </g>
+  <g transform="matrix(-0.0017458 -0.999998 0.999998 -0.0017458 101.566 170.489)">
+   <text x="148.5" y="105"  class="fil1 fnt0">S1F</text>
+  </g>
+  <polyline class="fil2 str4" points="197.963,3.9558 197.963,7.2503 204.778,7.2503 "/>
+  <polyline class="fil2 str4" points="100.876,3.9558 100.876,7.2503 94.0612,7.2503 "/>
+  <polyline class="fil2 str4" points="196.136,196.03 195.129,192.585 201.966,190.73 "/>
+  <polyline class="fil2 str4" points="196.136,196.03 195.129,192.585 201.966,190.73 "/>
+  <polyline class="fil2 str4" points="101.628,195.895 102.635,192.45 95.7975,190.595 "/>
+  <line class="fil2" x1="124.879" y1="200.211" x2="175.392" y2= "200.211" />
+  <g transform="matrix(0.999999 -0.00150517 0.00150517 0.999999 -3.50964 85.8039)">
+   <text x="148.5" y="105"  class="fil7 fnt2">KEDR</text>
+  </g>
+  <g id="_72332416" link="NTW" class="link" >
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 201.631 -134.387)">
+    <text x="148.5" y="105" id="_41826352" class="fil7 fnt0">NTW</text>
+   </g>
+   <polygon id="_42389968" class="fil8 str1" points="96.8788,12.7257 96.8788,10.1983 101.578,10.1983 101.578,12.7257 "/>
+  </g>
+  <g id="_71084032" link="STW" class="link" >
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 96.4319 171.124)">
+    <text x="148.5" y="105" id="_41900056" class="fil7 fnt0">STW</text>
+   </g>
+   <polygon id="_42340848" class="fil9 str1" points="196.919,12.7257 196.919,10.1983 201.618,10.1983 201.618,12.7257 "/>
+  </g>
+  <g id="_41497736" link="NEL34" class="link" >
+   <rect id="_42335568" class="fil10 str3" transform="matrix(0.264745 -0.964318 0.964318 0.264745 99.7268 183.881)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.262474 -0.964939 0.964939 0.262474 -37.4043 296.287)">
+    <text x="148.5" y="105" id="_42329624" class="fil7 fnt0">NEL34</text>
+   </g>
+   <polygon id="_42328592" class="fil11" points="99.7268,183.882 100.876,182.652 101.246,184.299 "/>
+   <polygon id="_42326360" class="fil12" points="101.999,181.451 100.85,182.68 100.48,181.033 "/>
+  </g>
+  <g id="_42053120" link="SEL34" class="link" >
+   <rect id="_42334464" class="fil10 str3" transform="matrix(-0.264745 -0.964318 -0.964318 0.264745 198.545 183.884)" width="2.9455" height="1.5755"/>
+   <polygon id="_42327528" class="fil13" points="198.545,183.884 197.395,182.654 197.025,184.301 "/>
+   <polygon id="_42325144" class="fil14" points="196.272,181.453 197.422,182.682 197.792,181.036 "/>
+   <g transform="matrix(0.264985 0.964252 -0.964252 0.264985 254.533 -1.15947)">
+    <text x="148.5" y="105" id="_42320040" class="fil7 fnt0">SEL34</text>
+   </g>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 223.6 -141.58)">
+   <text x="148.5" y="105"  class="fil7 fnt2">CAV2</text>
+  </g>
+  <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 229.054 -141.611)">
+   <text x="148.5" y="105"  class="fil7 fnt2">CAV3</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 68.9416 164.193)">
+   <text x="148.5" y="105"  class="fil7 fnt2">CAV4</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 74.7728 164.364)">
+   <text x="148.5" y="105"  class="fil7 fnt2">CAV5</text>
+  </g>
+  <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 79.9709 164.444)">
+   <text x="148.5" y="105"  class="fil7 fnt2">CAV6</text>
+  </g>
+  <g id="_12760616" link="NIW" class="link" >
+   <g transform="matrix(0.995912 -0.0903287 0.0903287 0.995912 -153.795 13.3388)">
+    <text x="148.5" y="105" id="_42280616" class="fil7 fnt0">NIW</text>
+   </g>
+   <polygon id="_42279272" class="fil15 str1" points="14.593,103.916 12.4501,104.085 12.1817,100.678 14.3246,100.509 "/>
+  </g>
+  <g id="_42059464" link="NL2" class="link" >
+   <rect id="_43126664" class="fil10 str3" transform="matrix(0.999983 -0.0058416 0.0058416 0.999983 11.7012 90.8968)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.894582 0.0171865 -0.015377 0.999852 -127.343 -14.5688)">
+    <text x="148.5" y="105" id="_42274128" class="fil7 fnt1">NL2</text>
+   </g>
+  </g>
+  <g id="_71018184" link="NL4" class="link" >
+   <rect id="_43124640" class="fil10 str3" transform="matrix(0.98694 -0.161088 0.161088 0.98694 12.7274 109.393)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.982028 -0.188733 0.188733 0.982028 -159.869 37.8803)">
+    <text x="148.5" y="105" id="_42268984" class="fil7 fnt0">NL4</text>
+   </g>
+  </g>
+  <g id="_41786296" link="NL1" class="link" >
+   <rect id="_41772192" class="fil4 str3" transform="matrix(0.986873 0.161501 -0.161501 0.986873 12.7439 80.9352)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.986615 0.163065 -0.163065 0.986615 -124.228 -46.1735)">
+    <text x="148.5" y="105" id="_42263704" class="fil7 fnt0">NL1</text>
+   </g>
+  </g>
+  <g id="_41497296" link="NIM4" class="link" >
+   <rect id="_43134640" class="fil16 str3" transform="matrix(-0.145659 -1.13375 1.13375 -0.145659 12.5252 108.858)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.989848 -0.142129 0.142129 0.989848 -158.76 26.5032)">
+    <text x="148.5" y="105" id="_42258560" class="fil7 fnt0">NIM4</text>
+   </g>
+  </g>
+  <g id="_72217392" link="NIM1" class="link" >
+   <rect id="_43138584" class="fil16 str3" transform="matrix(0.234048 -1.11885 1.11885 0.234048 12.8151 80.3517)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.975463 0.220162 -0.220162 0.975463 -117.635 -57.6554)">
+    <text x="148.5" y="105" id="_42253408" class="fil7 fnt0">NIM1</text>
+   </g>
+  </g>
+  <g id="_41407808" link="SL4" class="link" >
+   <rect id="_43125720" class="fil10 str3" transform="matrix(-0.98694 -0.161088 -0.161088 0.98694 285.618 109.668)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.984252 0.176774 -0.176774 0.984252 158.468 -17.583)">
+    <text x="148.5" y="105" id="_42248264" class="fil7 fnt0">SL4</text>
+   </g>
+  </g>
+  <g id="_71143920" link="SIM4" class="link" >
+   <rect id="_43135752" class="fil16 str3" transform="matrix(0.145659 -1.13375 -1.13375 -0.145659 285.82 109.133)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.990791 0.1354 -0.1354 0.990791 153.548 -15.89)">
+    <text x="148.5" y="105" id="_42243120" class="fil7 fnt0">SIM4</text>
+   </g>
+  </g>
+  <g id="_71005184" link="SL2" class="link" >
+   <rect id="_41769088" class="fil10 str3" transform="matrix(-0.999983 -0.0058416 -0.0058416 0.999983 286.644 91.1716)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.999996 0.00293904 -0.00293904 0.999996 139.785 -11.9982)">
+    <text x="148.5" y="105" id="_42237976" class="fil7 fnt0">SL2</text>
+   </g>
+  </g>
+  <g id="_43998968" link="SL1" class="link" >
+   <rect id="_43131808" class="fil4 str3" transform="matrix(-0.986873 0.161501 0.161501 0.986873 285.601 81.21)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.989862 -0.142034 0.142034 0.989862 124.814 0.222508)">
+    <text x="148.5" y="105" id="_42232832" class="fil7 fnt0">SL1</text>
+   </g>
+  </g>
+  <g id="_42071120" link="SIM1" class="link" >
+   <rect id="_43139560" class="fil16 str3" transform="matrix(-0.234048 -1.11885 -1.11885 0.234048 285.53 80.6265)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.983045 -0.183363 0.183363 0.983045 120.747 3.44827)">
+    <text x="148.5" y="105" id="_42227688" class="fil7 fnt0">SIM1</text>
+   </g>
+  </g>
+  <g id="_71101736" link="TL4" class="link" >
+   <rect id="_42314136" class="fil17 str1" x="104.097" y="10.0169" width="2.7778" height="2.9642"/>
+   <rect id="_42312104" class="fil18 str1" x="191.129" y="10.0169" width="2.7778" height="2.9642"/>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 208.76 -146.191)">
+    <text x="148.5" y="105" id="_42222576" class="fil7 fnt0">TL4</text>
+   </g>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 89.468 157.578)">
+    <text x="148.5" y="105" id="_42217464" class="fil7 fnt0">TL4</text>
+   </g>
+  </g>
+  <g id="_72545496" link="TL3" class="link" >
+   <rect id="_42315120" class="fil19 str1" x="106.88" y="10.0169" width="2.7778" height="2.9642"/>
+   <rect id="_42313344" class="fil20 str1" x="188.346" y="10.0169" width="2.7778" height="2.9642"/>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 212.093 -146.191)">
+    <text x="148.5" y="105" id="_42212216" class="fil7 fnt0">TL3</text>
+   </g>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 86.135 157.578)">
+    <text x="148.5" y="105" id="_42207104" class="fil7 fnt0">TL3</text>
+   </g>
+  </g>
+  <g id="_42057400" link="TL2" class="link" >
+   <rect id="_42317088" class="fil17 str1" x="138.863" y="10.0169" width="2.7778" height="2.9642"/>
+   <rect id="_42316104" class="fil18 str1" x="156.397" y="9.9695" width="2.7778" height="2.9642"/>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 243.688 -146.288)">
+    <text x="148.5" y="105" id="_42201984" class="fil7 fnt0">TL2</text>
+   </g>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 54.5393 157.675)">
+    <text x="148.5" y="105" id="_42196872" class="fil7 fnt0">TL2</text>
+   </g>
+  </g>
+  <g id="_42061496" link="TL1" class="link" >
+   <rect id="_42319056" class="fil19 str1" x="141.646" y="10.0169" width="2.7778" height="2.9642"/>
+   <rect id="_42318072" class="fil20 str1" x="153.614" y="9.9695" width="2.7778" height="2.9642"/>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 247.021 -146.288)">
+    <text x="148.5" y="105" id="_42191760" class="fil7 fnt0">TL1</text>
+   </g>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 51.2063 157.675)">
+    <text x="148.5" y="105" id="_42186648" class="fil7 fnt0">TL1</text>
+   </g>
+  </g>
+  <g id="_72545800" link="SEM" class="link" >
+   <rect id="_43113016" class="fil21 str3" transform="matrix(1.56294 -0.293299 -0.293299 -1.56294 175.368 190.484)" width="3.562" height="2.74"/>
+   <rect id="_43111096" class="fil21 str3" transform="matrix(1.57854 -0.192347 -0.192347 -1.57854 165.029 191.976)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.999999 -0.00150517 0.00150517 0.999999 20.8978 89.7952)">
+    <text x="148.5" y="105" id="_42181440" class="fil7 fnt0">SEM</text>
+   </g>
+  </g>
+  <g id="_42063560" link="NEM" class="link" >
+   <rect id="_43113976" class="fil21 str3" transform="matrix(-1.56294 -0.293299 0.293299 -1.56294 122.977 190.484)" width="3.562" height="2.74"/>
+   <rect id="_43112056" class="fil21 str3" transform="matrix(-1.57854 -0.192347 0.192347 -1.57854 133.316 191.976)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.999999 -0.00150517 0.00150517 0.999999 -28.1035 89.7332)">
+    <text x="148.5" y="105" id="_42171024" class="fil7 fnt0">NEM</text>
+   </g>
+  </g>
+  <g id="_71428176" link="EL2" class="link" >
+   <rect id="_43108376" class="fil4 str3" transform="matrix(-0.00164439 -1.45744 1.45744 -0.00164439 136.193 191.626)" width="2.9455" height="1.5755"/>
+   <rect id="_43107608" class="fil4 str3" transform="matrix(0.00164439 -1.45744 -1.45744 -0.00164439 162.06 191.6)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 33.0208 347.52)">
+    <text x="148.5" y="105" id="_42176232" class="fil7 fnt0">EL2</text>
+   </g>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 265.202 43.5488)">
+    <text x="148.5" y="105" id="_42160472" class="fil7 fnt0">EL2</text>
+   </g>
+  </g>
+  <g id="_71428640" link="EL1" class="link" >
+   <rect id="_43110104" class="fil10 str3" transform="matrix(-0.00164439 -1.45744 1.45744 -0.00164439 138.983 191.604)" width="2.9455" height="1.5755"/>
+   <rect id="_43109144" class="fil10 str3" transform="matrix(0.00164439 -1.45744 -1.45744 -0.00164439 159.27 191.578)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(-0.00150517 -0.999999 0.999999 -0.00150517 36.1651 347.454)">
+    <text x="148.5" y="105" id="_42165816" class="fil7 fnt0">EL1</text>
+   </g>
+   <g transform="matrix(0.00150517 0.999999 -0.999999 0.00150517 262.128 43.5649)">
+    <text x="148.5" y="105" id="_42155232" class="fil7 fnt0">EL1</text>
+   </g>
+  </g>
+  <g id="_72159952" link="EL5" class="link" >
+   <rect id="_43119856" class="fil10 str3" transform="matrix(0.27981 -0.960056 0.960056 0.27981 80.8323 178.419)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.262776 -0.964857 0.964857 0.262776 -59.7204 301.832)">
+    <text x="148.5" y="105" id="_42139600" class="fil7 fnt0">EL5</text>
+   </g>
+   <rect id="_42128240" class="fil10 str3" transform="matrix(-0.27981 -0.960056 -0.960056 0.27981 217.512 178.419)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.298664 0.954358 -0.954358 0.298664 271.919 6.43734)">
+    <text x="148.5" y="105" id="_42123032" class="fil7 fnt0">EL5</text>
+   </g>
+  </g>
+  <g id="_41396152" link="EZM" class="link" >
+   <polygon id="_43121760" class="fil22 str3" points="93.165,182.02 89.2349,180.956 90.0535,177.933 93.9836,178.997 "/>
+   <polygon id="_43120800" class="fil23 str3" points="205.18,182.02 209.11,180.956 208.291,177.933 204.361,178.997 "/>
+   <g transform="matrix(0.290345 -0.956922 0.956922 0.290345 -53.7532 301.066)">
+    <text x="148.5" y="105" id="_42150024" class="fil7 fnt0">EZM</text>
+   </g>
+   <g transform="matrix(0.263814 0.964573 -0.964573 0.263814 267.996 11.3098)">
+    <text x="148.5" y="105" id="_42117824" class="fil7 fnt0">EZM</text>
+   </g>
+  </g>
+  <g id="_42274152" link="EM3" class="link" >
+   <rect id="_43123680" class="fil21 str3" transform="matrix(-1.10191 -0.303955 0.303955 -1.10191 87.6989 180.708)" width="3.562" height="2.74"/>
+   <rect id="_43122720" class="fil21 str3" transform="matrix(1.10191 -0.303955 -0.303955 -1.10191 210.565 180.56)" width="3.562" height="2.74"/>
+   <g transform="matrix(0.276572 -0.960993 0.960993 0.276572 -57.5088 301.409)">
+    <text x="148.5" y="105" id="_42144816" class="fil7 fnt0">EM3</text>
+   </g>
+   <g transform="matrix(0.275862 0.961197 -0.961197 0.275862 271.25 9.29872)">
+    <text x="148.5" y="105" id="_42112480" class="fil7 fnt0">EM3</text>
+   </g>
+  </g>
+  <g id="_41519536" link="EL4" class="link" >
+   <rect id="_43117952" class="fil4 str3" transform="matrix(0.264745 -0.964318 0.964318 0.264745 95.4829 182.725)" width="2.9455" height="1.5755"/>
+   <rect id="_43116992" class="fil4 str3" transform="matrix(-0.264745 -0.964318 -0.964318 0.264745 202.707 182.612)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.295553 -0.955326 0.955326 0.295553 -48.7045 300.759)">
+    <text x="148.5" y="105" id="_42134392" class="fil7 fnt0">EL4</text>
+   </g>
+   <g transform="matrix(0.257582 0.966256 -0.966256 0.257582 264.066 13.1736)">
+    <text x="148.5" y="105" id="_42107272" class="fil7 fnt0">EL4</text>
+   </g>
+  </g>
+  <g id="_42058448" link="EL3" class="link" >
+   <rect id="_43116048" class="fil10 str3" transform="matrix(0.270015 -0.962856 0.962856 0.270015 103.949 185.027)" width="2.9455" height="1.5755"/>
+   <rect id="_43114968" class="fil10 str3" transform="matrix(-0.270015 -0.962856 -0.962856 0.270015 194.337 184.755)" width="2.9455" height="1.5755"/>
+   <g transform="matrix(0.265477 -0.964117 0.964117 0.265477 -36.5827 307.312)">
+    <text x="148.5" y="105" id="_42129144" class="fil7 fnt0">EL3</text>
+   </g>
+   <g transform="matrix(0.257981 0.96615 -0.96615 0.257981 255.639 15.2269)">
+    <text x="148.5" y="105" id="_42102472" class="fil7 fnt0">EL3</text>
+   </g>
+  </g>
+  <g id="_44006712" link="D7" class="link" >
+   <polygon id="_42g id408000" class="fil24 str1" points="15.6328,70.1035 18.062,70.8009 16.4644,76.3663 14.0352,75.6689 "/>
+   <polygon id="_42406032" class="fil25 str1" points="20.2509,58.2164 22.5587,59.2469 20.1979,64.534 17.8901,63.5035 "/>
+   <polygon id="_42404064" class="fil26 str1" points="26.7667,47.3998 28.8507,48.8298 25.5745,53.604 23.4905,52.174 "/>
+   <polygon id="_42402096" class="fil27 str1" points="35.0541,37.7355 36.8765,39.4866 32.8647,43.6617 31.0423,41.9106 "/>
+   <polygon id="_42399992" class="fil28 str1" points="44.2608,29.2227 45.8839,31.16 41.4456,34.8785 39.8225,32.9412 "/>
+   <polygon id="_42398024" class="fil29 str1" points="54.7295,22.1391 56.0503,24.2939 51.1137,27.3199 49.7929,25.1651 "/>
+   <polygon id="_42396056" class="fil30 str1" points="66.1266,16.5082 67.1159,18.8339 61.7878,21.1004 60.7985,18.7747 "/>
+   <polygon id="_42394088" class="fil31 str1" points="77.9537,12.6958 78.6171,15.1346 73.0299,16.6544 72.3665,14.2156 "/>
+   <polygon id="_42392280" class="fil32 str1" points="90.2562,10.4539 90.5635,12.9625 84.8162,13.6665 84.5089,11.1579 "/>
+   <polygon id="_42386984" class="fil33 str1" points="15.1658,118.109 17.5833,117.372 19.2716,122.911 16.8541,123.648 "/>
+   <polygon id="_42386000" class="fil34 str1" points="282.997,118.109 280.58,117.372 278.891,122.911 281.309,123.648 "/>
+   <polygon id="_42383016" class="fil35 str1" points="19.9273,130.566 22.1769,129.414 24.8163,134.567 22.5667,135.719 "/>
+   <polygon id="_42382032" class="fil36 str1" points="278.236,130.565 275.986,129.413 273.347,134.567 275.596,135.719 "/>
+   <polygon id="_42378912" class="fil37 str1" points="26.5524,142.07 28.5532,140.526 32.0908,145.11 30.09,146.654 "/>
+   <polygon id="_42377928" class="fil38 str1" points="271.611,142.07 269.61,140.526 266.072,145.11 268.073,146.654 "/>
+   <polygon id="_42374944" class="fil39 str1" points="34.7704,152.132 36.5358,150.324 40.6792,154.368 38.9138,156.177 "/>
+   <polygon id="_42373960" class="fil40 str1" points="263.393,152.132 261.627,150.324 257.484,154.368 259.249,156.177 "/>
+   <polygon id="_42370840" class="fil41 str1" points="44.3599,160.871 45.8383,158.821 50.5345,162.208 49.0561,164.258 "/>
+   <polygon id="_42369856" class="fil42 str1" points="253.803,160.87 252.325,158.821 247.629,162.208 249.107,164.258 "/>
+   <polygon id="_42366904" class="fil43 str1" points="55.3131,168.196 56.4894,165.959 61.6143,168.654 60.438,170.891 "/>
+   <polygon id="_42365920" class="fil44 str1" points="242.85,168.196 241.674,165.959 236.549,168.654 237.725,170.891 "/>
+   <polygon id="_42362960" class="fil45 str1" points="67.1075,173.817 67.9556,171.436 73.4101,173.379 72.562,175.76 "/>
+   <polygon id="_42361976" class="fil46 str1" points="231.055,173.817 230.207,171.436 224.753,173.379 225.601,175.76 "/>
+   <polygon id="_42358888" class="fil47 str1" points="282.957,70.3021 280.528,70.9995 282.125,76.5649 284.554,75.8675 "/>
+   <polygon id="_42356920" class="fil48 str1" points="278.3,58.6518 275.992,59.6823 278.353,64.9694 280.661,63.9389 "/>
+   <polygon id="_42354952" class="fil49 str1" points="271.784,47.8352 269.7,49.2652 272.976,54.0394 275.06,52.6094 "/>
+   <polygon id="_42352984" class="fil50 str1" points="263.497,38.1709 261.674,39.922 265.686,44.0971 267.509,42.346 "/>
+   <polygon id="_42350872" class="fil51 str1" points="254.29,29.6581 252.667,31.5954 257.105,35.3139 258.728,33.3766 "/>
+   <polygon id="_42348904" class="fil52 str1" points="243.934,22.3391 242.613,24.4939 247.55,27.5199 248.871,25.3651 "/>
+   <polygon id="_42346936" class="fil53 str1" points="232.58,16.7881 231.591,19.1138 236.919,21.3803 237.908,19.0546 "/>
+   <polygon id="_42344968" class="fil54 str1" points="220.635,12.7665 219.971,15.2053 225.558,16.7251 226.222,14.2863 "/>
+   <polygon id="_42343160" class="fil55 str1" points="208.333,10.4903 208.025,12.9989 213.773,13.7029 214.08,11.1943 "/>
+   <rect id="_42339832" class="fil56 str1" x="130.257" y="84.7627" width="5.13055" height="5.79338"/>
+   <text x="130.703" y="93.9618" id="_42097376" class="fil57 fnt0">D7</text>
+  </g>
+  <g id="_70734024" link="F7" class="link" >
+   <polygon id="_42407016" class="fil58 str1" points="17.7413,64.1268 20.1266,64.9623 18.2125,70.427 15.8272,69.5915 "/>
+   <polygon id="_42405048" class="fil59 str1" points="23.351,52.6297 25.54,53.8929 22.6458,58.9079 20.4568,57.6447 "/>
+   <polygon id="_42403080" class="fil60 str1" points="30.6886,42.4412 32.6566,44.0268 29.0238,48.5356 27.0558,46.95 "/>
+   <polygon id="_42400976" class="fil61 str1" points="39.4413,33.3063 41.1979,35.1235 37.0347,39.1478 35.2782,37.3306 "/>
+   <polygon id="_42399008" class="fil62 str1" points="49.4414,25.5419 50.8605,27.6333 46.0692,30.8845 44.6501,28.7931 "/>
+   <polygon id="_42397040" class="fil63 str1" points="60.2643,19.0926 61.4919,21.3018 56.4307,24.1144 55.2031,21.9052 "/>
+   <polygon id="_42395072" class="fil64 str1" points="71.9808,14.417 72.8222,16.8002 67.3622,18.7278 66.5208,16.3446 "/>
+   <polygon id="_42393072" class="fil65 str1" points="84.002,11.3009 84.5596,13.7661 78.912,15.0435 78.3544,12.5783 "/>
+   <polygon id="_42391352" class="fil66 str1" points="96.5856,10.2172 96.6492,12.7438 90.8608,12.8894 90.7972,10.3628 "/>
+   <polygon id="_42388952" class="fil67 str1" points="13.5406,111.789 15.9978,111.197 17.353,116.826 14.8958,117.418 "/>
+   <polygon id="_42387968" class="fil68 str1" points="284.622,111.788 282.165,111.197 280.81,116.826 283.267,117.418 "/>
+   <polygon id="_42384984" class="fil69 str1" points="17.2278,124.401 19.554,123.413 21.818,128.742 19.4918,129.73 "/>
+   <polygon id="_42384000" class="fil70 str1" points="280.935,124.401 278.609,123.413 276.345,128.742 278.671,129.73 "/>
+   <polygon id="_42380880" class="fil71 str1" points="23.0516,136.523 25.182,135.163 28.2976,140.043 26.1672,141.403 "/>
+   <polygon id="_42379896" class="fil72 str1" points="275.111,136.523 272.981,135.163 269.865,140.043 271.996,141.403 "/>
+   <polygon id="_42376912" class="fil73 str1" points="30.4429,147.316 32.2941,145.595 36.2361,149.836 34.3849,151.557 "/>
+   <polygon id="_42375928" class="fil74 str1" points="267.72,147.316 265.869,145.595 261.927,149.836 263.778,151.557 "/>
+   <polygon id="_42372944" class="fil75 str1" points="39.4203,156.707 41.0394,154.766 45.4855,158.475 43.8664,160.416 "/>
+   <polygon id="_42371960" class="fil76 str1" points="258.743,156.707 257.124,154.766 252.678,158.475 254.297,160.416 "/>
+   <polygon id="_42368872" class="fil77 str1" points="49.6012,164.66 50.9395,162.516 55.8512,165.582 54.5129,167.726 "/>
+   <polygon id="_42367888" class="fil78 str1" points="248.562,164.66 247.224,162.516 242.312,165.582 243.65,167.726 "/>
+   <polygon id="_42364936" class="fil79 str1" points="61.1501,171.221 62.1752,168.911 67.4677,171.259 66.4426,173.57 "/>
+   <polygon id="_42363944" class="fil80 str1" points="237.013,171.221 235.988,168.911 230.695,171.259 231.72,173.569 "/>
+   <polygon id="_42360856" class="fil81 str1" points="73.1179,175.89 73.8731,173.478 79.3987,175.209 78.6435,177.62 "/>
+   <polygon id="_42359872" class="fil82 str1" points="225.045,175.89 224.29,173.478 218.764,175.208 219.519,177.62 "/>
+   <polygon id="_42357904" class="fil83 str1" points="280.88,64.3744 278.494,65.2099 280.408,70.6746 282.794,69.8391 "/>
+   <polygon id="_42355936" class="fil84 str1" points="275.2,53.0651 273.011,54.3283 275.905,59.3433 278.094,58.0801 "/>
+   <polygon id="_42353968" class="fil85 str1" points="267.862,42.8766 265.894,44.4622 269.527,48.971 271.495,47.3854 "/>
+   <polygon id="_42351992" class="fil86 str1" points="259.11,33.7417 257.353,35.5589 261.516,39.5832 263.273,37.766 "/>
+   <polygon id="_42349888" class="fil87 str1" points="249.307,25.6524 247.783,27.6684 252.401,31.1606 253.926,29.1446 "/>
+   <polygon id="_42347920" class="fil88 str1" points="238.488,19.3102 237.261,21.5194 242.322,24.332 243.55,22.1228 "/>
+   <polygon id="_42345952" class="fil89 str1" points="226.657,14.5241 225.815,16.9073 231.275,18.8349 232.117,16.4517 "/>
+   <polygon id="_42343952" class="fil90 str1" points="214.629,11.359 214.072,13.8242 219.719,15.1016 220.277,12.6364 "/>
+   <polygon id="_42342368" class="fil91 str1" points="202.086,10.3456 202.022,12.8722 207.811,13.0178 207.874,10.4912 "/>
+   <rect id="_42338848" class="fil92 str1" x="146.916" y="84.7406" width="5.16943" height="5.83728"/>
+   <text x="147.487" y="93.9618" id="_42092280" class="fil57 fnt0">F7</text>
+  </g>
+  <g id="_71059936" link="NIL" class="link" >
+   <rect id="_41769272" class="fil4 str3" transform="matrix(0.998448 -0.0556915 0.0556915 0.998448 11.6702 98.5747)" width="2.9455" height="1.5755"/>
+   <rect id="_42336528" class="fil1 str1" x="163.984" y="84.7404" width="5.16943" height="5.83728"/>
+   <text x="164.228" y="93.9618" id="_42087184" class="fil57 fnt0">NIL</text>
+  </g>
+  <g id="_80991904" link="QQXZ" class="link" >
+   <rect id="_80031528" class="fil1 str1" x="113.144" y="96.5186" width="5.16943" height="5.83728"/>
+   <text x="111.267" y="105.76" id="_81832056" class="fil57 fnt0">QQXZ</text>
+  </g>
+  <g id="_81670312" link="QZX" class="link" >
+   <rect id="_43832448" class="fil1 str1" x="130.238" y="96.5541" width="5.16943" height="5.83728"/>
+   <text x="129.25" y="105.783" id="_42735808" class="fil57 fnt0">QZX</text>
+  </g>
+  <g id="_71004584" link="H" class="link" >
+   <rect id="_43137640" class="fil16 str3" transform="matrix(-0.0767233 -1.14049 -1.14049 0.0767233 286.726 90.397)" width="3.562" height="2.74"/>
+   <rect id="_43136696" class="fil16 str3" transform="matrix(0.0767233 -1.14049 1.14049 0.0767233 11.6186 90.1222)" width="3.562" height="2.74"/>
+   <rect id="_43133696" class="fil16 str3" transform="matrix(0.010709 -1.14302 -1.14302 -0.010709 286.831 98.0439)" width="3.562" height="2.74"/>
+   <rect id="_43132752" class="fil16 str3" transform="matrix(-0.010709 -1.14302 1.14302 -0.010709 11.5146 97.7691)" width="3.562" height="2.74"/>
+   <rect id="_42076016" class="fil93 str1" x="113.145" y="84.7418" width="5.16751" height="5.83511"/>
+   <text x="114.176" y="93.9618" id="_42071248" class="fil57 fnt0">H</text>
+  </g>
+  <g id="_70756128" link="SIL" class="link" >
+   <rect id="_41769352" class="fil4 str3" transform="matrix(-0.998448 -0.0556915 -0.0556915 0.998448 286.675 98.8495)" width="2.9455" height="1.5755"/>
+   <rect id="_42337864" class="fil1 str1" x="181.095" y="84.7407" width="5.16943" height="5.83728"/>
+   <text x="181.323" y="93.9311" id="_42066960" class="fil57 fnt0">SIL</text>
+  </g>
+ </g>
+</svg>

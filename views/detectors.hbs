@@ -1,0 +1,497 @@
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://d3js.org/d3-zoom.v1.min.js"></script>
+<link href="/static/css/scheme.css" rel="stylesheet">
+
+<script>
+    var svg,
+        scale,
+        container,
+        sensorspanel,
+        sensorpanelrect,
+        sensorpaneltext,
+        zoom = d3.behavior.zoom()
+        .scaleExtent([1, 10])
+        .on('zoom', function(){
+            container.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+        });
+
+    var magnets = [{
+        name: "NTL1",
+        sensors: []
+    },{
+        name: "NTL2",
+        sensors: []
+    },{
+        name: "NTL3",
+        sensors: []
+    },{
+        name: "NTL4",
+        sensors: []
+    },{
+        name: "NTW",
+        sensors: []
+    },{
+        name: "N1F",
+        sensors: []
+    },{
+        name: "N1D",
+        sensors: []
+    },{
+        name: "N2F",
+        sensors: []
+    },{
+        name: "N2D",
+        sensors: []
+    },{
+        name: "N3F",
+        sensors: []
+    },{
+        name: "N3D",
+        sensors: []
+    },{
+        name: "N4F",
+        sensors: []
+    },{
+        name: "N4D",
+        sensors: []
+    },{
+        name: "N5F",
+        sensors: []
+    },{
+        name: "N5D",
+        sensors: []
+    },{
+        name: "N6F",
+        sensors: []
+    },{
+        name: "N6D",
+        sensors: []
+    },{
+        name: "N7F",
+        sensors: []
+    },{
+        name: "N7D",
+        sensors: []
+    },{
+        name: "N8F",
+        sensors: []
+    },{
+        name: "N8D",
+        sensors: []
+    },{
+        name: "N9F",
+        sensors: []
+    },{
+        name: "N9D",
+        sensors: []
+    },{
+        name: "NIM1",
+        sensors: []
+    },{
+        name: "NIL1",
+        sensors: []
+    },{
+        name: "NIM2",
+        sensors: []
+    },{
+        name: "NIL2",
+        sensors: []
+    },{
+        name: "NIM3",
+        sensors: []
+    },{
+        name: "NIW",
+        sensors: []
+    },{
+        name: "NIM4",
+        sensors: []
+    },{
+        name: "NIL4",
+        sensors: []
+    },{
+        name: "N10F",
+        sensors: []
+    },{
+        name: "N10D",
+        sensors: []
+    },{
+        name: "N11F",
+        sensors: []
+    },{
+        name: "N11D",
+        sensors: []
+    },{
+        name: "N12F",
+        sensors: []
+    },{
+        name: "N12D",
+        sensors: []
+    },{
+        name: "N13F",
+        sensors: []
+    },{
+        name: "N13D",
+        sensors: []
+    },{
+        name: "N14F",
+        sensors: []
+    },{
+        name: "N14D",
+        sensors: []
+    },{
+        name: "N15F",
+        sensors: []
+    },{
+        name: "N15D",
+        sensors: []
+    },{
+        name: "N16F",
+        sensors: []
+    },{
+        name: "N16D",
+        sensors: []
+    },{
+        name: "N17F",
+        sensors: []
+    },{
+        name: "NEL5",
+        sensors: []
+    },{
+        name: "NEM3",
+        sensors: []
+    },{
+        name: "NEZM",
+        sensors: []
+    },{
+        name: "NEL4",
+        sensors: []
+    },{
+        name: "NEL3",
+        sensors: []
+    },{
+        name: "NEM2",
+        sensors: []
+    },{
+        name: "NEM1",
+        sensors: []
+    },{
+        name: "NEL2",
+        sensors: []
+    },{
+        name: "NEL1",
+        sensors: []
+    },{
+        name: "STL1",
+        sensors: []
+    },{
+        name: "STL2",
+        sensors: []
+    },{
+        name: "STL3",
+        sensors: []
+    },{
+        name: "STL4",
+        sensors: []
+    },{
+        name: "STW",
+        sensors: []
+    },{
+        name: "S1F",
+        sensors: []
+    },{
+        name: "S1D",
+        sensors: []
+    },{
+        name: "S2F",
+        sensors: []
+    },{
+        name: "S2D",
+        sensors: []
+    },{
+        name: "S3F",
+        sensors: []
+    },{
+        name: "S3D",
+        sensors: []
+    },{
+        name: "S4F",
+        sensors: []
+    },{
+        name: "S4D",
+        sensors: []
+    },{
+        name: "S5F",
+        sensors: []
+    },{
+        name: "S5D",
+        sensors: []
+    },{
+        name: "S6F",
+        sensors: []
+    },{
+        name: "S6D",
+        sensors: []
+    },{
+        name: "S7F",
+        sensors: []
+    },{
+        name: "S7D",
+        sensors: []
+    },{
+        name: "S8F",
+        sensors: []
+    },{
+        name: "S8D",
+        sensors: []
+    },{
+        name: "S9F",
+        sensors: []
+    },{
+        name: "S9D",
+        sensors: []
+    },{
+        name: "SIM1",
+        sensors: []
+    },{
+        name: "SIL1",
+        sensors: []
+    },{
+        name: "SIM2",
+        sensors: []
+    },{
+        name: "SIL2",
+        sensors: []
+    },{
+        name: "SIM3",
+        sensors: []
+    },{
+        name: "SIW",
+        sensors: []
+    },{
+        name: "SIM4",
+        sensors: []
+    },{
+        name: "SIL4",
+        sensors: []
+    },{
+        name: "S10F",
+        sensors: []
+    },{
+        name: "S10D",
+        sensors: []
+    },{
+        name: "S11F",
+        sensors: []
+    },{
+        name: "S11D",
+        sensors: []
+    },{
+        name: "S12F",
+        sensors: []
+    },{
+        name: "S12D",
+        sensors: []
+    },{
+        name: "S13F",
+        sensors: []
+    },{
+        name: "S13D",
+        sensors: []
+    },{
+        name: "S14F",
+        sensors: []
+    },{
+        name: "S14D",
+        sensors: []
+    },{
+        name: "S15F",
+        sensors: []
+    },{
+        name: "S15D",
+        sensors: []
+    },{
+        name: "S16F",
+        sensors: []
+    },{
+        name: "S16D",
+        sensors: []
+    },{
+        name: "S17F",
+        sensors: []
+    },{
+        name: "SEL5",
+        sensors: []
+    },{
+        name: "SEM3",
+        sensors: []
+    },{
+        name: "SEZM",
+        sensors: []
+    },{
+        name: "SEL4",
+        sensors: []
+    },{
+        name: "SEL3",
+        sensors: []
+    },{
+        name: "SEM2",
+        sensors: []
+    },{
+        name: "SEM1",
+        sensors: []
+    },{
+        name: "SEL2",
+        sensors: []
+    },{
+        name: "SEL1",
+        sensors: []
+    }]
+
+    function zoomToArea(cx,cy,areasize){
+            console.log(cx,cy,areasize)
+            var canvasel = d3.select("#mainSVG")[0][0],
+                canwidth = (canvasel.clientWidth || canvasel.parentNode.clientWidth),
+                canheight = (canvasel.clientHeight || canvasel.parentNode.clientHeight),
+                x = -cx,
+                y = -cy,
+                relation = [canwidth/areasize[0],canheight/areasize[1]];
+
+
+            if(relation[0]==0) return;
+            scale = (relation[0]>=relation[1])?relation[1]:relation[0];
+            //x = canwidth/2;
+            //y = canheight/2;
+
+            container.transition()
+                .attr("transform", "scale("+scale+") translate("+x+","+y+")");
+            zoom.translate([x*scale,y*scale]);
+            zoom.scale(scale);
+
+        };
+    function zoomToNode(node){
+            var bbox = node.getBBox();
+            var width = bbox.width,
+                height = bbox.height;
+            zoomToArea(bbox.x,bbox.y,[width,height]);
+        };
+
+    function loadScheme(scheme_name){
+        //var parser = new DOMParser();
+        if(!scheme_name)
+            return;
+        d3.xml("static/images/"+scheme_name+".svg", "image/svg+xml", function(error, xml) {
+            if (error) throw error;
+            var defs = xml.documentElement.getElementById("defs");
+            schemeSVG = document.getElementById("schemeSVG");
+            schemeSVG.appendChild(defs);
+            scheme = xml.documentElement.getElementById("Слой_x0020_1");
+            schemeSVG.appendChild(scheme);
+            addMagnetsInteraction();
+            zoomToNode(schemeSVG);
+        });
+    };
+
+    function initSensorsPanel(){
+        sensorspanel = svg.append("g");
+        sensorspanelrect = sensorspanel.append("rect")
+            .attr("id","sensors")
+            .attr("rx",5)
+            .attr("style","fill: white; stroke: black; stroke-width: 0.2");
+        sensorspaneltext = sensorspanel
+            .append('foreignObject')
+            .attr('width', 200)
+            .attr('height', 200)
+        sensorspaneltext.append("xhtml:body");
+    };
+
+    function addMagnetsInteraction(){
+        magnets.forEach(function(magnet){
+            var magnet_text = $("#Слой_x0020_1 text:containsExact('"+magnet.name+"')");
+            var magnet_g = magnet_text.parent();
+            var x = magnet_text.attr("x");
+            var y = magnet_text.attr("y");
+            magnet_g.siblings("rect,polygon").hover(function(event){
+                    if(magnet.sensors.length!=0){
+                        showSensorsPanel(magnet.sensors,event);
+                    }
+                    else{
+                        loadSensors(magnet,event);
+                    }
+                },hideDetectors);
+        });
+    };
+
+    function listToString(list){
+        var text = "<div style='display: inline-table; margin-left:5px'>";
+        list.forEach(function(item){
+            if(item.name){
+                text += item.name+"<br/>";
+            }
+        });
+        text += "</div>";
+        return text;
+    }
+
+    function showSensorsPanel(list,event){
+        var height = list.length*20
+        sensorspanelrect
+            .attr("width",200)
+            .attr("height",height+15)
+            .attr("x", event.offsetX)
+            .attr("y", event.offsetY);
+        sensorspaneltext
+            .attr("x", event.offsetX+10)
+            .attr("y", event.offsetY+8)
+            .attr("width",200)
+            .attr("height",height)
+            .html('<div style="width: '+200+'px; height: '+height+'px">'+listToString(list)+'</div>')
+    };
+    function hideDetectors(event){
+        sensorspanelrect
+            .attr("width",0)
+            .attr("height",0);
+        sensorspaneltext
+            .text("")
+            .attr("width",0)
+            .attr("height",0);
+    };
+
+    function loadSensors(magnet,event){
+        $.ajax({
+            type: 'GET',
+            url: '/get_magnet_sensors/'+magnet.name,
+            datatype: 'json',
+            success: function(data){
+                magnet.sensors = data;
+                showSensorsPanel(magnet.sensors,event);
+            }
+        })
+    }
+
+    svg = d3.select("body").append("svg")
+        .attr('id','mainSVG')
+        .attr('width', "100%")
+        .attr('height', "100%");
+        //.call(zoom);
+    
+    container = svg
+        .append("g")
+        .attr("id","schemeSVG");
+
+    svg.call(zoom);
+
+    initSensorsPanel();
+    loadScheme("vepp4_main_magnets_elements");
+
+    $.extend( $.expr[":"], {
+        containsExact: $.expr.createPseudo ?
+        $.expr.createPseudo(function(text) {
+            return function(elem) {
+                return $.trim(elem.innerHTML.toLowerCase()) === text.toLowerCase();
+            };
+        }) :
+        function(elem, i, match) {
+            return $.trim(elem.innerHTML.toLowerCase()) === match[3].toLowerCase();
+        }
+    });
+</script>
