@@ -1,0 +1,38 @@
+
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<script src="/bower_components/highcharts/highcharts.js"></script>
+<script src="/static/js/chart.js"></script>
+<link href="/static/css/dbtree.css" rel="stylesheet">
+<link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+
+<div id="test_zingchart" width="80%" height="100%"></div>
+<br/>
+<div id="test_highcharts" style="width:100%; height:400px;"></div>
+
+<script>
+    loadTestChartData();
+
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+    var connection = new WebSocket('ws://127.0.0.1:1337');
+
+    connection.onopen = function () {
+        // connection is opened and ready to use
+    };
+
+    connection.onerror = function (error) {
+        // an error occurred when sending/receiving data
+    };
+
+    connection.onmessage = function (message) {
+        try {
+            var json = JSON.parse(message.data);
+            renderChart(json);
+            //refreshTree(json);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    };
+</script>
+

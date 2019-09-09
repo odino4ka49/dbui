@@ -1,8 +1,10 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-const dbtree = require("./dbtree")
+const model = require("./model")
 
 var clients = [];
+var order = 0;
+var orders = new Map();
 
 var server = http.createServer(function (request, response) {
     // process HTTP request. Since we're writing just WebSockets
@@ -19,12 +21,20 @@ wsServer.on('request', function (request) {
     var connection = request.accept(null, request.origin);
     var index = clients.push(connection) - 1;
 
-    wsServer.sendTree(dbtree.systems)
+    connection.sendUTF(JSON.stringify(model.systems));
     // This is the most important callback for us, we'll handle
     // all messages from users here.
-    connection.on('message', function (message) {
-        if (message.type === 'utf8') {
-            // process WebSocket message
+    connection.on('message', function (msg) {
+        if(msg.type=="utf8"){
+            var message = JSON.parse(msg.utf8Data);
+            console.log(message);
+            switch(message.type) {
+                case 'channel_data':
+                    orders.set(order,index);
+                    model.getChannelData(message.datatable,message.channel,message.datetime,order);
+                    order++;
+                    break;
+            }
         }
     });
 
@@ -35,10 +45,27 @@ wsServer.on('request', function (request) {
     });
 });
 
-wsServer.sendTree = function(data){
+wsServer.sendData = function(data,ordernum){
+    var index = orders.get(ordernum);
+    clients[index].sendUTF(JSON.stringify(data));
+    removeOrder(ordernum);
+}
+
+wsServer.broadcast = function(data){
     for (var i=0; i < clients.length; i++) {
         clients[i].sendUTF(JSON.stringify(data));
     }
 };
 
-wsServer.sendTree(dbtree.systems)
+function removeOrder(ordernum){
+    orders.delete(ordernum);
+}
+
+function sendData(data,ordernum){
+    wsServer.sendData(data,ordernum);
+}
+
+
+module.exports = {
+    sendData: sendData
+}

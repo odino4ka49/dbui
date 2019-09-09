@@ -1,6 +1,7 @@
 Toinstall:
-- nodejs
+- nodejs 8+
 - npm
 - pg
 - express
 - express-handlebars
+- tree-model

@@ -5,12 +5,15 @@
   "main": "main.js",
   "dependencies": {
     "async": "^2.6.2",
+    "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
+    "connect": "^3.7.0",
     "express-handlebars": "^3.0.2",
     "infinite-tree": "^1.16.2",
     "jquery": "^3.4.1",
     "pg": "^7.8.0",
     "popper": "^1.0.1",
+    "tree-model": "^1.0.7",
     "websocket": "^1.0.28"
   },
   "devDependencies": {},

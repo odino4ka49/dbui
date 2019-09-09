@@ -1,0 +1,15 @@
+#dbtree{
+    width: 280px;
+}
+#datetimerange{
+    width: 280px;
+    margin: 5px 0px;
+}
+
+div{
+    display: table-cell;
+}
+
+div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
+    display: block;
+}

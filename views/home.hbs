@@ -1,38 +1,22 @@
 
-<link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 <script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="/static/js/chart.js"></script>
+<script src="/static/js/tree.js"></script>
+<script src="/static/js/timepicker.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link href="/static/css/dbtree.css" rel="stylesheet">
+<link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
-<div id="dbtree"></div>
+<input id="datetimerange" type="text" name="datetimes" />
+<div id="dbtree" class="inline"></div>
+<div id="test_zingchart" class="inline"></div>
+<br/>
 
 <script>
-    //require(['infinite-tree']);
-    function parseTree(data){
-        data.forEach(function(node){
-            node.text = node.name;
-            if('subsystems' in node && node.subsystems.length!=0){
-                node.nodes = node.subsystems;
-                parseTree(node.nodes);
-            }
-            else if ('groups' in node && node.groups.length!=0){
-                node.nodes = node.groups;
-                parseTree(node.nodes);
-            }
-            else if ('channels' in node && node.channels.length!=0){
-                node.nodes = node.channels;
-                parseTree(node.nodes);
-            }
-        });
-        return data;
-    };
 
-    function refreshTree(data) {
-        $('#dbtree').treeview(
-            {
-                data: parseTree(data),
-                levels: 1
-            })
-    };
-    
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
     var connection = new WebSocket('ws://127.0.0.1:1337');
@@ -46,16 +30,24 @@
     };
 
     connection.onmessage = function (message) {
-        // try to decode json (I assume that each message
-        // from server is json)
         try {
             var json = JSON.parse(message.data);
-            console.log(json);
-            refreshTree(json);
+            if(json.title == "channel_data"){
+                renderChart(json.name,json.data);
+            }
+            else{
+                refreshTree(json);
+            }
         } catch (e) {
             console.log(e);
             return;
         }
-        // handle incoming message
     };
+
+    function sendMessageToServer(message){
+        connection.send(message);
+    }
+
+    initPicker();
+
 </script>
