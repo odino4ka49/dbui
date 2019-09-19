@@ -1,8 +1,14 @@
+var is_chart_rendered = false;
+var scales_units = new Map([
+    ["Celsius degree", "scale-x, scale-y"],
+    [null, "scale-x, scale-y-2"] 
+]);
+
 function showChart(channel){
     //console.log(channel);
     //loadChannelData(channel);
 }
-
+/*
 function parseToChartData(channel,data){
     var result = {
         "dates": [],
@@ -13,7 +19,7 @@ function parseToChartData(channel,data){
         result.values.push(element[channel]);
     });
     return result;
-}
+}*/
 
 function parseToArrayData(data){
     var result = []
@@ -23,19 +29,32 @@ function parseToArrayData(data){
     return result;
 }
 
-function renderChart(channel,data){
-    var rightData = parseToChartData(channel,data);
+function renderChart(channel,data,units){
+    if(is_chart_rendered){
+        addPlot(channel,data,units);
+        return;
+    };
+    is_chart_rendered = true;
+	$('.resizable').resizable({
+        handles: 'n, e, s, w'
+    });
     var chartData = {
         type: 'line',  // Specify your chart type here.
-        legend: {}, // Creates an interactive legend
+        legend: {
+            'max-items':5,
+            'overflow': "scroll",
+            'draggable': true
+        }, // Creates an interactive legend
         series: [  // Insert your series data here.
             { 
-                values: rightData.values,
-                text: channel
+                id: channel,
+                values: data,
+                text: channel,
+                scales: scales_units.get(units)
             }
         ],
         scaleX: {
-          values: rightData.dates,
+          //values: data.dates,
           guide: {
             lineColor: '#444',
             lineStyle: 'solid',
@@ -62,9 +81,26 @@ function renderChart(channel,data){
             y: '0px'
           }
         },
-        scaleY:{
+        "scale-y-n":{
           zooming: true 
         },
+        scaleY:{
+            label:{
+                "text": 'Celsius degree'
+            }
+        },
+        scaleY2:{
+        },
+        preview: {
+            adjustLayout: true,
+            borderColor: '#E3E3E5',
+            label: {
+                fontColor: '#E3E3E5'
+            },
+            mask: {
+                backgroundColor: '#E3E3E5'
+            }
+        }
       };
     zingchart.complete = function() {
         document.body.style.cursor='default';
@@ -72,45 +108,33 @@ function renderChart(channel,data){
     zingchart.render({ // Render Method[3]
         id: 'test_zingchart',
         data: chartData,
-        height: 700,
-        width: 900
+        height: "100%",
+        width: "100%"
+    });
+    /*zingchart.bind('test_zingchart', 'legend_marker_click', function(e) {
+        removePlot(e.plotid)
+    });
+    zingchart.bind('test_zingchart', 'legend_item_click', function(e) {
+        removePlot(e.plotid);
+    });*/
+}
+
+
+
+function removePlot(channel){
+    zingchart.exec('test_zingchart', 'removeplot', {
+        plotid: channel
     });
 }
 
-function loadTestChartData(){
-    //renderHighchart();
-    $.ajax({
-        type: 'GET',
-        url: '/get_test_data/',
-        datatype: 'json',
-        success: function(data){
-            //wsServer.sendData(data);
+
+function addPlot(channel,data,units){
+    zingchart.exec('test_zingchart', 'addplot', {
+        data : {
+            id: channel,
+            values: data,
+            text: channel,
+            scales: scales_units.get(units)
         }
-    })
-}
-
-function renderHighchart(){
-    var myChart = Highcharts.chart('test_highcharts', {
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Fruit Consumption'
-        },
-        xAxis: {
-            categories: ['Apples', 'Bananas', 'Oranges']
-        },
-        yAxis: {
-            title: {
-                text: 'Fruit eaten'
-            }
-        },
-        series: [{
-            name: 'Jane',
-            data: [1, 0, 4]
-        }, {
-            name: 'John',
-            data: [5, 7, 3]
-        }]
     });
-}
+};

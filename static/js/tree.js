@@ -23,11 +23,24 @@ function refreshTree(data) {
         {
             data: parseTree(data),
             levels: 1,
-            onNodeSelected: function(event,data){
-                if(data.type=="channel"){
-                    loadChannelData(data);
+            multiSelect: true,
+            //showCheckbox: true,
+            onNodeSelected: function(event, node) {
+                if(node.type=="channel"){
+                    loadChannelData(node);
                 }
-            }
+            },
+            onNodeUnselected: function (event, node) {
+                if(node.type=="channel"){
+                    removePlot(node.name);
+                }                    }
+            /*onNodeUnchecked: function (event, node) {
+                if(node.type=="channel"){
+                    removePlot(data);
+                }            
+            },
+            onNodeSelected: function(event,data){
+            }*/
         });
 };
 

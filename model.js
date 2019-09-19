@@ -6,6 +6,15 @@ var systems = []
 var subsystems = []
 
 
+function parseToChartData(channel,data){
+    var result = [];
+    data.forEach(element => {
+        //result.dates.push(parseInt(element["t"]));
+        result.push([parseInt(element["t"]),element[channel]]);
+    });
+    return result;
+}
+
 function findSS(ss_id){
     var res = systems.find(o => o.ss_id === ss_id);
     if(res){
@@ -92,11 +101,12 @@ function getChannelData(datatable,channel,datetime,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+datetime[0]+'\' and date_time <= \''+datetime[1]+'\' order by date_time asc;'
     ,function(result){
-        console.log(result);
+        console.log(channel);
         var channel_data = {
             "title": "channel_data",
             "name": channel.name,
-            "data": result
+            "data": parseToChartData(channel.name, result),
+            "units": channel.unit
         }
         wsServer.sendData(channel_data,order);
         //wsServer.sendData(result);

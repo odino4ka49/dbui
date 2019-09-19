@@ -6,10 +6,23 @@
     margin: 5px 0px;
 }
 
-div{
-    display: table-cell;
+div.graph{
+    top: 40px;
+    left: 300px;
+    width: 70%;
+    position: absolute;
 }
 
 div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     display: block;
+}
+.resizable{
+    height: 700px;
+    border: 1px solid gray;
+}
+
+#test_zingchart {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }

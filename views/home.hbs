@@ -11,8 +11,18 @@
 <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
 <input id="datetimerange" type="text" name="datetimes" />
-<div id="dbtree" class="inline"></div>
-<div id="test_zingchart" class="inline"></div>
+<div id="dbtree"></div>
+
+<div class="graph">
+    <div class="resizable">
+        <div id="test_zingchart"></div>
+    </div>
+</div>
+<!--div class="graph">
+    <div class="resizable">
+        <div id="test_zingchart2"></div>
+    </div>
+</div-->
 <br/>
 
 <script>
@@ -33,7 +43,8 @@
         try {
             var json = JSON.parse(message.data);
             if(json.title == "channel_data"){
-                renderChart(json.name,json.data);
+                //addPlot(json.name,json.data);
+                renderChart(json.name,json.data,json.units);
             }
             else{
                 refreshTree(json);
