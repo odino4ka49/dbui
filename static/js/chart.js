@@ -3,16 +3,18 @@ var scales_units = new Map([
     ["Celsius degree", "scale-x, scale-y"],
     [null, "scale-x, scale-y-2"] 
 ]);
+var graphs = new Map();
 
 function showChart(channel){
     //console.log(channel);
     //loadChannelData(channel);
 }
+
 /*
 function parseToChartData(channel,data){
     var result = {
         "dates": [],
-        "values": []    
+        "values": []  
     }
     data.forEach(element => {
         result.dates.push(parseInt(element["t"]));
@@ -20,6 +22,29 @@ function parseToChartData(channel,data){
     });
     return result;
 }*/
+
+function addGraphData(json){
+    var graph = graphs.get(json.name);
+    if(graph){
+        //graph.set(json.index,json.data);
+        console.log(graph)
+        zingchart.exec('test_zingchart', 'appendseriesvalues', {
+            //graphid: 0,
+            plotid: json.name,
+            values: json.data
+          });
+    }
+    else{
+        //graph = new Map([json.index,json.data]);
+        graphs.set(json.name,json.data);
+        if(!is_chart_rendered){
+            renderChart(json.name,json.data,json.units);
+        }
+        else{
+            addPlot(json.name,json.data,json.units);
+        };
+    }
+}
 
 function parseToArrayData(data){
     var result = []
@@ -30,10 +55,6 @@ function parseToArrayData(data){
 }
 
 function renderChart(channel,data,units){
-    if(is_chart_rendered){
-        addPlot(channel,data,units);
-        return;
-    };
     is_chart_rendered = true;
 	$('.resizable').resizable({
         handles: 'n, e, s, w'
@@ -122,6 +143,7 @@ function renderChart(channel,data,units){
 
 
 function removePlot(channel){
+    graphs.delete(channel);
     zingchart.exec('test_zingchart', 'removeplot', {
         plotid: channel
     });

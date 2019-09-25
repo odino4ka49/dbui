@@ -45,10 +45,12 @@ wsServer.on('request', function (request) {
     });
 });
 
-wsServer.sendData = function(data,ordernum){
+wsServer.sendData = function(data,ordernum,end){
     var index = orders.get(ordernum);
     clients[index].sendUTF(JSON.stringify(data));
-    removeOrder(ordernum);
+    if(end){
+        removeOrder(ordernum);
+    }
 }
 
 wsServer.broadcast = function(data){

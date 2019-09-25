@@ -1,10 +1,15 @@
 const dbc = require('./dbconnection')
 const tm = require('./model_classes')
 var TreeModel = require('tree-model')
+var dt = require('node-datetime');
 
 var systems = []
 var subsystems = []
 
+Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+}
 
 function parseToChartData(channel,data){
     var result = [];
@@ -42,7 +47,7 @@ function parseSystems(data) {
         if(ss.subsys_id){
             subsys = new tm.Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status);
             sys.appendSubsystem(subsys);
-            subsystems.push(subsys)
+            subsystems.push(subsys);
         }
         else{
             sys.data_tbl = ss.data_tbl;
@@ -99,17 +104,43 @@ function loadChannels(){
 
 function getChannelData(datatable,channel,datetime,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
-    dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+datetime[0]+'\' and date_time <= \''+datetime[1]+'\' order by date_time asc;'
+    var date1 = new Date(datetime[0]);
+    var date2 = new Date(datetime[1]);
+    var hours = Math.abs(date1 - date2) / 36e5;
+    var parts = Math.ceil(hours/12.0);
+    var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
+    for(var i=0;i<parts;i++){
+        if(i==parts-1){
+            dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        }
+        else{
+            dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        }
+        //var part_datetime = dates.slice(i,i+2);
+        //loadChannelData(datatable,channel,part_datetime,order,datatype,i,parts);
+    }
+    console.log(dates);
+    loadChannelData(datatable,channel,dates,order,datatype,0);
+}
+
+function loadChannelData(datatable,channel,dates,order,datatype,i){
+    var parts = dates.length-1;
+    dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
     ,function(result){
-        console.log(channel);
         var channel_data = {
             "title": "channel_data",
             "name": channel.name,
             "data": parseToChartData(channel.name, result),
-            "units": channel.unit
+            "units": channel.unit,
+            "index": i
         }
-        wsServer.sendData(channel_data,order);
-        //wsServer.sendData(result);
+        if(i==parts-1){
+            wsServer.sendData(channel_data,order,true);
+        }
+        else{
+            wsServer.sendData(channel_data,order,false);
+            loadChannelData(datatable,channel,dates,order,datatype,i+1)
+        }
     })
 }
 

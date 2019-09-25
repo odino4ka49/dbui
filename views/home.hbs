@@ -44,7 +44,7 @@
             var json = JSON.parse(message.data);
             if(json.title == "channel_data"){
                 //addPlot(json.name,json.data);
-                renderChart(json.name,json.data,json.units);
+                addGraphData(json);
             }
             else{
                 refreshTree(json);
