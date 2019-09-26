@@ -119,29 +119,39 @@ function getChannelData(datatable,channel,datetime,order){
         //var part_datetime = dates.slice(i,i+2);
         //loadChannelData(datatable,channel,part_datetime,order,datatype,i,parts);
     }
-    console.log(dates);
     loadChannelData(datatable,channel,dates,order,datatype,0);
 }
 
 function loadChannelData(datatable,channel,dates,order,datatype,i){
     var parts = dates.length-1;
-    dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
-    ,function(result){
-        var channel_data = {
-            "title": "channel_data",
-            "name": channel.name,
-            "data": parseToChartData(channel.name, result),
-            "units": channel.unit,
-            "index": i
-        }
-        if(i==parts-1){
-            wsServer.sendData(channel_data,order,true);
-        }
-        else{
-            wsServer.sendData(channel_data,order,false);
-            loadChannelData(datatable,channel,dates,order,datatype,i+1)
-        }
-    })
+    try{
+        dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+        ,function(result){
+            if(result.type=="err"){
+                console.log("problema")
+            }
+            else{
+                var channel_data = {
+                    "title": "channel_data",
+                    "name": channel.name,
+                    "data": parseToChartData(channel.name, result),
+                    "units": channel.unit,
+                    "index": i
+                }
+                //console.log(result);
+                if(i==parts-1){
+                    wsServer.sendData(channel_data,order,true);
+                }
+                else{
+                    wsServer.sendData(channel_data,order,false);
+                    loadChannelData(datatable,channel,dates,order,datatype,i+1)
+                }
+            }
+        });
+    }
+    catch(e){
+        console.log(e);
+    }
 }
 
 function getTestData(){

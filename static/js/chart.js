@@ -27,7 +27,6 @@ function addGraphData(json){
     var graph = graphs.get(json.name);
     if(graph){
         //graph.set(json.index,json.data);
-        console.log(graph)
         zingchart.exec('test_zingchart', 'appendseriesvalues', {
             //graphid: 0,
             plotid: json.name,
@@ -160,3 +159,7 @@ function addPlot(channel,data,units){
         }
     });
 };
+
+$(document).ready(function(){
+    dragula([document.querySelector('#graph1'), document.querySelector('#graph2')]);
+});

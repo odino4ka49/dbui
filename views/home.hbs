@@ -5,24 +5,40 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/tree.js"></script>
+<script src="/static/js/dbselect.js"></script>
 <script src="/static/js/timepicker.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dbtree.css" rel="stylesheet">
 <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
 <input id="datetimerange" type="text" name="datetimes" />
+
+<select id="db-select" onchange="changeDB()">
+    <option value="db1">DB1</option>
+    <option value="db2">DB2</option>
+    <option value="db3">DB3</option>
+</select>
+
 <div id="dbtree"></div>
 
 <div class="graph">
-    <div class="resizable">
+    <div id="graph1" class="resizable">
         <div id="test_zingchart"></div>
     </div>
+    <div id="graph2" class="resizable">
+        <div id="test_2"></div>
+    </div>
+</div>
+<div class="graph">
 </div>
 <!--div class="graph">
     <div class="resizable">
         <div id="test_zingchart2"></div>
     </div>
 </div-->
+
+
 <br/>
 
 <script>

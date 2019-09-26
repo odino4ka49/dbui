@@ -1,6 +1,7 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-const model = require("./model")
+const model = require("./model");
+var dbconnection = require("./dbconnection")
 
 var clients = [];
 var order = 0;
@@ -27,13 +28,15 @@ wsServer.on('request', function (request) {
     connection.on('message', function (msg) {
         if(msg.type=="utf8"){
             var message = JSON.parse(msg.utf8Data);
-            console.log(message);
+            //console.log(message);
             switch(message.type) {
                 case 'channel_data':
                     orders.set(order,index);
                     model.getChannelData(message.datatable,message.channel,message.datetime,order);
                     order++;
                     break;
+                case 'db_change':
+                    dbconnection.changeDB(message.db);
             }
         }
     });

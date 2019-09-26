@@ -1,11 +1,27 @@
 const pg = require('pg')
 
-const pool = new pg.Pool({
-    user: 'vepp4',
-    port: 5432,
-    host: 'vepp4-pg',//'192.168.144.4',
-    database: 'v4parameters'//'v4',
-})
+var dbs = {
+    "db1": {
+        user: 'vepp4',
+        port: 5432,
+        host: 'vepp4-pg',//'192.168.144.4',
+        database: 'v4parameters'//'v4',
+    },
+    "db2": {
+        user: 'vepp4',
+        port: 5432,
+        host: '192.168.144.4',
+        database: 'v4',
+    },
+    "db3": {
+        user: 'vepp4',
+        port: 5432,
+        host: 'pg',
+        database: 'v4',
+    }
+}
+
+var pool = new pg.Pool(dbs["db1"])
 
 pool.on('error', (err, client) => {
     console.error('Unexpected error on idle client', err)
@@ -25,9 +41,16 @@ function sendRequest(request,callback){
                     console.log(err.stack);
                 })
         })
+        .catch(err => {
+            throw "can't connect to the DB";
+        })
 }
 
+function changeDB(db){
+    pool = new pg.Pool(dbs[db]);
+}
 
 module.exports = {
-    sendRequest: sendRequest
+    sendRequest: sendRequest,
+    changeDB: changeDB
 }
