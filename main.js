@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 const app = express()
 const port = 8080
 
-model.loadSystems();
+//model.loadSystems();
 
 app.engine('.hbs', exphbs({
     defaultLayout: 'main',

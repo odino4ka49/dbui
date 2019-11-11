@@ -1,4 +1,4 @@
-#dbtree{
+#dbtree,#databases{
     width: 280px;
 }
 #datetimerange{
@@ -12,11 +12,18 @@
 
 }
 
-div.graph{
+div.graphset{
     top: 28px;
     left: 300px;
     width: 70%;
     position: absolute;
+}
+div.zchart{
+    width: 100%;
+    height: 100%;
+}
+div.active{
+    border: 3px solid lightskyblue;
 }
 
 div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
@@ -24,7 +31,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 .resizable{
     margin-top: 10px;
-    height: 700px;
+    height: 500px;
     border: 1px solid gray;
 }
 
@@ -37,4 +44,33 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     position: relative;
     width: 100%;
     height: 100%;
+}
+
+#databases{
+    list-style-type:none;
+    padding: 0 0 0 20px;
+    margin-top: 10px;
+}
+#databases ul{
+    list-style-type:none;
+    padding: 0;
+    margin-top: 10px;
+}
+#databases li{
+    position: relative;
+    height: 40px;
+    font-size: 15pt;
+    display: table;
+    width: 250px;
+}
+#databases p{
+    display: inline;
+    cursor: pointer;
+}
+button.refresh {
+    background-image: url('https://image.flaticon.com/icons/svg/189/189687.svg');
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0px;
 }

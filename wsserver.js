@@ -22,38 +22,48 @@ wsServer.on('request', function (request) {
     var connection = request.accept(null, request.origin);
     var index = clients.push(connection) - 1;
 
-    connection.sendUTF(JSON.stringify(model.systems));
-    // This is the most important callback for us, we'll handle
-    // all messages from users here.
+    connection.sendUTF(JSON.stringify({
+        title: "databases",
+        data: model.getDatabasesInfo()
+    }));
     connection.on('message', function (msg) {
         if(msg.type=="utf8"){
             var message = JSON.parse(msg.utf8Data);
-            //console.log(message);
             switch(message.type) {
                 case 'channel_data':
-                    orders.set(order,index);
-                    model.getChannelData(message.datatable,message.channel,message.datetime,order);
+                    orders.set(order,connection);
+                    model.getChannelData(message.chart,message.dbid,message.datatable,message.channel,message.datetime,order);
                     order++;
                     break;
-                case 'db_change':
-                    dbconnection.changeDB(message.db);
+                case 'tree_data':
+                    orders.set(order,connection);
+                    model.loadTreeData(message.database,order);
+                    order++;
+                    break;
             }
         }
     });
 
     connection.on('close', function (connection) {
         clients.splice(index, 1);
-
-        // close user connection
     });
 });
 
 wsServer.sendData = function(data,ordernum,end){
-    var index = orders.get(ordernum);
-    clients[index].sendUTF(JSON.stringify(data));
+    var connection = orders.get(ordernum);
+    connection.sendUTF(JSON.stringify(data));
     if(end){
         removeOrder(ordernum);
     }
+}
+
+wsServer.sendError = function(text,ordernum){
+    var connection = orders.get(ordernum);
+    connection.sendUTF(JSON.stringify({
+        "title": "error",
+        "data": text
+    }));
+    removeOrder(ordernum);
 }
 
 wsServer.broadcast = function(data){

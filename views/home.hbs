@@ -5,7 +5,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/tree.js"></script>
-<script src="/static/js/dbselect.js"></script>
 <script src="/static/js/timepicker.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -14,30 +13,18 @@
 
 <input id="datetimerange" type="text" name="datetimes" />
 
-<select id="db-select" onchange="changeDB()">
-    <option value="db1">DB1</option>
-    <option value="db2">DB2</option>
-    <option value="db3">DB3</option>
-</select>
 
 <div id="dbtree"></div>
+<ul id="databases"></ul>
 
-<div class="graph">
-    <div id="graph1" class="resizable">
-        <div id="test_zingchart"></div>
+<div id="graphset" class="graphset">
+    <div id="graph1" class="resizable active">
+        <div id="chart_1" class="zchart"></div>
     </div>
     <div id="graph2" class="resizable">
-        <div id="test_2"></div>
+        <div id="chart_2" class="zchart"></div>
     </div>
 </div>
-<div class="graph">
-</div>
-<!--div class="graph">
-    <div class="resizable">
-        <div id="test_zingchart2"></div>
-    </div>
-</div-->
-
 
 <br/>
 
@@ -45,7 +32,7 @@
 
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://127.0.0.1:1337');
+    var connection = new WebSocket('ws://192.168.163.195:1337');
 
     connection.onopen = function () {
         // connection is opened and ready to use
@@ -58,12 +45,19 @@
     connection.onmessage = function (message) {
         try {
             var json = JSON.parse(message.data);
-            if(json.title == "channel_data"){
-                //addPlot(json.name,json.data);
-                addGraphData(json);
-            }
-            else{
-                refreshTree(json);
+            switch (json.title) {
+                case "channel_data":
+                    addGraphData(json);
+                    break;
+                case "databases":
+                    displayDatabases(json.data);
+                    break;
+                case "tree_data":
+                    refreshTree(json.database,json.data);
+                    break;
+                case "error":
+                    alertError(json.data);
+                    break;
             }
         } catch (e) {
             console.log(e);

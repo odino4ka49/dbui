@@ -1,10 +1,7 @@
 const dbc = require('./dbconnection')
 const tm = require('./model_classes')
-var TreeModel = require('tree-model')
-var dt = require('node-datetime');
 
-var systems = []
-var subsystems = []
+var databases = new Map();
 
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
@@ -14,96 +11,56 @@ Date.prototype.addHours = function(h) {
 function parseToChartData(channel,data){
     var result = [];
     data.forEach(element => {
-        //result.dates.push(parseInt(element["t"]));
         result.push([parseInt(element["t"]),element[channel]]);
     });
     return result;
 }
 
-function findSS(ss_id){
-    var res = systems.find(o => o.ss_id === ss_id);
-    if(res){
-        return res;
+function checkIfError(result,order){
+    if(result.name == 'error'){
+        wsServer.sendError(result.stack,order);
+        return true;
     }
-    res = subsystems.find(o => o.ss_id === ss_id);
-    if(res){
-        return res;
+    return false;
+}
+
+function loadTreeData(dbid,order){
+    var tree = new tm.SystemTree(dbid);
+    var db = databases.get(dbid);
+    if(db.type == 'v4'){
+        db.sendRequest('SELECT * FROM "01_system"',order,function(result){
+            tree.parseSystems(result);
+            db.sendRequest('SELECT * FROM "02_group"',order,function(result){
+                tree.parseGroups(result);
+                db.sendRequest('SELECT * FROM "03_chan"',order,function(result){
+                    tree.parseChannels(result);
+                    wsServer.sendData({
+                        "title": "tree_data",
+                        "database": dbid,
+                        "data": tree.systems
+                    },order,true);
+                })
+            })
+        })
     }
-    return null;
+    else if(db.type == 'pickups'){
+        db.sendRequest('SELECT * FROM "01_system"',order,function(result){
+            tree.parseSystems(result);
+            db.sendRequest('SELECT * FROM "02_chan"',order,function(result){
+                tree.parseChannels(result);
+                wsServer.sendData({
+                    "title": "tree_data",
+                    "database": dbid,
+                    "data": tree.systems
+                },order,true);
+            })
+        })
+    }
 }
 
-function parseSystems(data) {
-    var sys_ids = []
-    var sys
-    data.forEach(function(ss){
-        if(sys_ids.includes(ss.sys_id)){
-            sys = systems.find(o => o.id === ss.sys_id);
-        }
-        else{
-            sys = new tm.System(ss.sys_id,ss.system);
-            sys_ids.push(ss.sys_id);
-            systems.push(sys);
-        }
-        if(ss.subsys_id){
-            subsys = new tm.Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status);
-            sys.appendSubsystem(subsys);
-            subsystems.push(subsys);
-        }
-        else{
-            sys.data_tbl = ss.data_tbl;
-            sys.status = ss.status;
-            sys.ss_id = ss.id; 
-        }
-    });
-}
-
-function parseGroups(data){
-    data.forEach(function(gr){
-        group = new tm.Group(gr.group_id,gr.name,gr.status);
-        var ss = findSS(gr.ss_id);
-        if(ss){
-            ss.appendGroup(group);
-        }
-    })
-}
-
-function parseChannels(data){
-    data.forEach(function(ch){
-        channel = new tm.Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
-        var ss = findSS(ch.ss_id);
-        if(ss&&ch.gr_id){
-            group = ss.groups.find(o => o.id === ch.gr_id);
-            group.appendChannel(channel);
-        }
-        else if(ss){
-            ss.appendChannel(channel);
-        }
-    })
-}
-
-
-function loadSystems(){
-    dbc.sendRequest('SELECT * FROM "01_system"',function(result){
-        parseSystems(result);
-        loadGroups();
-    })
-}
-
-function loadGroups(){
-    dbc.sendRequest('SELECT * FROM "02_group"',function(result){
-        parseGroups(result);
-        loadChannels();
-    })
-}
-
-function loadChannels(){
-    dbc.sendRequest('SELECT * FROM "03_chan"',function(result){
-        parseChannels(result);
-    })
-}
-
-function getChannelData(datatable,channel,datetime,order){
+function getChannelData(chart,dbid,datatable,channel,datetime,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
+    var db = databases.get(dbid);
     var date1 = new Date(datetime[0]);
     var date2 = new Date(datetime[1]);
     var hours = Math.abs(date1 - date2) / 36e5;
@@ -116,17 +73,15 @@ function getChannelData(datatable,channel,datetime,order){
         else{
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
-        //var part_datetime = dates.slice(i,i+2);
-        //loadChannelData(datatable,channel,part_datetime,order,datatype,i,parts);
     }
-    loadChannelData(datatable,channel,dates,order,datatype,0);
+    loadChannelData(chart,db,datatable,channel,dates,order,datatype,0);
 }
 
-function loadChannelData(datatable,channel,dates,order,datatype,i){
+function loadChannelData(chart,db,datatable,channel,dates,order,datatype,i){
     var parts = dates.length-1;
     try{
-        dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
-        ,function(result){
+        db.sendRequest('select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+        ,order,function(result){
             if(result.type=="err"){
                 console.log("problema")
             }
@@ -136,15 +91,15 @@ function loadChannelData(datatable,channel,dates,order,datatype,i){
                     "name": channel.name,
                     "data": parseToChartData(channel.name, result),
                     "units": channel.unit,
-                    "index": i
+                    "index": i,
+                    "chart": chart
                 }
-                //console.log(result);
                 if(i==parts-1){
                     wsServer.sendData(channel_data,order,true);
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadChannelData(datatable,channel,dates,order,datatype,i+1)
+                    loadChannelData(chart,db,datatable,channel,dates,order,datatype,i+1)
                 }
             }
         });
@@ -154,25 +109,35 @@ function loadChannelData(datatable,channel,dates,order,datatype,i){
     }
 }
 
-function getTestData(){
-    //dbc.sendRequest('select extract(epoch from date_time),v4_current from "stap" where date_time >=\'2017-02-01 00:00:00\' and date_time <= \'2017-02-07 00:01:00\' order by date_time asc;'
-    dbc.sendRequest('select extract(epoch from date_time)*1000::integer as t,"3M6F_SW"::float from "Tv3" where date_time >=\'2018-01-07 00:00:00\' and date_time <= \'2018-07-07 00:01:00\' order by date_time asc;'
-    ,function(result){
-        console.log("got db answer");
-        //result.title = "channel_data"
-        wsServer.sendData(result);
-    })
-}
-
 function getSensors(magnet_name){
     var sensors = systems.find(o => o.name === "Temperature").findAll(magnet_name)
     return sensors
 }
 
+function initDatabases(){
+    for(var i=1;i<6;i++){
+        var db = new dbc.DBConnection("db"+i);
+        databases.set(db.id,db);
+    }
+}
+
+function getDatabasesInfo(){
+    var result = [];
+    databases.forEach(function(db){
+        result.push({
+            id: db.id,
+            name: db.name,
+            status: db.status
+        })
+    });
+    return result;
+}
+
+initDatabases();
+
 module.exports = {
-    loadSystems: loadSystems,
-    systems: systems,
+    loadTreeData: loadTreeData,
     getSensors: getSensors,
-    getTestData: getTestData,
-    getChannelData: getChannelData
+    getChannelData: getChannelData,
+    getDatabasesInfo: getDatabasesInfo
 }
