@@ -22,12 +22,12 @@ class SystemTree {
         var sys, subsys;
         for(var i=0;i<data.length;i++){
             var ss = data[i];
-            if(!("status" in ss) || ss.status){
+            //if(!("status" in ss) || ss.status){
                 if(sys_ids.includes(ss.sys_id)){
                     sys = this.systems.find(o => o.id === ss.sys_id);
                 }
                 else{
-                    sys = new System(ss.sys_id,ss.system);
+                    sys = new System(ss.sys_id,ss.system,ss.status);
                     sys_ids.push(ss.sys_id);
                     this.systems.push(sys);
                 }
@@ -37,31 +37,37 @@ class SystemTree {
                     this.subsystems.push(subsys);
                 }
                 else{
-                    sys.data_tbl = ss.data_tbl;
+                    sys.setDatatable(ss.data_tbl);
                     sys.status = ss.status;
                     sys.ss_id = ss.id; 
                 }
-            }
+            //}
+        }
+    }
+
+    setOneDatatable(data_tbl){
+        for(var i=0;i<this.systems.length;i++){
+            this.systems[i].setDatatable(data_tbl);
         }
     }
 
     parseGroups(data){
         for(var i=0;i<data.length;i++){
             var gr = data[i];
-            if(!("status" in gr) || gr.status){
+            //if(!("status" in gr) || gr.status){
                 var group = new Group(gr.group_id,gr.name,gr.status);
                 var ss = this.findSS(gr.ss_id);
                 if(ss){
                     ss.appendGroup(group);
                 }
-            }
+            //}
         }
     }
 
     parseChannels(data){
         for(var i=0;i<data.length;i++){
             var ch = data[i];
-            if(!("status" in ch) || ch.status){
+            //if(!("status" in ch) || ch.status){
                 var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
                 var ss = this.findSS(ch.ss_id);
                 if(ss&&ch.gr_id){
@@ -73,28 +79,43 @@ class SystemTree {
                 else if(ss){
                     ss.appendChannel(channel);
                 }
-            }
+            //}
         }
     }
     
 }
 class System {
-    constructor(id,name){
+    constructor(id,name,status){
         this.id = id;
         this.name = name;
-        this.subsystems = [];
-        this.groups = [];
-        this.channels = [];
         this.type = "system";
+        this.status = status;
+        /*if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }*/
     }
     appendSubsystem(item){
+        if(!this.subsystems){
+            this.subsystems = [];
+        }
         this.subsystems.push(item);
     }
     appendGroup(item){
+        if(!this.groups){
+            this.groups = [];
+        }
         this.groups.push(item);
     }
     appendChannel(item){
+        if(!this.channels){
+            this.channels = [];
+        }
         this.channels.push(item);
+    }
+    setDatatable(data_tbl){
+        this.data_tbl = data_tbl;
     }
     findAll(regex){
         var result = [];
@@ -118,14 +139,23 @@ class Subsystem {
         this.name = name;
         this.status = status;
         this.data_tbl = data_tbl;
-        this.groups = [];
-        this.channels = [];
         this.type = "subsystem";
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
     }
     appendGroup(item){
+        if(!this.groups){
+            this.groups = [];
+        }
         this.groups.push(item);
     }
     appendChannel(item){
+        if(!this.channels){
+            this.channels = [];
+        }
         this.channels.push(item);
     }
     findAll(regex){
@@ -147,6 +177,11 @@ class Group {
         this.status = status;
         this.channels = [];
         this.type = "group";
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
     }
     appendChannel(item){
         this.channels.push(item);
@@ -170,6 +205,11 @@ class Channel {
         this.divider = divider;
         this.status = status;
         this.type = "channel";
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
     }
     check(regex){
         if(this.name.startsWith(regex)){

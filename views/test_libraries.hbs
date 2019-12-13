@@ -28,6 +28,7 @@
         try {
             var json = JSON.parse(message.data);
             renderChart(json);
+            json = null;
             //refreshTree(json);
         } catch (e) {
             console.log(e);

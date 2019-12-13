@@ -9,14 +9,14 @@ var dbs = {
         database: 'v4parameters',
         type: 'v4'
     },
-    "db1": {
+    /*"db1": {
         name: "v4_Jun2019-..",
         user: 'vepp4',
         port: 5432,
         host: '192.168.144.4',
         database: 'v4',
         type: 'v4'
-    },
+    },*/
     "db3": {
         name: "v4pickups_Oct2019-..",
         user: "vepp4",
@@ -45,7 +45,7 @@ var dbs = {
 
 class DBConnection {
     constructor(id){
-        var info = dbs[id];
+        let info = dbs[id];
         this.id = id;
         this.name = info.name;
         this.user = info.user;
@@ -72,13 +72,23 @@ class DBConnection {
                     .catch(err => {
                         client.release();
                         this.status = false;
+                        console.log(request);
                         wsServer.sendError(err.stack,order);
                     })
             })
             .catch(err => {
                 this.status = false;
-                wsServer.sendError(err.stack,order);
+                if(order){
+                    console.log(request);
+                    wsServer.sendError(err.stack,order);
+                }
             })
+    }
+    setAzimuths(az){
+        this.azimuths = az;
+    }
+    getAzimuths(){
+        return JSON.parse(JSON.stringify(this.azimuths));
     }
 }
 

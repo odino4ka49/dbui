@@ -20,16 +20,19 @@
 <div id="graphset" class="graphset">
     <div id="graph1" class="resizable active">
         <div id="chart_1" class="zchart"></div>
+        <div class="close_chart"></div>
     </div>
     <div id="graph2" class="resizable">
         <div id="chart_2" class="zchart"></div>
+        <div class="close_chart"></div>
     </div>
+    <div id="add_chart"></div>
 </div>
 
 <br/>
 
 <script>
-
+    'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
     var connection = new WebSocket('ws://192.168.163.195:1337');
@@ -49,6 +52,9 @@
                 case "channel_data":
                     addGraphData(json);
                     break;
+                case "orbit_data":
+                    addOrbitData(json);
+                    break;
                 case "databases":
                     displayDatabases(json.data);
                     break;
@@ -59,6 +65,7 @@
                     alertError(json.data);
                     break;
             }
+            json = null;
         } catch (e) {
             console.log(e);
             return;

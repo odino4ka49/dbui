@@ -25,6 +25,31 @@ div.zchart{
 div.active{
     border: 3px solid lightskyblue;
 }
+div.close_chart{
+    background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/delete.png");
+    width: 30px;
+    height: 30px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    top: 3px;
+    right: 3px;
+    position: absolute;
+    cursor: pointer;
+}
+#add_chart{
+    background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/add.png");
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    top: 50px;
+    left: 43%;
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 40px;
+}
 
 div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     display: block;
@@ -67,10 +92,15 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     display: inline;
     cursor: pointer;
 }
-button.refresh {
-    background-image: url('https://image.flaticon.com/icons/svg/189/189687.svg');
+div.refresh {
+    background-image: url('https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/reload.png');
     width: 30px;
     height: 30px;
     position: absolute;
-    right: 0px;
+    right: 0;
+    top: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
 }

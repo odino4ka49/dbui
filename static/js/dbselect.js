@@ -1,7 +1,8 @@
+'use strict';
 
 function changeDB(){
-    var db = $("#db-select").val();
-    var msg = {
+    let db = $("#db-select").val();
+    let msg = {
         type: "db_change",
         db: db
     };

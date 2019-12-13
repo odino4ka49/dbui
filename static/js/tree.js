@@ -1,17 +1,22 @@
+'use strict';
+let databases;
 
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
         if('subsystems' in node && node.subsystems.length!=0){
             node.nodes = node.subsystems;
+            delete node.subsystems;
             parseTree(node.nodes);
         }
         else if ('groups' in node && node.groups.length!=0){
             node.nodes = node.groups;
+            delete node.groups;
             parseTree(node.nodes);
         }
         else if ('channels' in node && node.channels.length!=0){
             node.nodes = node.channels;
+            delete node.channels;
             parseTree(node.nodes);
         }
     });
@@ -19,9 +24,9 @@ function parseTree(data){
 };
 
 function refreshTree(dbid,data) {
-    var db_li = $("#"+dbid);
+    let db_li = $("#"+dbid);
     db_li.children("ul").remove();
-    var db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
+    let db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
     db_tree.treeview(
         {
             data: parseTree(data),
@@ -34,29 +39,47 @@ function refreshTree(dbid,data) {
             },
             onNodeUnselected: function (event, node) {
                 if(node.type=="channel"){
-                    removePlot(node.name);
+                    removePlot(node.text);
                 }                    
             }
         });
     document.body.style.cursor='default';
     db_li.addClass("opened");
+    db_li = null;
+    db_tree = null;
 };
 
 function getDatatable(channel,dbid){
-    var db_tree = $("#"+dbid+"_tree");
-    var parent = channel;
-    while (!("data_tbl" in parent)&&parent.parentId){
+    let db_tree = $("#"+dbid+"_tree");
+    let data_tbl;
+    let hierarchy = {};
+    let parent = channel;
+    hierarchy["channel"] = channel;
+    while (parent.parentId!=undefined){
         parent = db_tree.treeview('getParent', parent);
+        hierarchy[parent.type] = {
+            "id": parent.id,
+            "name": parent.text
+        };
+        if("data_tbl" in parent){
+            data_tbl = parent["data_tbl"];
+        }
     }
-    return parent.data_tbl;
+    db_tree = null;
+    parent = null;
+    return [data_tbl,hierarchy];
 }
 
 function loadChannelData(channel,dbid){
-    var datatable = getDatatable(channel,dbid);
+    let [datatable,hierarchy] = getDatatable(channel,dbid);
+    if(!activechart){
+        alert("Please choose a canvas to display the data");
+        return;
+    }
     if(datatable){
-        var msg = {
+        let msg = {
             type: "channel_data",
-            channel: channel,
+            hierarchy: hierarchy,
             datatable: datatable,
             dbid: dbid,
             datetime: getDateTime(),
@@ -64,30 +87,37 @@ function loadChannelData(channel,dbid){
         };
         document.body.style.cursor='wait';
         sendMessageToServer(JSON.stringify(msg));
+        msg = null;
     }
+    datatable = null;
+    hierarchy = null;
 }
 
 function loadDatabaseTree(dbid){
     document.body.style.cursor='wait';
-    var msg = {
+    let msg = {
         type: "tree_data",
         database: dbid
     };
     sendMessageToServer(JSON.stringify(msg));
+    msg = null;
 }
 
 function displayDatabases(data){
-    var db_ul = $("#databases");
+    databases = data;
+    let db_ul = $("#databases");
     data.forEach(function(db){
-        db_ul.append($('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<button class='refresh'>").delegate('button','click',refreshDatabaseTree));
+        db_ul.append($('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree));
     });
     db_ul.children("li").children("p").click(showDatabaseTree);
+    data = null;
+    db_ul = null;
 }
 
 function showDatabaseTree(event){
-    var db_li = $(event.target).parent();
-    var dbid = db_li.attr('id');
-    var db_tree = db_li.children("ul")[0];
+    let db_li = $(event.target).parent();
+    let dbid = db_li.attr('id');
+    let db_tree = db_li.children("ul")[0];
     if(db_tree){
         if(db_li.hasClass("opened")){
             $(db_tree).hide();
@@ -101,17 +131,19 @@ function showDatabaseTree(event){
     else{
         loadDatabaseTree(dbid);
     }
+    db_li = null;
+    dbid = null;
+    db_tree = null;
 }
 
 function refreshDatabaseTree(event){
     event.stopPropagation();
-    var dbid = $(event.target).parent().attr('id');
+    let dbid = $(event.target).parent().attr('id');
     loadDatabaseTree(dbid);
 }
 
 function alertError(text){
     alert(text);
-    console.log(text);
     document.body.style.cursor='default';
 }
 

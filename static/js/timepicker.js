@@ -1,4 +1,5 @@
-var datetimerange = [];
+'use strict';
+let datetimerange = [];
 
 function initPicker() {
     $('#datetimerange').daterangepicker({
