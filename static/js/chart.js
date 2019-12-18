@@ -1,6 +1,5 @@
-'use strict';
-let activechart = 'chart_1';
-let chart_max_n = 2;
+var activechart = 'chart_1';
+var chart_max_n = 2;
 
 function setActiveGraph(div){
     activechart = div.attr('id');
@@ -26,7 +25,7 @@ class Chart {
         if(this.type=="orbit"){
             return false;
         }
-        //let graph = this.graphs.get(json.name);
+        //var graph = this.graphs.get(json.name);
         if(this.graphs.includes(json.name)){
             zingchart.exec(this.name, 'appendseriesvalues', {
                 plotid: json.name,
@@ -62,7 +61,7 @@ class Chart {
     }
 
     parseToArrayData(data){
-        let result = []
+        var result = []
         data.forEach(element => {
             result.push([parseInt(element["date_part"])*1000,element.v4_current]);
         });
@@ -72,7 +71,7 @@ class Chart {
 
     renderChart(channel,data,units){
         this.is_chart_rendered = true;
-        let transform_x_scale = null;
+        var transform_x_scale = null;
         if(this.type == "timeseries"){
             transform_x_scale =  {
                 type: 'date',
@@ -81,7 +80,7 @@ class Chart {
             }
         }
         this.scales_units.set(units,"scale-x ,scale-y");
-        let chartData = {
+        var chartData = {
             type: 'line',
             legend: {
                 'max-items': 5,
@@ -166,8 +165,8 @@ class Chart {
 
     addPlot(channel,data,units){
         if(!this.scales_units.get(units)){
-            let scale_num = this.scales_units.size+1;
-            let scale_data = {};
+            var scale_num = this.scales_units.size+1;
+            var scale_data = {};
             scale_data["scale-y-"+scale_num] = {
                 label:{
                     "text": units
@@ -194,7 +193,7 @@ class Chart {
     };
 };
 
-let charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
+var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
 
 function removePlot(channel){
     if(activechart){
@@ -206,7 +205,7 @@ function addGraphData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addGraphData(json)){
             if(!charts[activechart].addGraphData(json)){
-                let new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
+                var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
                 setActiveGraphByName("chart_"+new_chart_n);
                 charts["chart_"+new_chart_n].addGraphData(json);
                 new_chart_n = null;
@@ -223,7 +222,7 @@ function addGraphData(json){
 function addOrbitData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addOrbitData(json)){
-            let new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
+            var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
             setActiveGraphByName("chart_"+new_chart_n);
             charts["chart_"+new_chart_n].addOrbitData(json);
             new_chart_n = null;
@@ -250,7 +249,7 @@ function addChartBeforeTarget(target){
 }
 
 function closeChart(e){
-    let name = $(e.target).parent().children(":first").attr("id");
+    var name = $(e.target).parent().children(":first").attr("id");
     $(e.target).parent().remove();
     delete charts[name];
     if(activechart == name){

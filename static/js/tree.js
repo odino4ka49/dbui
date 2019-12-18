@@ -1,4 +1,3 @@
-'use strict';
 let databases;
 
 function parseTree(data){
@@ -26,7 +25,7 @@ function parseTree(data){
 function refreshTree(dbid,data) {
     let db_li = $("#"+dbid);
     db_li.children("ul").remove();
-    let db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
+    var db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
     db_tree.treeview(
         {
             data: parseTree(data),
@@ -50,10 +49,10 @@ function refreshTree(dbid,data) {
 };
 
 function getDatatable(channel,dbid){
-    let db_tree = $("#"+dbid+"_tree");
-    let data_tbl;
-    let hierarchy = {};
-    let parent = channel;
+    var db_tree = $("#"+dbid+"_tree");
+    var data_tbl;
+    var hierarchy = {};
+    var parent = channel;
     hierarchy["channel"] = channel;
     while (parent.parentId!=undefined){
         parent = db_tree.treeview('getParent', parent);
@@ -71,13 +70,13 @@ function getDatatable(channel,dbid){
 }
 
 function loadChannelData(channel,dbid){
-    let [datatable,hierarchy] = getDatatable(channel,dbid);
+    var [datatable,hierarchy] = getDatatable(channel,dbid);
     if(!activechart){
         alert("Please choose a canvas to display the data");
         return;
     }
     if(datatable){
-        let msg = {
+        var msg = {
             type: "channel_data",
             hierarchy: hierarchy,
             datatable: datatable,
@@ -140,6 +139,7 @@ function refreshDatabaseTree(event){
     event.stopPropagation();
     let dbid = $(event.target).parent().attr('id');
     loadDatabaseTree(dbid);
+    dbid = null;
 }
 
 function alertError(text){
