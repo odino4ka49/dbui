@@ -1,4 +1,4 @@
-let databases;
+var databases;
 
 function parseTree(data){
     data.forEach(function(node){
@@ -23,7 +23,7 @@ function parseTree(data){
 };
 
 function refreshTree(dbid,data) {
-    let db_li = $("#"+dbid);
+    var db_li = $("#"+dbid);
     db_li.children("ul").remove();
     var db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
     db_tree.treeview(
@@ -94,7 +94,7 @@ function loadChannelData(channel,dbid){
 
 function loadDatabaseTree(dbid){
     document.body.style.cursor='wait';
-    let msg = {
+    var msg = {
         type: "tree_data",
         database: dbid
     };
@@ -104,7 +104,7 @@ function loadDatabaseTree(dbid){
 
 function displayDatabases(data){
     databases = data;
-    let db_ul = $("#databases");
+    var db_ul = $("#databases");
     data.forEach(function(db){
         db_ul.append($('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree));
     });
@@ -114,9 +114,9 @@ function displayDatabases(data){
 }
 
 function showDatabaseTree(event){
-    let db_li = $(event.target).parent();
-    let dbid = db_li.attr('id');
-    let db_tree = db_li.children("ul")[0];
+    var db_li = $(event.target).parent();
+    var dbid = db_li.attr('id');
+    var db_tree = db_li.children("ul")[0];
     if(db_tree){
         if(db_li.hasClass("opened")){
             $(db_tree).hide();
@@ -137,7 +137,7 @@ function showDatabaseTree(event){
 
 function refreshDatabaseTree(event){
     event.stopPropagation();
-    let dbid = $(event.target).parent().attr('id');
+    var dbid = $(event.target).parent().attr('id');
     loadDatabaseTree(dbid);
     dbid = null;
 }
