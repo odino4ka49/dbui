@@ -12,7 +12,7 @@
     "infinite-tree": "^1.16.2",
     "jquery": "^3.4.1",
     "node-datetime": "^2.1.2",
-    "pg": "^7.8.0",
+    "pg": "^7.17.0",
     "popper": "^1.0.1",
     "tree-model": "^1.0.7",
     "websocket": "^1.0.28"
