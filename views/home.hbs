@@ -21,10 +21,7 @@
     <div id="graph1" class="resizable active">
         <div id="chart_1" class="zchart"></div>
         <div class="close_chart"></div>
-    </div>
-    <div id="graph2" class="resizable">
-        <div id="chart_2" class="zchart"></div>
-        <div class="close_chart"></div>
+        <div class="handle"></div>
     </div>
     <div id="add_chart"></div>
 </div>
@@ -35,7 +32,7 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');
+    var connection = new WebSocket('ws://192.168.163.195:1337');
 
     connection.onopen = function () {
         // connection is opened and ready to use

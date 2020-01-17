@@ -7,7 +7,8 @@ var dbs = {
         port: 5432,
         host: 'vepp4-pg',
         database: 'v4parameters',
-        type: 'v4'
+        type: 'v4',
+        active: true
     },
     /*"db1": {
         name: "v4_Jun2019-..",
@@ -23,7 +24,8 @@ var dbs = {
         port: 5432,
         host: "vepp4-pult1",
         database: "v4pickups",
-        type: 'pickups'
+        type: 'pickups',
+        active: true
     },
     "db4":{
         name: "v4_2013-2015",
@@ -31,7 +33,8 @@ var dbs = {
         port: 5433,
         host: "vepp4-k500",
         database: 'v4parameters',
-        type: 'v4'
+        type: 'v4',
+        active: false
     },
     "db5":{
         name: "v4_2007-2013",
@@ -39,7 +42,8 @@ var dbs = {
         port: 5432,
         host: "vepp4-k500",
         database: 'v4parameters',
-        type: 'v4'
+        type: 'v4',
+        active: false
     }
 }
 
@@ -53,7 +57,7 @@ class DBConnection {
         this.host = info.host;
         this.type = info.type;
         this.database = info.database;
-        this.status = true;
+        this.status = info.active;
         this.pool = new pg.Pool(info)
         this.pool.on('error', (err, client) => {
             this.status = false;
@@ -72,14 +76,14 @@ class DBConnection {
                     .catch(err => {
                         client.release();
                         this.status = false;
-                        console.log(request);
+                        //console.log(request);
                         wsServer.sendError(err.stack,order);
                     })
             })
             .catch(err => {
                 this.status = false;
                 if(order){
-                    console.log(request);
+                    //console.log(request);
                     wsServer.sendError(err.stack,order);
                 }
             })

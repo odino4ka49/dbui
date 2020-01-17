@@ -37,10 +37,22 @@ div.close_chart{
     position: absolute;
     cursor: pointer;
 }
+div.handle{
+    background-image: url("https://png.pngtree.com/svg/20170802/drag_1320614.png");
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    top: 8px;
+    left: 8px;
+    position: absolute;
+    cursor: pointer;
+}
 #add_chart{
     background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/add.png");
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -91,6 +103,12 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 #databases p{
     display: inline;
     cursor: pointer;
+}
+#databases li.inactive{
+    color: grey;
+}
+#databases li.inactive p{
+    cursor: default;
 }
 div.refresh {
     background-image: url('https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/reload.png');

@@ -39,7 +39,7 @@ function refreshTree(dbid,data) {
             onNodeUnselected: function (event, node) {
                 if(node.type=="channel"){
                     removePlot(node.text);
-                }                    
+                }
             }
         });
     document.body.style.cursor='default';
@@ -106,9 +106,16 @@ function displayDatabases(data){
     databases = data;
     var db_ul = $("#databases");
     data.forEach(function(db){
-        db_ul.append($('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree));
+        console.log(db)
+        var db_li = $('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree).appendTo(db_ul);
+        if(!db.status){
+            db_li.addClass("inactive");
+        }
+        else{
+            db_li.addClass("active");
+        }
     });
-    db_ul.children("li").children("p").click(showDatabaseTree);
+    db_ul.children("li").not('.inactive').children("p").click(showDatabaseTree);
     data = null;
     db_ul = null;
 }

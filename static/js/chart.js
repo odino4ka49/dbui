@@ -241,7 +241,7 @@ function addChartBeforeTarget(target){
     chart_max_n++;
     $('<div id="graph' + chart_max_n
     + '" class="resizable"><div id="chart_' + chart_max_n
-    + '" class="zchart"></div><div class="close_chart"></div></div>').insertBefore(target).resizable();
+    + '" class="zchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
     charts["chart_" + chart_max_n] = new Chart("chart_" + chart_max_n);
     return chart_max_n;
 }
@@ -257,7 +257,11 @@ function closeChart(e){
 }
 
 $(document).ready(function(){
-    dragula([document.getElementById('graphset')]);
+    dragula([document.getElementById('graphset')], {
+        moves: function (el, container, handle) {
+          return handle.classList.contains('handle');
+        }
+    });
     $("body").on("click",".zchart",function(){
         setActiveGraph($(this));
     });
