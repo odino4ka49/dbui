@@ -260,7 +260,8 @@ $(document).ready(function(){
     dragula([document.getElementById('graphset')], {
         moves: function (el, container, handle) {
           return handle.classList.contains('handle');
-        }
+        },
+        mirrorContainer: document.getElementById('mirror')
     });
     $("body").on("click",".zchart",function(){
         setActiveGraph($(this));

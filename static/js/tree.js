@@ -106,7 +106,6 @@ function displayDatabases(data){
     databases = data;
     var db_ul = $("#databases");
     data.forEach(function(db){
-        console.log(db)
         var db_li = $('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree).appendTo(db_ul);
         if(!db.status){
             db_li.addClass("inactive");
@@ -142,15 +141,21 @@ function showDatabaseTree(event){
     db_tree = null;
 }
 
+function deactivateDatabase(dbid){
+    $("#"+dbid).addClass("inactive").removeClass("active");
+}
+
 function refreshDatabaseTree(event){
     event.stopPropagation();
     var dbid = $(event.target).parent().attr('id');
+    $(event.target).parent().addClass("active").removeClass("inactive")
     loadDatabaseTree(dbid);
     dbid = null;
 }
 
-function alertError(text){
-    alert(text);
+function alertError(err){
+    alert(err.text);
     document.body.style.cursor='default';
+    deactivateDatabase(err.dbid);
 }
 

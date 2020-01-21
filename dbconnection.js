@@ -68,6 +68,7 @@ class DBConnection {
     sendRequest(request,order,callback){
         this.pool.connect()
             .then(client => {
+                this.status = true;
                 return client.query(request)
                     .then(res => {
                         callback(res.rows);
@@ -77,14 +78,18 @@ class DBConnection {
                         client.release();
                         this.status = false;
                         //console.log(request);
-                        wsServer.sendError(err.stack,order);
+                        wsServer.sendError(err,order);
                     })
             })
             .catch(err => {
                 this.status = false;
                 if(order){
-                    //console.log(request);
-                    wsServer.sendError(err.stack,order);
+                    if(err.code=="EHOSTUNREACH"){
+                        this.status = false;
+                    }
+                    err.dbid = this.id;
+                    //console.log(err);
+                    wsServer.sendError(err,order);
                 }
             })
     }

@@ -47,7 +47,10 @@ div.handle{
     top: 8px;
     left: 8px;
     position: absolute;
-    cursor: pointer;
+    cursor: grab;
+}
+.gu-mirror div.handle{
+    cursor: move;
 }
 #add_chart{
     background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/add.png");
@@ -68,7 +71,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 .resizable{
     margin-top: 10px;
-    height: 500px;
+    height: 300px;
     border: 1px solid gray;
 }
 
@@ -122,3 +125,4 @@ div.refresh {
     background-position: center center;
     cursor: pointer;
 }
+

@@ -27,7 +27,7 @@ function parseToOrbitData(channel,data,azimuths){
 
 function checkIfError(result,order){
     if(result.name == 'error'){
-        wsServer.sendError(result.stack,order);
+        wsServer.sendError(result,order);
         return true;
     }
     return false;

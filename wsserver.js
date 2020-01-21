@@ -57,11 +57,12 @@ wsServer.sendData = function(data,ordernum,end){
     }
 }
 
-wsServer.sendError = function(text,ordernum){
+wsServer.sendError = function(err,ordernum){
     var connection = orders.get(ordernum);
+    err.text = err.stack;
     connection.sendUTF(JSON.stringify({
         "title": "error",
-        "data": text
+        "data": err
     }));
     removeOrder(ordernum);
 }

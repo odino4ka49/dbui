@@ -81,8 +81,20 @@ class SystemTree {
                 }
             //}
         }
+        this.checkStatus(this.systems);
     }
-    
+
+    checkStatus(elements){
+        for (const element of elements){
+            element.checkStatus();
+            if("subsystems" in element){
+                this.checkStatus(element.subsystems);
+            }
+            else if("groups" in element){
+                this.checkStatus(element.groups);
+            }
+        }
+    }
 }
 class System {
     constructor(id,name,status){
@@ -90,11 +102,6 @@ class System {
         this.name = name;
         this.type = "system";
         this.status = status;
-        /*if(!this.status){
-            this.state = {
-                disabled: true
-            }
-        }*/
     }
     appendSubsystem(item){
         if(!this.subsystems){
@@ -131,6 +138,27 @@ class System {
         });
         return result;
     }
+    checkStatus(){
+        if(this.status == false && (this.channels||this.groups||this.subsystems)){
+            var newstatus = false;
+            var children;
+            if("channels" in this) children = this.channels;
+            else if("groups" in this) children = this.groups;
+            else if("subsystems" in this) children = this.subsystems;
+            for (const element of children){
+                if(element.status) newstatus = true;
+            }
+            this.status = newstatus;
+            this.checkIfDisabled();
+        }
+    }
+    checkIfDisabled(){
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
+    }
 }
 class Subsystem {
     constructor(id,ssid,name,data_tbl,status){
@@ -140,11 +168,7 @@ class Subsystem {
         this.status = status;
         this.data_tbl = data_tbl;
         this.type = "subsystem";
-        if(!this.status){
-            this.state = {
-                disabled: true
-            }
-        }
+        this.checkIfDisabled();
     }
     appendGroup(item){
         if(!this.groups){
@@ -169,6 +193,26 @@ class Subsystem {
         });
         return result;
     }
+    checkStatus(){
+        if(this.status == true && (this.channels||this.groups)){
+            var newstatus = false;
+            var children;
+            if("channels" in this) children = this.channels;
+            else if("groups" in this) children = this.groups; 
+            for (const element of children){
+                if(element.status) newstatus = true;
+            }
+            this.status = newstatus;
+            this.checkIfDisabled();
+        }
+    }
+    checkIfDisabled(){
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
+    }
 }
 class Group {
     constructor(id,name,status){
@@ -177,11 +221,7 @@ class Group {
         this.status = status;
         this.channels = [];
         this.type = "group";
-        if(!this.status){
-            this.state = {
-                disabled: true
-            }
-        }
+        this.checkIfDisabled();
     }
     appendChannel(item){
         this.channels.push(item);
@@ -194,6 +234,23 @@ class Group {
         });
         return result;
     }
+    checkStatus(){
+        if(this.status == false && this.channels.length!=0){
+            var newstatus = false;
+            for (const element of this.channels){
+                if(element.status) newstatus = true;
+            }
+            this.status = newstatus;
+            this.checkIfDisabled();
+        }
+    }
+    checkIfDisabled(){
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
+    }
 }
 class Channel {
     constructor(name,fullname,address,type,unit,divider,status){
@@ -205,17 +262,20 @@ class Channel {
         this.divider = divider;
         this.status = status;
         this.type = "channel";
-        if(!this.status){
-            this.state = {
-                disabled: true
-            }
-        }
+        this.checkIfDisabled();
     }
     check(regex){
         if(this.name.startsWith(regex)){
             return true;
         }
         return false;
+    }
+    checkIfDisabled(){
+        if(!this.status){
+            this.state = {
+                disabled: true
+            }
+        }
     }
 }
 
