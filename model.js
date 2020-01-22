@@ -82,7 +82,7 @@ function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
     var date1 = new Date(datetime[0]);
     var date2 = new Date(datetime[1]);
     var hours = Math.abs(date1 - date2) / 36e5;
-    var parts = Math.ceil(hours/12.0);
+    var parts = Math.ceil(hours/2.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
@@ -97,7 +97,7 @@ function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
             dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
         else{
-            dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+            dates.push(date1.addHours(2).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
     if(db.type == "pickups"){
