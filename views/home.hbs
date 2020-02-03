@@ -37,16 +37,24 @@
     var connection = new WebSocket('ws://192.168.144.71:1337');
 
     connection.onopen = function () {
+        console.log("connection is opened")
         // connection is opened and ready to use
     };
 
+    connection.onclose = function () {
+        console.log("connection is closed")
+        // an error occurred when sending/receiving data
+    };
+
     connection.onerror = function (error) {
+        console.log("connection error")
         // an error occurred when sending/receiving data
     };
 
     connection.onmessage = function (message) {
         try {
             var json = JSON.parse(message.data);
+            console.log("got message "+json.title)
             switch (json.title) {
                 case "channel_data":
                     addGraphData(json);

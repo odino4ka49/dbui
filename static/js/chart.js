@@ -13,6 +13,10 @@ function setActiveGraphByName(name){
     $("#"+name).parent().addClass('active');
 }
 
+function getActiveGraphPixelSize(){
+    return Math.ceil($("#"+activechart).width());
+}
+
 function Chart (name) {
         this.name = name;
         this.is_chart_rendered = false;

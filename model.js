@@ -34,6 +34,7 @@ function checkIfError(result,order){
 }
 
 function loadTreeData(dbid,order){
+    console.log("loadTreeData");
     var tree = new tm.SystemTree(dbid);
     var db = databases.get(dbid);
     if(db.type == 'v4'){
@@ -74,7 +75,25 @@ function loadAzimuths(db){
     });
 }
 
-function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
+function averageData(data,y){
+    //var t = data[data.length/2].t;
+    var result = [{"t": data[0].t},{"t": data[data.length-1].t}]
+    result[0][y] = data.reduce((min, p) => p[y] < min ? p[y] : min, data[0][y]);
+    result[1][y] = data.reduce((max, p) => p[y] > max ? p[y] : max, data[0][y]);
+    return(result)
+}
+
+function filterData(data,pixels,chname){
+    var partsize = data.length/pixels;
+    console.log(data.length,pixels,partsize)
+    var result = [];
+    for (var i=0;i<pixels;i++){
+        result = result.concat(averageData(data.slice(i*partsize,(i+1)*partsize-1),chname));
+    }
+    return(result);
+}
+
+function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
@@ -82,7 +101,7 @@ function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
     var date1 = new Date(datetime[0]);
     var date2 = new Date(datetime[1]);
     var hours = Math.abs(date1 - date2) / 36e5;
-    var parts = Math.ceil(hours/2.0);
+    var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
@@ -97,7 +116,7 @@ function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
             dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
         else{
-            dates.push(date1.addHours(2).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+            dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
     if(db.type == "pickups"){
@@ -109,10 +128,11 @@ function getChannelData(chart,dbid,datatable,hierarchy,datetime,order){
             return;
         }
     }
-    loadChannelData(chart,db,datatable,channel,subsystem,dates,order,datatype,0);
+    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,order,datatype,0);
 }
 
 function loadOrbitData(chart,db,datatable,channel,date,order){
+    console.log("loadOrbitData");
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
@@ -136,7 +156,8 @@ function loadOrbitData(chart,db,datatable,channel,date,order){
     }
 }
 
-function loadChannelData(chart,db,datatable,channel,subsystem,dates,order,datatype,i){
+function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,i){
+    console.log("loadChannelData part "+i);
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
@@ -153,10 +174,11 @@ function loadChannelData(chart,db,datatable,channel,subsystem,dates,order,dataty
                 console.log("problema")
             }
             else{
+                var filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
                     "name": chan_name,
-                    "data": parseToChartData(chan_name, result),
+                    "data": parseToChartData(chan_name, filtered_data),
                     "units": channel.unit,
                     "index": i,
                     "chart": chart
@@ -166,7 +188,7 @@ function loadChannelData(chart,db,datatable,channel,subsystem,dates,order,dataty
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadChannelData(chart,db,datatable,channel,subsystem,dates,order,datatype,i+1)
+                    loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,i+1)
                 }
             }
         });

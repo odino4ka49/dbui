@@ -82,7 +82,8 @@ function loadChannelData(channel,dbid){
             datatable: datatable,
             dbid: dbid,
             datetime: getDateTime(),
-            chart: activechart
+            chart: activechart,
+            pixels: getActiveGraphPixelSize()-30
         };
         document.body.style.cursor='wait';
         sendMessageToServer(JSON.stringify(msg));
