@@ -1,5 +1,13 @@
 var activechart = 'chart_1';
 var chart_max_n = 2;
+//var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
+var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+
+const resizeObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      Plotly.Plots.resize(entry.target);
+    }
+  });
 
 function setActiveGraph(div){
     activechart = div.attr('id');
@@ -13,7 +21,15 @@ function setActiveGraphByName(name){
     $("#"+name).parent().addClass('active');
 }
 
-function getActiveGraphPixelSize(){
+function parseDates(dates){
+    var result = [];
+    dates.forEach(element => {
+        result.push(new Date(element));
+    });
+    return result;
+}
+
+function getActiveGraphWidth(){
     return Math.ceil($("#"+activechart).width());
 }
 
@@ -22,21 +38,27 @@ function Chart (name) {
         this.is_chart_rendered = false;
         this.scales_units = new Map();
         this.graphs = [];
+        this.axis_labels = [];
     }
-    
+
+Chart.prototype.getWidth = function(){
+    return Math.ceil($("#"+this.name).width());
+}
+
+Chart.prototype.getHeight = function(){
+    return Math.ceil($("#"+this.name).parent().height());
+}
+
 Chart.prototype.addGraphData = function(json){
     if(this.type=="orbit"){
         return false;
     }
-    //var graph = this.graphs.get(json.name);
+    json.data.x = parseDates(json.data.x);
     if(this.graphs.indexOf(json.name)>-1){
-        zingchart.exec(this.name, 'appendseriesvalues', {
-            plotid: json.name,
-            values: json.data
-        });
+        this.extendLine(json.name,json.data,json.units)
     }
     else{
-        this.graphs.push(json.name);//.set(json.name,json.data);
+        this.graphs.push(json.name);
         if(!this.is_chart_rendered){
             this.type = "timeseries";
             this.renderChart(json.name,json.data,json.units);
@@ -52,7 +74,7 @@ Chart.prototype.addOrbitData = function(json){
     if(this.type=="timeseries"){
         return false;
     }
-    this.graphs.push(json.name);//this.graphs.set(json.name,json.data);
+    this.graphs.push(json.name);
     if(!this.is_chart_rendered){
         this.type = "orbit";
         this.renderChart(json.name,json.data,json.units);
@@ -72,134 +94,120 @@ Chart.prototype.parseToArrayData = function(data){
     return result;
 }
 
+Chart.prototype.extendLine = function(channel,data,units){
+    data.name = channel;
+    var id = this.graphs.indexOf(channel);
+    Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
+}
+
 Chart.prototype.renderChart = function(channel,data,units){
     this.is_chart_rendered = true;
-    var transform_x_scale = null;
-    if(this.type == "timeseries"){
-        transform_x_scale =  {
-            type: 'date',
-            all: '%D, %d %M<br>%H:%i:%s',
-            itemsOverlap: true
+    data.mode = 'markers';//'lines';
+    data.name = channel;
+    data.line = { color: colors[0] }
+    data.marker = {size:3}
+    this.axis_labels = [
+        {
+            xref:'paper',
+            yref:'paper',
+            x: 0,
+            xanchor:'top',
+            y: 1.07,
+            yanchor:'bottom ',
+            text: units,
+            showarrow: false
         }
-    }
-    this.scales_units.set(units,"scale-x ,scale-y");
-    var chartData = {
-        type: 'line',
+    ];
+    var chartData = [data];
+    var config = {responsive: true};
+    var layout = {
         legend: {
-            'max-items': 5,
-            'overflow': "scroll",
-            'draggable': true
+            y: 0.5,
+            traceorder: 'reversed',
+            font: {size: 16}
         },
-        series: [
-            { 
-                id: channel,
-                values: data,
-                text: channel,
-                scales: this.scales_units.get(units)
-            }
-        ],
-        scaleX: {
-            guide: {
-                lineColor: '#444',
-                lineStyle: 'solid',
-                visible: true
-            },
-            item: {
-                fontFamily: 'Open Sans'
-            },
-            transform: transform_x_scale,
-            zooming: {
-                shared: true
-            }
+        margin: { l: 20, r: 10, b: 40, t: 40},
+        xaxis: {
+            domain: [0, 1]
         },
-        crosshairX: {
-        plotLabel: {
-            backgroundColor: '#bbb',
-            fontColor: '#222',
-            fontFamily: 'Open Sans',
-            y: '0px'
-        }
+        yaxis: {
+            linecolor: colors[0],
+            position: 0
         },
-        "scale-y-n":{
-            zooming: true 
-        },
-        "scale-y":{
-            label:{
-                "text": units
-            }
-        },
-        scrollX:{
-
-        },
-        scrollY:{
-
-        }/*,
-        preview: {
-            adjustLayout: true,
-            borderColor: '#E3E3E5',
-            label: {
-                fontColor: '#E3E3E5'
-            },
-            mask: {
-                backgroundColor: '#E3E3E5'
-            }
-        }*/
+        annotations: this.axis_labels
     };
-    zingchart.complete = function() {
-        document.body.style.cursor='default';
-    };
-    zingchart.render({
-        id: this.name,
-        data: chartData,
-        height: "100%",
-        width: "98%"
+    Plotly.react(this.name, chartData, layout, config).then(function(gd) {
+        resizeObserver.observe(gd);
+      });;
+    this.scales_units.set(units,{
+        color: colors[0],
+        axis_n: 1
+    });
+    document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
+        removePlot(data.curveNumber)
+        return false;
     });
     chartData = null;
     transform_x_scale = null;
 }
 
-Chart.prototype.removePlot = function(channel){
-    this.graphs.splice(this.graphs.indexOf(channel), 1);//this.graphs.delete(channel);
-    zingchart.exec(this.name, 'removeplot', {
-        plotid: channel
-    });
-    channel = null;
+Chart.prototype.removePlot = function(id){
+    this.graphs.splice(id, 1);
+    Plotly.deleteTraces(this.name, id);
+    id = null;
 }
 
 Chart.prototype.addPlot = function(channel,data,units){
-    if(!this.scales_units.get(units)){
-        var scale_num = this.scales_units.size+1;
-        var scale_data = {};
-        scale_data["scale-y-"+scale_num] = {
-            label:{
-                "text": units
-            }
+    var scale_data = this.scales_units.get(units);
+    if(!scale_data){
+        var scale_num = this.scales_units.size;
+        scale_data = {
+            color: colors[scale_num],
+            axis_n: scale_num+1
         };
-        this.scales_units.set(units,"scale-x, scale-y-"+scale_num);
-        zingchart.exec(this.name, 'modify', {
-            data: scale_data
-                //this.chartData,
-            //update: false
-        })
+        this.scales_units.set(units,scale_data);
+        this.axis_labels.push(
+            {
+                xref:'paper',
+                yref:'paper',
+                x: scale_num/25,
+                xanchor:'top',
+                y: 1.07,
+                yanchor:'bottom ',
+                text: units,
+                showarrow:false
+            }
+        )
+        Plotly.relayout(
+            this.name,
+            {
+                ["yaxis" + (scale_num+1)]: {
+                    overlaying: "y",
+                    linecolor: colors[scale_num],
+                    anchor: 'free',
+                    side: "left",
+                    position: scale_num/25
+                },
+                xaxis: {domain:[(this.scales_units.size-1)/25,1]},
+                annotations: this.axis_labels
+            }
+        );
         scale_num = null;
-        scale_data = null;
     }
-    zingchart.exec(this.name, 'addplot', {
-        data : {
-            id: channel,
-            values: data,
-            text: channel,
-            scales: this.scales_units.get(units),
-            update: false
-        }
-    });
+    data.mode = 'markers'; //type of plot
+    data.name = channel;
+    data.line = {color: scale_data.color};
+    data.marker = {size:3} //size of markers
+    data.yaxis = "y"+scale_data.axis_n;
+    Plotly.addTraces(this.name, data);
+    scale_data = null;
 }
 
 var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
 
-function removePlot(channel){
+function removePlot(id){
     if(activechart){
-        charts[activechart].removePlot(channel);
+        charts[activechart].removePlot(id);
     }
 }
 
@@ -245,7 +253,7 @@ function addChartBeforeTarget(target){
     chart_max_n++;
     $('<div id="graph' + chart_max_n
     + '" class="resizable"><div id="chart_' + chart_max_n
-    + '" class="zchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
+    + '" class="pchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
     charts["chart_" + chart_max_n] = new Chart("chart_" + chart_max_n);
     return chart_max_n;
 }
@@ -267,7 +275,7 @@ $(document).ready(function(){
         },
         mirrorContainer: document.getElementById('mirror')
     });
-    $("body").on("click",".zchart",function(){
+    $("body").on("click",".pchart",function(){
         setActiveGraph($(this));
     });
     $("body").on("click",".close_chart",closeChart);

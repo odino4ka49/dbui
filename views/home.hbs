@@ -1,11 +1,11 @@
 
 <script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
-<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/timepicker.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dbtree.css" rel="stylesheet">
@@ -15,12 +15,13 @@
 <input id="datetimerange" type="text" name="datetimes" />
 
 
-<div id="dbtree"></div>
+<div id="dbtree">
 <ul id="databases"></ul>
+</div>
 
 <div id="graphset" class="graphset">
     <div id="graph1" class="resizable active">
-        <div id="chart_1" class="zchart"></div>
+        <div id="chart_1" class="pchart"></div>
         <div class="close_chart"></div>
         <div class="handle"></div>
     </div>
@@ -34,7 +35,7 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');
+    var connection = new WebSocket('ws://192.168.163.195:1337');
 
     connection.onopen = function () {
         console.log("connection is opened")
@@ -52,6 +53,7 @@
     };
 
     connection.onmessage = function (message) {
+        document.body.style.cursor='default';
         try {
             var json = JSON.parse(message.data);
             console.log("got message "+json.title)

@@ -1,6 +1,8 @@
 const pg = require('pg')
+var fs = require('fs');
+var dbs = JSON.parse(fs.readFileSync('databases.json', 'utf8'));
 
-var dbs = {
+/*var dbs = {
     "db2": {
         name: "v4_Sep2015-..",
         user: 'vepp4',
@@ -17,7 +19,7 @@ var dbs = {
         host: '192.168.144.4',
         database: 'v4',
         type: 'v4'
-    },*/
+    },
     "db3": {
         name: "v4pickups_Oct2019-..",
         user: "vepp4",
@@ -45,7 +47,7 @@ var dbs = {
         type: 'v4',
         active: false
     }
-}
+}*/
 
 class DBConnection {
     constructor(id){
@@ -66,6 +68,7 @@ class DBConnection {
         })
     }
     sendRequest(request,order,callback){
+        console.log(request,order)
         this.pool.connect()
             .then(client => {
                 this.status = true;
@@ -83,12 +86,21 @@ class DBConnection {
             })
             .catch(err => {
                 this.status = false;
-                if(order){
-                    if(err.code=="EHOSTUNREACH"){
-                        this.status = false;
+                if(order!=null){
+                    switch(err.code){
+                        case "EHOSTUNREACH":
+                            this.status = false;
+                            err.text = "No route to the host";
+                            break;
+                        case "ECONNREFUSED":
+                            err.text = "Connection refused by DB server";
+                            break;
+                        case "ENOTFOUND":
+                            err.text = "The domain you are trying to reach is unavailable or wrong";
+                            break;  
                     }
                     err.dbid = this.id;
-                    //console.log(err);
+                    console.log(err);
                     wsServer.sendError(err,order);
                 }
             })

@@ -30,19 +30,19 @@ function refreshTree(dbid,data) {
         {
             data: parseTree(data),
             levels: 1,
-            multiSelect: true,
+            //multiSelect: true,
             onNodeSelected: function(event, node) {
                 if(node.type=="channel"){
                     loadChannelData(node,dbid);
+                    $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                 }
             },
-            onNodeUnselected: function (event, node) {
+            /*onNodeUnselected: function (event, node) {
                 if(node.type=="channel"){
                     removePlot(node.text);
                 }
-            }
+            }*/
         });
-    document.body.style.cursor='default';
     db_li.addClass("opened");
     db_li = null;
     db_tree = null;
@@ -83,7 +83,7 @@ function loadChannelData(channel,dbid){
             dbid: dbid,
             datetime: getDateTime(),
             chart: activechart,
-            pixels: getActiveGraphPixelSize()-30
+            pixels: getActiveGraphWidth()-30
         };
         document.body.style.cursor='wait';
         sendMessageToServer(JSON.stringify(msg));
@@ -96,7 +96,7 @@ function loadChannelData(channel,dbid){
 function loadDatabaseTree(dbid){
     document.body.style.cursor='wait';
     var msg = {
-        type: "tree_data",
+        type: "tree_data", //type of msg: get tree of this
         database: dbid
     };
     sendMessageToServer(JSON.stringify(msg));
@@ -134,6 +134,7 @@ function showDatabaseTree(event){
             db_li.addClass("opened");
         }
     }
+
     else{
         loadDatabaseTree(dbid);
     }
@@ -146,17 +147,19 @@ function deactivateDatabase(dbid){
     $("#"+dbid).addClass("inactive").removeClass("active");
 }
 
+// connected to refresh db button
 function refreshDatabaseTree(event){
     event.stopPropagation();
     var dbid = $(event.target).parent().attr('id');
-    $(event.target).parent().addClass("active").removeClass("inactive")
+    //makes db name active
+    $(event.target).parent().addClass("active").removeClass("inactive");
+    //tries to load db tree
     loadDatabaseTree(dbid);
     dbid = null;
 }
 
 function alertError(err){
     alert(err.text);
-    document.body.style.cursor='default';
     deactivateDatabase(err.dbid);
 }
 

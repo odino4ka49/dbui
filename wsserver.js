@@ -30,7 +30,7 @@ wsServer.on('request', function (request) {
     connection.on('message', function (msg) {
         if(msg.type=="utf8"){
             var message = JSON.parse(msg.utf8Data);
-            switch(message.type) {
+            switch(message.type) { //depending on the msgtype we decide what to do
                 case 'channel_data':
                     orders.set(order,connection);
                     model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,order);
@@ -63,8 +63,8 @@ wsServer.sendData = function(data,ordernum,end){
 
 wsServer.sendError = function(err,ordernum){
     var connection = orders.get(ordernum);
-    err.text = err.stack;
-    console.log("try to send error to: "+connection.remoteAddress)
+    if (!err.text) err.text = "Error: "+err+". Please let us know about the incident: khudayb@inp.nsk.su";
+    console.log(err)
     connection.sendUTF(JSON.stringify({
         "title": "error",
         "data": err

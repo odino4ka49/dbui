@@ -2,6 +2,7 @@ const dbc = require('./dbconnection')
 const tm = require('./model_classes')
 
 var databases = new Map();
+console.log(dbc.dbs);
 
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
@@ -9,11 +10,18 @@ Date.prototype.addHours = function(h) {
 }
 
 function parseToChartData(channel,data){
-    var result = [];
+    var x = [];
+    var y = [];
     data.forEach(element => {
-        result.push([parseInt(element["t"]),element[channel]]);
+        var date = new Date();
+        date.setTime(element["t"]);
+        //console.log(date.toLocaleString())
+        //result.push([parseInt(element["t"]),element[channel]]);
+        x.push(date),
+        y.push(element[channel])
     });
-    return result;
+    console.log(x[0])
+    return {x: x,y: y};
 }
 
 function parseToOrbitData(channel,data,azimuths){
@@ -76,16 +84,23 @@ function loadAzimuths(db){
 }
 
 function averageData(data,y){
-    //var t = data[data.length/2].t;
-    var result = [{"t": data[0].t},{"t": data[data.length-1].t}]
-    result[0][y] = data.reduce((min, p) => p[y] < min ? p[y] : min, data[0][y]);
-    result[1][y] = data.reduce((max, p) => p[y] > max ? p[y] : max, data[0][y]);
+    if(!data || data.length==0){
+        return [];
+    }
+    var min = data[0];
+    var max = data[0];
+    //console.log(data)
+    for (var i=0;i<data.length;i++){
+        if(min[y]>data[i][y]) min = data[i];
+        if(max[y]<data[i][y]) max = data[i];
+    }
+    if(min[y]==max[y]) min = data[0];
+    var result = min.t>max.t? [max,min] : [min,max]
     return(result)
 }
 
 function filterData(data,pixels,chname){
     var partsize = data.length/pixels;
-    console.log(data.length,pixels,partsize)
     var result = [];
     for (var i=0;i<pixels;i++){
         result = result.concat(averageData(data.slice(i*partsize,(i+1)*partsize-1),chname));
@@ -128,7 +143,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,order){
             return;
         }
     }
-    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,order,datatype,0);
+    loadChannelData(chart,pixels/parts*1.5,db,datatable,channel,subsystem,dates,order,datatype,0);
 }
 
 function loadOrbitData(chart,db,datatable,channel,date,order){
@@ -172,9 +187,15 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
                 console.log("problema")
+                wsServer.sendError(result,order)
             }
             else{
-                var filtered_data = filterData(result,pixels,chan_name);
+                var filtered_data = [];
+                if(result.length==0){
+                    wsServer.sendError({"text":"no data"},order)
+                    return;
+                }
+                filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
                     "name": chan_name,
