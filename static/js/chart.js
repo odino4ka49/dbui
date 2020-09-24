@@ -3,11 +3,11 @@ var chart_max_n = 2;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
 var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
 
-/*const resizeObserver = new ResizeObserver(entries => {
+const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {
       Plotly.Plots.resize(entry.target);
     }
-  });*/
+  });
 
 function setActiveGraph(div){
     activechart = div.attr('id');
