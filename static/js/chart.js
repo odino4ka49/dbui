@@ -182,7 +182,7 @@ Chart.prototype.addPlot = function(channel,data,units){
         Plotly.relayout(
             this.name,
             {
-                ["yaxis" + (scale_num+1)]: {
+                "yaxis" + (scale_num+1): {
                     overlaying: "y",
                     linecolor: colors[scale_num],
                     anchor: 'free',
