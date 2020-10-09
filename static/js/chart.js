@@ -3,11 +3,18 @@ var chart_max_n = 2;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
 var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
 
-/*const resizeObserver = new ResizeObserver(entries => {
-    for (let entry of entries) {
-      Plotly.Plots.resize(entry.target);
-    }
-  });*/
+var resizeObserver;
+try{
+    resizeObserver = new ResizeObserver(entries => {
+        for (var entry of entries) {
+        Plotly.Plots.resize(entry.target);
+        }
+    });
+}
+catch(error){
+    alert("This browser is outdated. Some of the functions are not going to work. We recommend you to use Chrome 64+ or Firefox 69+ versions.");
+}
+
 
 function setActiveGraph(div){
     activechart = div.attr('id');
@@ -161,6 +168,7 @@ Chart.prototype.addPlot = function(channel,data,units){
     var scale_data = this.scales_units.get(units);
     if(!scale_data){
         var scale_num = this.scales_units.size;
+        var yaxisname = Symbol("yaxis" + scale_num+1);
         scale_data = {
             color: colors[scale_num],
             axis_n: scale_num+1
@@ -178,11 +186,10 @@ Chart.prototype.addPlot = function(channel,data,units){
                 showarrow:false
             }
         )
-        console.log("yaxis" + (scale_num+1))
         Plotly.relayout(
             this.name,
             {
-                "yaxis" + (scale_num+1): {
+                yaxisname: {
                     overlaying: "y",
                     linecolor: colors[scale_num],
                     anchor: 'free',

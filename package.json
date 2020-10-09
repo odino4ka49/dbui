@@ -17,7 +17,9 @@
     "tree-model": "^1.0.7",
     "websocket": "^1.0.28"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "resize-observer-polyfill": "^1.5.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
