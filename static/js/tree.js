@@ -1,5 +1,9 @@
 var databases;
 
+function getMode(){
+    return($('input[name="linetype"]:checked').val());
+}
+
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
@@ -69,21 +73,25 @@ function getDatatable(channel,dbid){
     return [data_tbl,hierarchy];
 }
 
+//загрузить данные о канале из базы
 function loadChannelData(channel,dbid){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
+    var time = getDateTime();
     if(!activechart){
         alert("Please choose a canvas to display the data");
         return;
     }
+    setRange(getDateTimeNotFormated());
     if(datatable){
         var msg = {
             type: "channel_data",
             hierarchy: hierarchy,
             datatable: datatable,
             dbid: dbid,
-            datetime: getDateTime(),
+            datetime: time,
             chart: activechart,
-            pixels: getActiveGraphWidth()-30
+            pixels: getActiveGraphWidth()-30,
+            mode: getMode()
         };
         document.body.style.cursor='wait';
         sendMessageToServer(JSON.stringify(msg));

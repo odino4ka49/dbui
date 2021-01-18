@@ -23,3 +23,7 @@ function initPicker() {
 function getDateTime() {
     return datetimerange;
 }
+
+function getDateTimeNotFormated() {
+    return([$('#datetimerange').data('daterangepicker').startDate._d,$('#datetimerange').data('daterangepicker').endDate._d]);
+}

@@ -33,7 +33,7 @@ wsServer.on('request', function (request) {
             switch(message.type) { //depending on the msgtype we decide what to do
                 case 'channel_data':
                     orders.set(order,connection);
-                    model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,order);
+                    model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,message.mode,order);
                     order++;
                     break;
                 case 'tree_data':

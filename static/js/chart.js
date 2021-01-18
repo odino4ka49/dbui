@@ -7,7 +7,7 @@ var resizeObserver;
 try{
     resizeObserver = new ResizeObserver(entries => {
         for (var entry of entries) {
-        Plotly.Plots.resize(entry.target);
+            Plotly.Plots.resize(entry.target);
         }
     });
 }
@@ -46,6 +46,7 @@ function Chart (name) {
         this.scales_units = new Map();
         this.graphs = [];
         this.axis_labels = [];
+        this.range = [];
     }
 
 Chart.prototype.getWidth = function(){
@@ -68,10 +69,10 @@ Chart.prototype.addGraphData = function(json){
         this.graphs.push(json.name);
         if(!this.is_chart_rendered){
             this.type = "timeseries";
-            this.renderChart(json.name,json.data,json.units);
+            this.renderChart(json.name,json.data,json.units,json.mode);
         }
         else{
-            this.addPlot(json.name,json.data,json.units);
+            this.addPlot(json.name,json.data,json.units,json.mode);
         };
     }
     return true;
@@ -84,10 +85,10 @@ Chart.prototype.addOrbitData = function(json){
     this.graphs.push(json.name);
     if(!this.is_chart_rendered){
         this.type = "orbit";
-        this.renderChart(json.name,json.data,json.units);
+        this.renderChart(json.name,json.data,json.units,json.mode);
     }
     else{
-        this.addPlot(json.name,json.data,json.units);
+        this.addPlot(json.name,json.data,json.units,json.mode);
     };
     return true;
 }
@@ -107,9 +108,9 @@ Chart.prototype.extendLine = function(channel,data,units){
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
-Chart.prototype.renderChart = function(channel,data,units){
+Chart.prototype.renderChart = function(channel,data,units,mode){
     this.is_chart_rendered = true;
-    data.mode = 'markers';//'lines';
+    data.mode = mode;//'markers';//
     data.name = channel;
     data.line = { color: colors[0] }
     data.marker = {size:3}
@@ -129,12 +130,19 @@ Chart.prototype.renderChart = function(channel,data,units){
     var config = {responsive: true};
     var layout = {
         legend: {
-            y: 0.5,
+            yanchor:"top",
+            y:1,
+            xanchor:"left",
+            x:0.8,
             traceorder: 'reversed',
-            font: {size: 16}
+            font: {size: 16},
+            bordercolor: "lightgray",
+            borderwidth: 1
         },
+        showlegend: true,
         margin: { l: 20, r: 10, b: 40, t: 40},
         xaxis: {
+            range: this.range,
             domain: [0, 1]
         },
         yaxis: {
@@ -145,7 +153,7 @@ Chart.prototype.renderChart = function(channel,data,units){
     };
     Plotly.react(this.name, chartData, layout, config).then(function(gd) {
         resizeObserver.observe(gd);
-      });;
+      });
     this.scales_units.set(units,{
         color: colors[0],
         axis_n: 1
@@ -164,7 +172,20 @@ Chart.prototype.removePlot = function(id){
     id = null;
 }
 
-Chart.prototype.addPlot = function(channel,data,units){
+Chart.prototype.setRange = function(time){
+    this.range = time;
+    /*if(this.is_chart_rendered){
+        Plotly.relayout(
+            this.name,
+            {
+                xaxis: {range:[time[0],time[1]]}
+            }
+        );
+    }*/
+}
+
+Chart.prototype.addPlot = function(channel,data,units,mode){
+    console.log(data);
     var scale_data = this.scales_units.get(units);
     if(!scale_data){
         var scale_num = this.scales_units.size;
@@ -196,19 +217,20 @@ Chart.prototype.addPlot = function(channel,data,units){
                     side: "left",
                     position: scale_num/25
                 },
-                xaxis: {domain:[(this.scales_units.size-1)/25,1]},
+                xaxis: {range:this.range,domain:[(this.scales_units.size-1)/25,1]},
                 annotations: this.axis_labels
             }
         );
         scale_num = null;
     }
-    data.mode = 'markers'; //type of plot
+    data.mode = mode//'markers'; //type of plot
     data.name = channel;
     data.line = {color: scale_data.color};
     data.marker = {size:3} //size of markers
     data.yaxis = "y"+scale_data.axis_n;
     Plotly.addTraces(this.name, data);
     scale_data = null;
+    console.log(mode);
 }
 
 var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
@@ -216,6 +238,12 @@ var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
 function removePlot(id){
     if(activechart){
         charts[activechart].removePlot(id);
+    }
+}
+
+function setRange(time){
+    if(activechart){
+        charts[activechart].setRange(time);
     }
 }
 

@@ -108,7 +108,7 @@ function filterData(data,pixels,chname){
     return(result);
 }
 
-function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,order){
+function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
@@ -143,10 +143,10 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,order){
             return;
         }
     }
-    loadChannelData(chart,pixels/parts*1.5,db,datatable,channel,subsystem,dates,order,datatype,0);
+    loadChannelData(chart,pixels/parts*1.5,db,datatable,channel,subsystem,dates,order,datatype,mode,0);
 }
 
-function loadOrbitData(chart,db,datatable,channel,date,order){
+function loadOrbitData(chart,db,datatable,channel,date,order,mode){
     console.log("loadOrbitData");
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
@@ -160,7 +160,8 @@ function loadOrbitData(chart,db,datatable,channel,date,order){
                     "name": channel.name,
                     "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
                     "units": "mm",
-                    "chart": chart
+                    "chart": chart,
+                    "mode": mode
                 }
                 wsServer.sendData(channel_data,order,true);
             }
@@ -171,7 +172,7 @@ function loadOrbitData(chart,db,datatable,channel,date,order){
     }
 }
 
-function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,i){
+function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i){
     console.log("loadChannelData part "+i);
     var parts = dates.length-1;
     var req;
@@ -192,7 +193,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
             else{
                 var filtered_data = [];
                 if(result.length==0){
-                    wsServer.sendError({"text":"no data"},order)
+                    wsServer.sendError({"text":"There is no data"},order)
                     return;
                 }
                 filtered_data = filterData(result,pixels,chan_name);
@@ -202,14 +203,15 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                     "data": parseToChartData(chan_name, filtered_data),
                     "units": channel.unit,
                     "index": i,
-                    "chart": chart
+                    "chart": chart,
+                    "mode": mode
                 }
                 if(i==parts-1){
                     wsServer.sendData(channel_data,order,true);
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,i+1)
+                    loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i+1)
                 }
             }
         });
