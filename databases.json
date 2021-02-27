@@ -14,7 +14,8 @@
         "port": 5432,
         "host": "192.168.144.4",
         "database": "v4",
-        "type": "v4"
+        "type": "v4",
+        "active": true
     },
     "db3": {
         "name": "v4pickups_Oct2019-..",

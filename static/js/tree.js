@@ -73,32 +73,41 @@ function getDatatable(channel,dbid){
     return [data_tbl,hierarchy];
 }
 
-//загрузить данные о канале из базы
 function loadChannelData(channel,dbid){
+    loadChannelDataTime(channel,dbid,getDateTime());
+    setRange(getDateTimeNotFormated());
+}
+//загрузить данные о канале из базы
+function loadChannelDataTime(channel,dbid,time){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
-    var time = getDateTime();
     if(!activechart){
         alert("Please choose a canvas to display the data");
         return;
     }
-    setRange(getDateTimeNotFormated());
     if(datatable){
-        var msg = {
-            type: "channel_data",
-            hierarchy: hierarchy,
-            datatable: datatable,
-            dbid: dbid,
-            datetime: time,
-            chart: activechart,
-            pixels: getActiveGraphWidth()-30,
-            mode: getMode()
-        };
-        document.body.style.cursor='wait';
-        sendMessageToServer(JSON.stringify(msg));
-        msg = null;
+        console.log(channel)
+        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid);
+        addChannelToGraph(channel_object);
+        loadChannelDataObject(channel_object,time);
     }
     datatable = null;
     hierarchy = null;
+}
+
+function loadChannelDataObject(channel_object,time){
+    var msg = {
+        type: "channel_data",
+        hierarchy: channel_object.hierarchy,
+        datatable: channel_object.datatable,
+        datetime: time,
+        dbid: channel_object.dbid,
+        chart: activechart,
+        pixels: getActiveGraphWidth()-10,
+        mode: getMode()                                                                      
+    };
+    document.body.style.cursor='wait';
+    sendMessageToServer(JSON.stringify(msg));
+    msg = null;
 }
 
 function loadDatabaseTree(dbid){

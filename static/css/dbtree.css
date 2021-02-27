@@ -40,7 +40,7 @@ div.pchart{
     height: 100%;
 }
 div.active{
-    border: 3px solid lightskyblue;
+    border: 2px solid lightskyblue;
 }
 div.close_chart{
     background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/delete.png");
@@ -56,13 +56,13 @@ div.close_chart{
 }
 div.handle{
     background-image: url("https://png.pngtree.com/svg/20170802/drag_1320614.png");
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    top: 8px;
-    left: 8px;
+    top: 3px;
+    left: 3px;
     position: absolute;
     cursor: grab;
 }

@@ -143,10 +143,10 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             return;
         }
     }
-    loadChannelData(chart,pixels/parts*1.5,db,datatable,channel,subsystem,dates,order,datatype,mode,0);
+    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,order,datatype,mode,0);
 }
 
-function loadOrbitData(chart,db,datatable,channel,date,order,mode){
+function loadOrbitData(chart,db,datatable,channel,date,mode,order){
     console.log("loadOrbitData");
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
@@ -161,7 +161,8 @@ function loadOrbitData(chart,db,datatable,channel,date,order,mode){
                     "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
                     "units": "mm",
                     "chart": chart,
-                    "mode": mode
+                    "mode": mode,
+                    "dbid": db.id
                 }
                 wsServer.sendData(channel_data,order,true);
             }
@@ -173,7 +174,7 @@ function loadOrbitData(chart,db,datatable,channel,date,order,mode){
 }
 
 function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i){
-    console.log("loadChannelData part "+i);
+    //console.log("loadChannelData part "+i);
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
@@ -192,10 +193,9 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
             }
             else{
                 var filtered_data = [];
-                if(result.length==0){
-                    wsServer.sendError({"text":"There is no data"},order)
-                    return;
-                }
+                /*if(result.length==0){
+                    wsServer.sendError({"text":"There is no data on this period"},order)
+                }*/
                 filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
@@ -204,7 +204,8 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                     "units": channel.unit,
                     "index": i,
                     "chart": chart,
-                    "mode": mode
+                    "mode": mode,
+                    "dbid": db.id
                 }
                 if(i==parts-1){
                     wsServer.sendData(channel_data,order,true);
