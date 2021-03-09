@@ -48,6 +48,7 @@ function loadTreeData(dbid,order){
     if(db.type == 'v4'){
         db.sendRequest('SELECT * FROM "01_system"',order,function(result){
             tree.parseSystems(result);
+            console.log(result);
             db.sendRequest('SELECT * FROM "02_group"',order,function(result){
                 tree.parseGroups(result);
                 db.sendRequest('SELECT * FROM "03_chan"',order,function(result){
