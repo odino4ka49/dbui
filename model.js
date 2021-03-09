@@ -228,7 +228,7 @@ function getSensors(magnet_name){
 }
 
 function initDatabases(){
-    for(var i=2;i<6;i++){
+    for(var i=1;i<6;i++){
         var db = new dbc.DBConnection("db"+i);
         databases.set(db.id,db);
         if(db.type=="pickups"){
