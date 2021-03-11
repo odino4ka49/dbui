@@ -48,7 +48,6 @@ function loadTreeData(dbid,order){
     if(db.type == 'v4'){
         db.sendRequest('SELECT * FROM "01_system"',order,function(result){
             tree.parseSystems(result);
-            console.log(result);
             db.sendRequest('SELECT * FROM "02_group"',order,function(result){
                 tree.parseGroups(result);
                 db.sendRequest('SELECT * FROM "03_chan"',order,function(result){
@@ -140,7 +139,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             subsystem = hierarchy.subsystem
         }
         else{
-            loadOrbitData(chart,db,datatable,channel,null,order);
+            loadOrbitData(chart,db,datatable,channel,null,mode,order);
             return;
         }
     }
@@ -148,7 +147,6 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
 }
 
 function loadOrbitData(chart,db,datatable,channel,date,mode,order){
-    console.log("loadOrbitData");
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
