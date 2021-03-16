@@ -64,21 +64,22 @@ class SystemTree {
         }
     }
 
-    parseChannels(data){
+    parseChannels(data,dbtype){
         for(var i=0;i<data.length;i++){
             var ch = data[i];
             //if(!("status" in ch) || ch.status){
-                var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
-                var ss = this.findSS(ch.ss_id);
-                if(ss&&ch.gr_id){
-                    var group = ss.groups.find(o => o.id === ch.gr_id);
-                    if(group){
-                        group.appendChannel(channel);
-                    }
+            var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
+            var ss = this.findSS(ch.ss_id);
+            if(ss&&ch.gr_id){
+                var group = ss.groups.find(o => o.id === ch.gr_id);
+                if(group){
+                    group.appendChannel(channel);
                 }
-                else if(ss){
-                    ss.appendChannel(channel);
-                }
+            }
+            else if(ss){
+                ss.appendChannel(channel);
+                if(ss.type!="subsystem" && dbtype=="pickups") channel.orbit = true
+            }
             //}
         }
         this.checkStatus(this.systems);

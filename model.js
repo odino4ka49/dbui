@@ -2,7 +2,7 @@ const dbc = require('./dbconnection')
 const tm = require('./model_classes')
 
 var databases = new Map();
-console.log(dbc.dbs);
+//console.log(dbc.dbs);
 
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
@@ -20,18 +20,27 @@ function parseToChartData(channel,data){
         x.push(date),
         y.push(element[channel])
     });
-    console.log(x[0])
     return {x: x,y: y};
 }
 
 function parseToOrbitData(channel,data,azimuths){
+    var x = [];
+    var y = [];
+    data[0][channel].forEach((element,i) => {
+        x.push( azimuths[i].azimuth),
+        y.push(element)
+    });
+    return {x: x,y: y};
+}
+
+/*function parseToOrbitData(channel,data,azimuths){
     var values = data[0][channel]
     var result = []
     for(var i=0;i<azimuths.length;i++){
         result.push([azimuths[i].azimuth,values[i]]);
     }
     return result;
-}
+}*/
 
 function checkIfError(result,order){
     if(result.name == 'error'){
@@ -42,7 +51,7 @@ function checkIfError(result,order){
 }
 
 function loadTreeData(dbid,order){
-    console.log("loadTreeData");
+    //console.log("loadTreeData");
     var tree = new tm.SystemTree(dbid);
     var db = databases.get(dbid);
     if(db.type == 'v4'){
@@ -66,7 +75,7 @@ function loadTreeData(dbid,order){
             tree.parseSystems(result);
             tree.setOneDatatable("03_v4pkpmea");
             db.sendRequest('SELECT * FROM "02_chan"',order,function(result){
-                tree.parseChannels(result);
+                tree.parseChannels(result,db.type);
                 wsServer.sendData({
                     "title": "tree_data",
                     "database": dbid,
@@ -134,7 +143,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if(db.type == "pickups"){
+    if(db.type == "pickups"){    
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
         }
@@ -151,7 +160,7 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,order){
     try{
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
-                console.log(result)
+                //console.log(result)
             }
             else{
                 var channel_data = {
@@ -198,7 +207,8 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                 filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
-                    "name": chan_name,
+                    "fullname": chan_name,
+                    "name": channel.name,
                     "data": parseToChartData(chan_name, filtered_data),
                     "units": channel.unit,
                     "index": i,

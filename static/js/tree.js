@@ -85,7 +85,7 @@ function loadChannelDataTime(channel,dbid,time){
         return;
     }
     if(datatable){
-        console.log(channel)
+        console.log("datatable",datatable)
         var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid);
         addChannelToGraph(channel_object);
         loadChannelDataObject(channel_object,time);

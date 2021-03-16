@@ -42,7 +42,13 @@ function getActiveGraphWidth(){
 }
 
 function addChannelToGraph(channel){
-    charts[activechart].addChannel(channel)
+    var chart = charts[activechart];
+    var new_chart_n = chart.name;
+    if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
+        new_chart_n = addChartBeforeTarget($("#"+chart.name).parent());
+        setActiveGraphByName("chart_"+new_chart_n);
+    }
+    charts[activechart].addChannel(channel);
 }
 
 function ChartChannel(name,hierarchy,datatable,dbid){
@@ -82,17 +88,18 @@ Chart.prototype.addGraphData = function(json){
     }
     json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element)=>(element.name==json.name));
-    if(channel){
+    var chan_name = json.name
+    if(channel){ 
         if(channel.displayed){
-            this.extendLine(json.name,json.data,json.units)
+            this.extendLine(chan_name,json.data,json.units,json.fullname)
         }
         else{
             if(!this.is_chart_rendered){
                 this.type = "timeseries";
-                this.renderChart(json.name,json.data,json.units,json.mode);
+                this.renderChart(chan_name,json.data,json.units,json.mode,json.fullname);
             }
             else{
-                this.addPlot(json.name,json.data,json.units,json.mode);
+                this.addPlot(chan_name,json.data,json.units,json.mode,json.fullname);
             };
         }
     }
@@ -103,12 +110,12 @@ Chart.prototype.addOrbitData = function(json){
     if(this.type=="timeseries"){
         return false;
     }
+    this.type = "orbit";
     if(!this.is_chart_rendered){
-        this.type = "orbit";
-        this.renderChart(json.name,json.data,json.units,json.mode);
+        this.renderChart(json.name,json.data,json.units,json.mode,json.fullname);
     }
     else{
-        this.addPlot(json.name,json.data,json.units,json.mode);
+        this.addPlot(json.name,json.data,json.units,json.mode,json.fullname);
     };
     return true;
 }
@@ -129,13 +136,15 @@ Chart.prototype.extendLine = function(channel,data,units){
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
-Chart.prototype.renderChart = function(channel,data,units,mode){
+
+Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
     this.max_id++;
     data.mode = mode;//'markers';//
     data.name = channel;
+    if(fullname) data.name = fullname;
     data.line = { color: colors[0] }
     data.marker = {size:3}
     this.axis_labels = [
@@ -144,7 +153,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode){
             yref:'paper',
             x: -0.02,
             xanchor:'top',
-            y: 1.01,
+            y: 0.91,
             yanchor:'bottom',
             text: units,
             textangle: -45,
@@ -168,17 +177,25 @@ Chart.prototype.renderChart = function(channel,data,units,mode){
         margin: { l: 20, r: 10, b: 40, t: 40},
         xaxis: {
             range: this.range,
-            domain: [0, 1]
+            domain: [0, 1],
+            type: "date"
         },
         yaxis: {
             color: colors[0],
             linecolor: colors[0],
+            domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0
         },
         annotations: this.axis_labels
     };
+    if(this.type=="orbit"){
+        layout.xaxis= {
+            domain: [0, 1]
+        }
+    }
     Plotly.react(this.name, chartData, layout, config).then(function(gd) {
+        console.log(gd)
         resizeObserver.observe(gd);
       });
     this.scales_units.set(units,{
@@ -213,20 +230,43 @@ Chart.prototype.removePlot = function(id){
 
 Chart.prototype.setRange = function(time){
     this.range = time;
+    if(this.is_chart_rendered && this.type!="orbit"){
+        var relayout_data = {
+            xaxis: {
+                range: this.range,
+                domain: [(this.scales_units.size)/25,1],
+                type: "date"
+            }
+        }
+        Plotly.update(this.name,[], relayout_data);
+    }
 }
 
-Chart.prototype.addPlot = function(channel,data,units,mode){
+Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
+    console.log("addplot",channel)
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
     this.max_id++;
+    if(fullname) channel = fullname;
     if(!scale_data){
+        //add new scale
         var scale_num = this.scales_units.size;
         var yaxisname = "yaxis" + (scale_num+1);
         var relayout_data = {
-            xaxis: {range:this.range,domain:[(this.scales_units.size)/25,1]},
+            xaxis: {
+                range: this.range,
+                domain: [(this.scales_units.size)/25,1],
+                autorange: false,
+                type: "date"
+            },
             annotations: this.axis_labels
         };
+        if(this.type=="orbit"){
+            relayout_data.xaxis = {
+                domain: [(this.scales_units.size)/25,1]
+            }
+        }
         relayout_data[yaxisname] = {
             overlaying: "y",
             color: colors[scale_num],
@@ -247,7 +287,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode){
                 yref:'paper',
                 x: scale_num/25-0.02,
                 xanchor:'top',
-                y: 1.01,
+                y: 0.91,
                 yanchor:'bottom',
                 text: units,
                 textangle: -45,
@@ -276,10 +316,10 @@ function removePlot(id){
     }
 }
 
+//sets variable range of the active chart
 function setRange(time){
     if(activechart){
         charts[activechart].setRange(time);
-        console.log("new range",time)
     }
 }
 
@@ -295,7 +335,7 @@ function addGraphData(json){
         }
     }
     else{
-        alert("Please choose a canvas to display the data");
+        //alert("Please choose a canvas to display the data");
         document.body.style.cursor='default';
     }
     json = null;
@@ -331,7 +371,9 @@ function addChartBeforeTarget(target){
 }
 
 function closeChart(e){
-    var name = $(e.target).parent().children(":first").attr("id");
+    var graph = $(e.target).parent().children(":first");
+    var name = graph.attr("id");
+    resizeObserver.unobserve(graph[0]);
     $(e.target).parent().remove();
     delete charts[name];
     if(activechart == name){
