@@ -25,6 +25,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/', (request, response) => {
     response.render('home', {})
 })
+app.get('/orbits', (request, response) => {
+    response.render('orbits', {})
+})
 app.get('/detectors', (request, response) => {
     response.render('detectors', {})
 })

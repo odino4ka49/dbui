@@ -2,9 +2,10 @@ var activechart = 'chart_1';
 var chart_max_n = 2;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
 var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+var tones = [20];
 var mousePosition;
-
 var resizeObserver;
+
 
 try{
     resizeObserver = new ResizeObserver(entries => {
@@ -132,7 +133,7 @@ Chart.prototype.parseToArrayData = function(data){
 Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
     var id = this.channels.find((element)=>(element.name==channel)).id;
-    //console.log(this.name,id)
+    console.log(this.channels,id)
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
@@ -145,7 +146,9 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     data.mode = mode;//'markers';//
     data.name = channel;
     if(fullname) data.name = fullname;
-    data.line = { color: colors[0] }
+    //auto generate line color with the right tone
+    var color = hsvToHex(tones[0], 80, 80)
+    data.line = { color: color }
     data.marker = {size:3}
     this.axis_labels = [
         {
@@ -157,7 +160,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
             yanchor:'bottom',
             text: units,
             textangle: -45,
-            font: {color: colors[0]},
+            font: {color: color},
             showarrow: false
         }
     ];
@@ -181,8 +184,8 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
             type: "date"
         },
         yaxis: {
-            color: colors[0],
-            linecolor: colors[0],
+            color: color,
+            linecolor: color,
             domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0
@@ -199,11 +202,11 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
         resizeObserver.observe(gd);
       });
     this.scales_units.set(units,{
-        color: colors[0],
+        color: color,
         axis_n: 1
     });
     document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
-        removePlot(data.curveNumber)
+        terminatePlot(data.curveNumber)
         return false;
     }).on('plotly_relayout',(eventdata) => {
         this.loadNewDataAfterZoom(eventdata);
@@ -222,6 +225,14 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
     }
 }
 
+//удаляет линию графика с осями и пр.
+Chart.prototype.terminatePlot = function(id){
+    //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
+    console.log(id,Plotly)
+    Plotly.deleteTraces(this.name, id);
+}
+
+//удаляет только линию графика с готовностью к обновлению
 Chart.prototype.removePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
     //console.log(id,this)
@@ -234,7 +245,7 @@ Chart.prototype.setRange = function(time){
         var relayout_data = {
             xaxis: {
                 range: this.range,
-                domain: [(this.scales_units.size)/25,1],
+                domain: [(this.scales_units.size-1)/25,1],
                 type: "date"
             }
         }
@@ -253,10 +264,13 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         //add new scale
         var scale_num = this.scales_units.size;
         var yaxisname = "yaxis" + (scale_num+1);
+        while(scale_num>=tones.length) nextTone();
+        console.log(this.scales_units)
+        var color = hsvToHex(tones[scale_num], 80, 80);
         var relayout_data = {
             xaxis: {
                 range: this.range,
-                domain: [(this.scales_units.size)/25,1],
+                domain: [scale_num/25,1],
                 autorange: false,
                 type: "date"
             },
@@ -264,20 +278,20 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         };
         if(this.type=="orbit"){
             relayout_data.xaxis = {
-                domain: [(this.scales_units.size)/25,1]
+                domain: [scale_num/25,1]
             }
         }
         relayout_data[yaxisname] = {
             overlaying: "y",
-            color: colors[scale_num],
-            linecolor: colors[scale_num],
+            color: color,
+            linecolor: color,
             zerolinecolor: "#ccc",
             anchor: 'free',
             side: "left",
             position: scale_num/25
         };
         scale_data = {
-            color: colors[scale_num],
+            color: color,
             axis_n: scale_num+1
         };
         this.scales_units.set(units,scale_data);
@@ -291,17 +305,20 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
                 yanchor:'bottom',
                 text: units,
                 textangle: -45,
-                font: {color: colors[scale_num]},
+                font: {color: color},
                 showarrow: false
             }
         )
         Plotly.update(this.name,[], relayout_data);
         scale_num = null;
     }
+    else{
+        scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+    }
     data.mode = mode//'markers'; //type of plot
     data.name = channel;
     data.line = {color: scale_data.color};
-    data.marker = {size:3} //size of markers
+    data.marker = {size:3}; //size of markers
     data.yaxis = "y"+scale_data.axis_n;
     Plotly.addTraces(this.name, data);
     chan_data.displayed = true;
@@ -315,6 +332,13 @@ function removePlot(id){
         charts[activechart].removePlot(id);
     }
 }
+
+function terminatePlot(id){
+    if(activechart){
+        charts[activechart].terminatePlot(id);
+    }
+}
+
 
 //sets variable range of the active chart
 function setRange(time){
@@ -388,6 +412,44 @@ function reloadChannels(channels,time){
         removePlot(0);
         loadChannelDataObject(channel,time);
     })
+}
+
+function hslToHex(h, s, l) {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+function hsvToHex(h,s,v){
+    var hsv = {
+        h: h,
+        s: s,
+        v: v
+    };
+    var c = Color( hsv );
+    return c.toString();
+}
+
+function nextTone(){
+    var size = tones.length;
+    if(tones[size-1]+30 >= 360){
+        tones.push(tones[size-1]+40-360);
+    }
+    else{
+        tones.push(tones[size-1]+30);
+    }
+    return tones[size];
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
 }
 
 $(document).ready(function(){

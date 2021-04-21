@@ -26,8 +26,7 @@
     </div>
 </div>
 
-<div id="dbtree">
-<ul id="databases"></ul>
+<div id="date_time_tree">
 </div>
 
 <div id="graphset" class="graphset">
@@ -46,11 +45,15 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.163.195:1337');//ws://192.168.144.71:1337');//
+    var connection = new WebSocket('ws://192.168.144.71:1337');//ws://192.168.163.195:1337');
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
     connection.onopen = function () {
         console.log("connection is opened")
+        sendMessageToServer(JSON.stringify({
+            type: "v3v4chan_orbits_data",
+            datetime: getDateTime()
+        }))
         // connection is opened and ready to use
     };
 

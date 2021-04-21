@@ -7,6 +7,7 @@ var clients = [];
 var order = 0;
 var orders = new Map();
 
+
 var server = http.createServer(function (request, response) {
     // process HTTP request. Since we're writing just WebSockets
     // server we don't have to implement anything.
@@ -39,6 +40,11 @@ wsServer.on('request', function (request) {
                 case 'tree_data':
                     orders.set(order,connection);
                     model.loadTreeData(message.database,order);
+                    order++;
+                    break;
+                case 'v3v4chan_orbits_data':
+                    orders.set(order,connection);
+                    model.loadV3V4ChanOrbitsData(message.datetime,order);
                     order++;
                     break;
             }

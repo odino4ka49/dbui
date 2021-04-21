@@ -10,10 +10,12 @@
     "connect": "^3.7.0",
     "express-handlebars": "^3.0.2",
     "infinite-tree": "^1.16.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.6.0",
     "node-datetime": "^2.1.2",
     "pg": "^7.17.0",
+    "plotly.js": "^1.58.4",
     "popper": "^1.0.1",
+    "react-plotly.js": "^2.5.1",
     "tree-model": "^1.0.7",
     "websocket": "^1.0.28"
   },

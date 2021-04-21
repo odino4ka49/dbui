@@ -43,9 +43,9 @@ div.active{
     border: 2px solid lightskyblue;
 }
 div.close_chart{
-    background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/delete.png");
-    width: 30px;
-    height: 30px;
+    background-image: url("https://static.vecteezy.com/system/resources/previews/000/366/876/original/cancel-vector-icon.jpg");
+    width: 20px;
+    height: 20px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -55,9 +55,9 @@ div.close_chart{
     cursor: pointer;
 }
 div.handle{
-    background-image: url("https://png.pngtree.com/svg/20170802/drag_1320614.png");
-    width: 15px;
-    height: 15px;
+    background-image: url("https://www.pinclipart.com/picdir/big/167-1670656_white-arrow-cliparts-29-buy-clip-art-move.png");
+    width: 20px;
+    height: 20px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -70,9 +70,9 @@ div.handle{
     cursor: move;
 }
 #add_chart{
-    background-image: url("https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/add.png");
-    width: 50px;
-    height: 50px;
+    background-image: url("https://cdn.pixabay.com/photo/2016/12/21/17/11/signe-1923369_1280.png");
+    width: 25px;
+    height: 25px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -131,9 +131,9 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     cursor: default;
 }
 div.refresh {
-    background-image: url('https://cdn4.iconfinder.com/data/icons/meBaze-Freebies/512/reload.png');
-    width: 30px;
-    height: 30px;
+    background-image: url('https://static.thenounproject.com/png/2391171-200.png');
+    width: 20px;
+    height: 20px;
     position: absolute;
     right: 0;
     top: 0;
