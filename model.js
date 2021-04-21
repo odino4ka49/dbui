@@ -53,7 +53,10 @@ function checkIfError(result,order){
 function loadV3V4ChanOrbitsData(datetime,order){
     var db = databases.get("db1");
     db.sendRequest('SELECT extract(epoch from date_time)*1000::integer as t,chan_id,value FROM "14_orb_v3v4chan" where date_time >=\''+datetime[0]+'\' and date_time <= \''+datetime[1]+'\' order by date_time asc;',order,function(result){
-        console.log(result);
+        wsServer.sendData({
+            "title": "v3v4chan_orbits_data",
+            "data": result
+        },order,true);
     })
 
 }
