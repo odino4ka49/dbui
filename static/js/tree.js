@@ -137,6 +137,18 @@ function displayDatabases(data){
     db_ul = null;
 }
 
+function refreshV3V4OrbitTable(data){
+    $('#date_time_table').w2grid({
+        name: 'grid',
+        header: 'Orbits V3V4',
+        columns: [
+            { field: 't', text: 'Date Time', size: '70%' },
+            { field: 'chan_id', text: 'Chan id', size: '30%' }
+        ],
+        records: data
+    });
+}
+
 function showDatabaseTree(event){
     var db_li = $(event.target).parent();
     var dbid = db_li.attr('id');

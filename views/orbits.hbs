@@ -2,6 +2,8 @@
 <script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script type="text/javascript" src="http://w2ui.com/src/w2ui-1.5.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.5.min.css" />
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/timepicker.js"></script>
@@ -26,7 +28,7 @@
     </div>
 </div>
 
-<div id="date_time_tree">
+<div id="date_time_table">
 </div>
 
 <div id="graphset" class="graphset">
@@ -47,6 +49,7 @@
 
     var connection = new WebSocket('ws://192.168.144.71:1337');//ws://192.168.163.195:1337');
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
+
 
     connection.onopen = function () {
         console.log("connection is opened")
@@ -86,7 +89,7 @@
                     refreshTree(json.database,json.data);
                     break;
                 case "v3v4chan_orbits_data":
-                    console.log(json.data);
+                    refreshV3V4OrbitTable(json.data);
                     break;
                 case "error":
                     alertError(json.data);

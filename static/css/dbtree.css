@@ -16,6 +16,10 @@
 #dbtree{
     width: 300px;
 }
+#date_time_table{
+    width: 300px;
+    height: 80%;
+}
 #databases{
     width: 250px;
 }
