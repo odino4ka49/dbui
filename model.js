@@ -286,7 +286,7 @@ initDatabases();
 
 module.exports = {
     loadTreeData: loadTreeData,
-    loadV3V4ChanOrbitsData: loadV3V4ChanOrbitsData,
+    loadV3V4ChanOrbitsStartData: loadV3V4ChanOrbitsStartData,
     getSensors: getSensors,
     getChannelData: getChannelData,
     getDatabasesInfo: getDatabasesInfo
