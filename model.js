@@ -53,7 +53,7 @@ function checkIfError(result,order){
 function loadV3V4ChanOrbitsStartData(datetime,order){
     var db = databases.get("db1");
     console.log("loadv3v4")
-    db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = "orbits v3v4chan"',order,function(result){
+    db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = "orbits_v3v4chan"',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_start_data",
             "data": result
