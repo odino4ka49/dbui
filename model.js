@@ -50,6 +50,19 @@ function checkIfError(result,order){
     return false;
 }
 
+function loadV3V4ChanOrbitsStartData(datetime,order){
+    var db = databases.get("db1");
+    console.log("loadv3v4")
+    db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = "orbits v3v4chan"',order,function(result){
+        wsServer.sendData({
+            "title": "v3v4chan_start_data",
+            "data": result
+        },order,true);
+        loadV3V4ChanOrbitsData(datetime,order);
+    })
+
+}
+
 function loadV3V4ChanOrbitsData(datetime,order){
     var db = databases.get("db1");
     db.sendRequest('SELECT extract(epoch from date_time)*1000::integer as t,chan_id,value FROM "14_orb_v3v4chan" where date_time >=\''+datetime[0]+'\' and date_time <= \''+datetime[1]+'\' order by date_time asc;',order,function(result){

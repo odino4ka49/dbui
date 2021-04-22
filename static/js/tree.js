@@ -1,4 +1,5 @@
 var databases;
+var v3v4channames;
 
 function getMode(){
     return($('input[name="linetype"]:checked').val());
@@ -154,6 +155,11 @@ function refreshV3V4OrbitTable(data){
         ],
         records: dataToW2Data(data)
     });
+}
+
+function setV3V4OrbitsNames(data){
+    v3v4channames = data;
+    console.log(data);
 }
 
 function showDatabaseTree(event){

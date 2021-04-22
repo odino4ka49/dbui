@@ -91,6 +91,9 @@
                 case "v3v4chan_orbits_data":
                     refreshV3V4OrbitTable(json.data);
                     break;
+                case "v3v4chan_start_data":
+                    setV3V4OrbitsNames(json.data);
+                    break;
                 case "error":
                     alertError(json.data);
                     break;
