@@ -139,7 +139,7 @@ function displayDatabases(data){
 
 function dataToW2Data(data){
     for(let i=1;i<=data.length;i++){
-        data[i].recid = i;
+        data[i-1].recid = i;
     }
     return data;
 }
