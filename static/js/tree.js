@@ -137,10 +137,11 @@ function displayDatabases(data){
     db_ul = null;
 }
 
-function datatoW2Data(data){
+function dataToW2Data(data){
     for(let i=1;i<=data.length;i++){
         data[i].recid = i;
     }
+    return data;
 }
 
 function refreshV3V4OrbitTable(data){
