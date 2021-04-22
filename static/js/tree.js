@@ -137,6 +137,12 @@ function displayDatabases(data){
     db_ul = null;
 }
 
+function datatoW2Data(data){
+    for(let i=1;i<=data.length;i++){
+        data[i].recid = i;
+    }
+}
+
 function refreshV3V4OrbitTable(data){
     $('#date_time_table').w2grid({
         name: 'grid',
@@ -145,7 +151,7 @@ function refreshV3V4OrbitTable(data){
             { field: 't', text: 'Date Time', size: '70%' },
             { field: 'chan_id', text: 'Chan id', size: '30%' }
         ],
-        records: data
+        records: dataToW2Data(data)
     });
 }
 
