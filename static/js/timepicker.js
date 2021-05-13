@@ -27,3 +27,7 @@ function getDateTime() {
 function getDateTimeNotFormated() {
     return([$('#datetimerange').data('daterangepicker').startDate._d,$('#datetimerange').data('daterangepicker').endDate._d]);
 }
+
+function getMode(){
+    return($('input[name="linetype"]:checked').val());
+}

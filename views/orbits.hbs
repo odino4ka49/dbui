@@ -4,8 +4,8 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.5.min.js"></script>
 <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.5.min.css" />
-<script src="/static/js/chart.js"></script>
-<script src="/static/js/tree.js"></script>
+<script src="/static/js/v3v4orbitschart.js"></script>
+<script src="/static/js/orbitgrid.js"></script>
 <script src="/static/js/timepicker.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/js/color.js"></script>
@@ -47,7 +47,7 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');//ws://192.168.163.195:1337');
+    var connection = new WebSocket('ws://192.168.163.195:1337');//ws://192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
 
@@ -83,13 +83,16 @@
                     addOrbitData(json);
                     break;
                 case "databases":
-                    displayDatabases(json.data);
+                    //displayDatabases(json.data);
                     break;
                 case "tree_data":
                     refreshTree(json.database,json.data);
                     break;
                 case "v3v4chan_orbits_data":
                     refreshV3V4OrbitTable(json.data);
+                    break;
+                case "v3v4chan_pkppos_data":
+                    setV3V4PkpData(json.data);
                     break;
                 case "v3v4chan_start_data":
                     setV3V4OrbitsNames(json.data);

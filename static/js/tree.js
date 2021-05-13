@@ -1,9 +1,5 @@
 var databases;
-var v3v4channames;
 
-function getMode(){
-    return($('input[name="linetype"]:checked').val());
-}
 
 function parseTree(data){
     data.forEach(function(node){
@@ -138,29 +134,6 @@ function displayDatabases(data){
     db_ul = null;
 }
 
-function dataToW2Data(data){
-    for(let i=1;i<=data.length;i++){
-        data[i-1].recid = i;
-    }
-    return data;
-}
-
-function refreshV3V4OrbitTable(data){
-    $('#date_time_table').w2grid({
-        name: 'grid',
-        header: 'Orbits V3V4',
-        columns: [
-            { field: 't', text: 'Date Time', size: '70%' },
-            { field: 'chan_id', text: 'Chan id', size: '30%' }
-        ],
-        records: dataToW2Data(data)
-    });
-}
-
-function setV3V4OrbitsNames(data){
-    v3v4channames = data;
-    console.log(data);
-}
 
 function showDatabaseTree(event){
     var db_li = $(event.target).parent();

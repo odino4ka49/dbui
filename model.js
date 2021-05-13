@@ -52,20 +52,29 @@ function checkIfError(result,order){
 
 function loadV3V4ChanOrbitsStartData(datetime,order){
     var db = databases.get("db1");
-    console.log("loadv3v4")
-    db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = "orbits_v3v4chan"',order,function(result){
+    /*db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits v3v4chan\'',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_start_data",
             "data": result
-        },order,true);
-        loadV3V4ChanOrbitsData(datetime,order);
-    })
-
+        },order,false);*/
+        loadV3V4ChanPkpPosData(datetime,order);
+    //})
 }
 
-function loadV3V4ChanOrbitsData(datetime,order){
+function loadV3V4ChanPkpPosData(datetime,order){
     var db = databases.get("db1");
-    db.sendRequest('SELECT extract(epoch from date_time)*1000::integer as t,chan_id,value FROM "14_orb_v3v4chan" where date_time >=\''+datetime[0]+'\' and date_time <= \''+datetime[1]+'\' order by date_time asc;',order,function(result){
+    db.sendRequest('select azimuth from "04_pkp_position" join "01_system" on "01_system".sys_id = "04_pkp_position".sys_id where "01_system".system = \'orbits v3v4chan\'',order,function(result){
+        wsServer.sendData({
+            "title": "v3v4chan_pkppos_data",
+            "data": result//result.map(x => x.azimuth)
+        },order,false);
+        loadV3V4ChanDatetimeData(datetime,order);
+    })
+}
+
+function loadV3V4ChanDatetimeData(datetime,order){
+    var db = databases.get("db1");
+    db.sendRequest('SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time asc;',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_orbits_data",
             "data": result
@@ -141,6 +150,7 @@ function filterData(data,pixels,chname){
     return(result);
 }
 
+//we get all channel data for a particular period of time
 function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
