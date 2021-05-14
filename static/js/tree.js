@@ -33,6 +33,10 @@ function refreshTree(dbid,data) {
             levels: 1,
             //multiSelect: true,
             onNodeSelected: function(event, node) {
+                console.log(dbid,node);
+                if(dbid=="db1" && node.name=="orbits v3v4chan"){
+                    window.open(window.location.href+"orbits")
+                }
                 if(node.type=="channel"){
                     loadChannelData(node,dbid);
                     $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);

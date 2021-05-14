@@ -28,8 +28,9 @@
     </div>
 </div>
 
-<div id="date_time_table">
-</div>
+<div id="tabs"></div>
+<div id="v3v4"></div>
+<div id="v4"></div>
 
 <div id="graphset" class="graphset">
     <div id="graph1" class="resizable active">
@@ -47,7 +48,7 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');//ws://192.168.163.195:1337');//
+    var connection = new WebSocket('ws://192.168.163.195:1337');//ws://192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
 
@@ -89,7 +90,7 @@
                     refreshTree(json.database,json.data);
                     break;
                 case "v3v4chan_orbits_data":
-                    refreshV3V4OrbitTable(json.data);
+                    refreshV3V4OrbitTable("v3v4",json.data);
                     break;
                 case "v3v4chan_pkppos_data":
                     setV3V4PkpData(json.data);

@@ -2,20 +2,20 @@ var v3v4channames;
 var v3v4pkps;
 
 function formatDate(d){
-    return d.getFullYear()+"."+d.getMonth().toString().padStart(2, "0")+"."+d.getDate().toString().padStart(2, "0")+" "+d.getHours().toString().padStart(2, "0")+":"+d.getMinutes().toString().padStart(2, "0")+":"+d.getSeconds().toString().padStart(2, "0");
+    return d.getFullYear()+"."+(d.getMonth()+1).toString().padStart(2, "0")+"."+d.getDate().toString().padStart(2, "0")+" "+d.getHours().toString().padStart(2, "0")+":"+d.getMinutes().toString().padStart(2, "0")+":"+d.getSeconds().toString().padStart(2, "0");
 }
 
 function dataToW2Data(data){
     for(let i=1;i<=data.length;i++){
         data[i-1].recid = i;
-        data[i-1].t = formatDate(new Date(data[i-1].t));
+        data[i-1].t = formatDate(new Date(data[i-1].t-25200000));
     }
     return data;
 }
 
-function refreshV3V4OrbitTable(data){
+function refreshV3V4OrbitTable(system,data){
     console.log(data);
-    $('#date_time_table').w2grid({
+    $('#'+system).w2grid({
         name: 'grid',
         header: 'Orbits V3V4',
         columns: [
@@ -50,7 +50,7 @@ function displayOrbit(channel){
     var data = {
         "name": channel_object.name,
         "data": parseToOrbitData(channel_object.name,channel.value,v3v4pkps),
-        "units": "mm",
+        "units": channel.unit,
         "chart": activechart,
         "mode": getMode()
     }
@@ -67,3 +67,29 @@ function parseToOrbitData(channel,data,azimuths){
     });
     return {x: x,y: y};
 }
+
+function openNewTab(event){
+    console.log(event);
+    $('#'+event.target).show();
+    if(event.target=="v3v4"){
+        $("#v4").hide();
+    }
+    else {
+        $("#v3v4").hide();
+    }
+}
+
+
+$(function () {
+    $('#tabs').w2tabs({
+        name: 'tabs',
+        active: 'v3v4',
+        tabs: [
+            { id: 'v3v4', text: 'V3V4Chan' },
+            { id: 'v4', text: 'V4' }
+        ],
+        onClick: function (event) {
+            openNewTab(event)
+        }
+    });
+});

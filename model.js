@@ -74,7 +74,8 @@ function loadV3V4ChanPkpPosData(datetime,order){
 
 function loadV3V4ChanDatetimeData(datetime,order){
     var db = databases.get("db1");
-    db.sendRequest('SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time asc;',order,function(result){
+    console.log(datetime);
+    db.sendRequest('SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time desc;',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_orbits_data",
             "data": result
