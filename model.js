@@ -50,37 +50,52 @@ function checkIfError(result,order){
     return false;
 }
 
-function loadV3V4ChanOrbitsStartData(datetime,order){
+function loadV3V4ChanOrbitsStartData(datetime,system,order){
     var db = databases.get("db1");
-    /*db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits v3v4chan\'',order,function(result){
-        wsServer.sendData({
-            "title": "v3v4chan_start_data",
-            "data": result
-        },order,false);*/
-        loadV3V4ChanPkpPosData(datetime,order);
-    //})
+    if(system=="orbits v4"){
+        db.sendRequest('select "03_chan".id,name,fullname,address from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits v4\'',order,function(result){
+            wsServer.sendData({
+                "title": "v4orbits_start_data",
+                "data": result
+            },order,false);
+            loadV3V4ChanPkpPosData(datetime,system,order);
+        })
+    }
 }
 
-function loadV3V4ChanPkpPosData(datetime,order){
+function loadV3V4ChanPkpPosData(datetime,system,order){
     var db = databases.get("db1");
-    db.sendRequest('select azimuth from "04_pkp_position" join "01_system" on "01_system".sys_id = "04_pkp_position".sys_id where "01_system".system = \'orbits v3v4chan\'',order,function(result){
+    db.sendRequest('select azimuth from "04_pkp_position" join "01_system" on "01_system".sys_id = "04_pkp_position".sys_id where "01_system".system = \''+system+'\'',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_pkppos_data",
             "data": result//result.map(x => x.azimuth)
         },order,false);
-        loadV3V4ChanDatetimeData(datetime,order);
+        loadV3V4ChanDatetimeData(datetime,system,order);
     })
 }
 
-function loadV3V4ChanDatetimeData(datetime,order){
+function loadV3V4ChanDatetimeData(datetime,system,order){
     var db = databases.get("db1");
     console.log(datetime);
-    db.sendRequest('SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time desc;',order,function(result){
-        wsServer.sendData({
-            "title": "v3v4chan_orbits_data",
-            "data": result
-        },order,true);
-    })
+    if(system=="orbits v3v4"){
+        
+        db.sendRequest(
+            'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time desc;',order,function(result){
+                wsServer.sendData({
+                    "title": "v3v4chan_orbits_data",
+                    "data": result
+                },order,true);
+            })
+    }
+    else{
+        db.sendRequest(
+            'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t,* FROM "15_orb_v4" where "15_orb_v4".date_time >=\''+datetime[0]+'\' and "15_orb_v4".date_time <= \''+datetime[1]+'\' order by "15_orb_v4".date_time desc;',order,function(result){
+                wsServer.sendData({
+                    "title": "v4_orbits_data",
+                    "data": result
+                },order,true);
+            })
+    }
 
 }
 

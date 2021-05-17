@@ -34,7 +34,7 @@ function refreshTree(dbid,data) {
             //multiSelect: true,
             onNodeSelected: function(event, node) {
                 console.log(dbid,node);
-                if(dbid=="db1" && node.name=="orbits v3v4chan"){
+                if(dbid=="db1" && (node.name=="orbits v3v4chan"||node.name=="orbits")){
                     window.open(window.location.href+"orbits")
                 }
                 if(node.type=="channel"){

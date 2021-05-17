@@ -1,4 +1,4 @@
-var v3v4channames;
+var v4channames;
 var v3v4pkps;
 
 function formatDate(d){
@@ -13,14 +13,38 @@ function dataToW2Data(data){
     return data;
 }
 
+function parseToTableData(data){
+    var result = [];
+    data.forEach(function(elem){
+        v4channames.forEach(function(v4){
+            result.push({
+                't':elem.t,
+                'name':v4.name,
+                'fullname':v4.fullname,
+                'value':elem[elem.name]
+            })
+        })
+    })
+    console.log(result);
+    return result;
+}
+
 function refreshV3V4OrbitTable(system,data){
     console.log(data);
     $('#'+system).w2grid({
         name: 'grid',
         header: 'Orbits V3V4',
+        show: { 
+            toolbar: true
+        },
+        multiSearch: true,
+        searches: [
+            { field: 't', caption: 'Date Time', type: 'text' },
+            { field: 'name', caption: 'Chan Name', type: 'text' }
+        ],
         columns: [
-            { field: 't', text: 'Date Time', size: '70%' },
-            { field: 'name', text: 'Chan name', size: '30%' }
+            { field: 't', caption: 'Date Time', size: '70%', sortable: true},
+            { field: 'name', caption: 'Chan name', size: '30%', sortable: true }
         ],
         records: dataToW2Data(data),
         onClick: function(event) {
@@ -30,7 +54,7 @@ function refreshV3V4OrbitTable(system,data){
 }
 
 function setV3V4OrbitsNames(data){
-    v3v4channames = data;
+    v4channames = data;
     console.log(data);
 }
 

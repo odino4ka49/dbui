@@ -18,12 +18,12 @@
 <input id="datetimerange" type="text" name="datetimes" />
 <div id="linetype">
     <div>
-        <input type="radio" id="markers" name="linetype" value="markers" checked>
+        <input type="radio" id="markers" name="linetype" value="markers" >
         <label for="markers">Markers</label>
     </div>
 
     <div>
-        <input type="radio" id="line" name="linetype" value="line">
+        <input type="radio" id="line" name="linetype" value="line" checked>
         <label for="line">Line</label>
     </div>
 </div>
@@ -92,11 +92,14 @@
                 case "v3v4chan_orbits_data":
                     refreshV3V4OrbitTable("v3v4",json.data);
                     break;
+                case "v4_orbits_data":
+                    refreshV3V4OrbitTable("v4",parseToTableData(json.data));
+                    break;
                 case "v3v4chan_pkppos_data":
                     setV3V4PkpData(json.data);
                     break;
-                case "v3v4chan_start_data":
-                    setV3V4OrbitsNames(json.data);
+                case "v4orbits_start_data":
+                    setV4OrbitsNames(json.data);
                     break;
                 case "error":
                     alertError(json.data);
