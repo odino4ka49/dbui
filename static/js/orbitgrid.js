@@ -1,5 +1,16 @@
 var v4channames;
 var v3v4pkps;
+var v3v4basicdata = {
+    "v3v4": { 
+        loaded: false,
+        system: "orbits v3v4chan",
+        azimuths: []
+    },
+    "v4": { 
+        loaded: false,
+        system: "orbits v4",
+        azimuths: []}
+    };
 
 function formatDate(d){
     return d.getFullYear()+"."+(d.getMonth()+1).toString().padStart(2, "0")+"."+d.getDate().toString().padStart(2, "0")+" "+d.getHours().toString().padStart(2, "0")+":"+d.getMinutes().toString().padStart(2, "0")+":"+d.getSeconds().toString().padStart(2, "0");
@@ -21,49 +32,63 @@ function parseToTableData(data){
                 't':elem.t,
                 'name':v4.name,
                 'fullname':v4.fullname,
-                'value':elem[elem.name]
+                'value':elem[v4.name]
             })
         })
     })
-    console.log(result);
+    console.log("parsed",result);
     return result;
 }
 
 function refreshV3V4OrbitTable(system,data){
-    console.log(data);
+    if(v3v4basicdata[system].loaded==false){
+        createV3V4OrbitTable(system,data);
+        return;
+    }
+    w2ui[system].clear();
+    w2ui[system].add(dataToW2Data(data));
+}
+
+function createV3V4OrbitTable(system,data){
+    console.log("tabledata",data);
     $('#'+system).w2grid({
-        name: 'grid',
+        name: system,
         header: 'Orbits V3V4',
         show: { 
             toolbar: true
         },
         multiSearch: true,
         searches: [
-            { field: 't', caption: 'Date Time', type: 'text' },
-            { field: 'name', caption: 'Chan Name', type: 'text' }
+            { field: 't', text: 'Date Time', type: 'text' },
+            { field: 'name', text: 'Chan Name', type: 'text' }
         ],
         columns: [
-            { field: 't', caption: 'Date Time', size: '70%', sortable: true},
-            { field: 'name', caption: 'Chan name', size: '30%', sortable: true }
+            { field: 't', text: 'Date Time', size: '70%', sortable: true},
+            { field: 'name', text: 'Chan name', size: '30%', sortable: true }
         ],
         records: dataToW2Data(data),
         onClick: function(event) {
-            displayOrbit(this.get(Number(event.recid)));
+            displayOrbit(system,this.get(Number(event.recid)));
+        },
+        onReload: function(event) {
+            loadSystemTable(system)
         }
     });
+    v3v4basicdata[system].loaded = true;
 }
 
-function setV3V4OrbitsNames(data){
+function setV4OrbitsNames(data){
     v4channames = data;
-    console.log(data);
+    console.log("v4names",data);
 }
 
-function setV3V4PkpData(data){
-    v3v4pkps = data;
-    console.log(data);
+function setV3V4PkpData(system,data){
+    console.log(system,v3v4basicdata);
+    v3v4basicdata[system].azimuths = data;
+    console.log("v3v4pkps",data);
 }
 
-function displayOrbit(channel){
+function displayOrbit(system,channel){
     if(!activechart){
         alert("Please choose a canvas to display the data");
         return;
@@ -73,7 +98,7 @@ function displayOrbit(channel){
     addChannelToGraph(channel_object);
     var data = {
         "name": channel_object.name,
-        "data": parseToOrbitData(channel_object.name,channel.value,v3v4pkps),
+        "data": parseToOrbitData(channel_object.name,channel.value,v3v4basicdata[system].azimuths),
         "units": channel.unit,
         "chart": activechart,
         "mode": getMode()
@@ -93,13 +118,15 @@ function parseToOrbitData(channel,data,azimuths){
 }
 
 function openNewTab(event){
-    console.log(event);
     $('#'+event.target).show();
     if(event.target=="v3v4"){
         $("#v4").hide();
     }
     else {
         $("#v3v4").hide();
+    }
+    if(v3v4basicdata[event.target].loaded==false){
+        loadSystemTable(event.target);
     }
 }
 
@@ -117,3 +144,11 @@ $(function () {
         }
     });
 });
+
+function loadSystemTable(system_id){
+    sendMessageToServer(JSON.stringify({
+        type: "v3v4chan_orbits_data",
+        system: system_id,
+        datetime: getDateTime()
+    }))
+}

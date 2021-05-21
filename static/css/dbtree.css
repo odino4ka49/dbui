@@ -14,14 +14,14 @@
 ::-webkit-resizer { background-color: #666;}
 
 #dbtree{
-    width: 300px;
+    width: 350px;
 }
 #v3v4,#v4{
-    width: 300px;
+    width: 350px;
     height: 80%;
 }
 #tabs{
-    width: 300px;
+    width: 350px;
 }
 #databases{
     width: 250px;
@@ -38,7 +38,7 @@
 
 div.graphset{
     top: 28px;
-    left: 300px;
+    left: 350px;
     width: 78%;
     position: absolute;
 }

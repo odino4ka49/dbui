@@ -54,10 +54,7 @@
 
     connection.onopen = function () {
         console.log("connection is opened")
-        sendMessageToServer(JSON.stringify({
-            type: "v3v4chan_orbits_data",
-            datetime: getDateTime()
-        }))
+        loadSystemTable("v3v4");
         // connection is opened and ready to use
     };
 
@@ -96,7 +93,7 @@
                     refreshV3V4OrbitTable("v4",parseToTableData(json.data));
                     break;
                 case "v3v4chan_pkppos_data":
-                    setV3V4PkpData(json.data);
+                    setV3V4PkpData(json.system,json.data);
                     break;
                 case "v4orbits_start_data":
                     setV4OrbitsNames(json.data);

@@ -44,7 +44,7 @@ wsServer.on('request', function (request) {
                     break;
                 case 'v3v4chan_orbits_data':
                     orders.set(order,connection);
-                    model.loadV3V4ChanOrbitsStartData(message.datetime,order);
+                    model.loadV3V4ChanOrbitsStartData(message.datetime,message.system,order);
                     order++;
                     break;
             }

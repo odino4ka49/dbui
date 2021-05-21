@@ -14,7 +14,7 @@ function parseTree(data){
             delete node.groups;
             parseTree(node.nodes);
         }
-        else if ('channels' in node && node.channels.length!=0){
+        else if ('channels' in node && node.channels.length!=0 && (node.name!="orbits v3v4chan"&&node.name!="orbits v4")){
             node.nodes = node.channels;
             delete node.channels;
             parseTree(node.nodes);
@@ -34,7 +34,7 @@ function refreshTree(dbid,data) {
             //multiSelect: true,
             onNodeSelected: function(event, node) {
                 console.log(dbid,node);
-                if(dbid=="db1" && (node.name=="orbits v3v4chan"||node.name=="orbits")){
+                if(dbid=="db1" && (node.name=="orbits v3v4chan"||node.name=="orbits v4")){
                     window.open(window.location.href+"orbits")
                 }
                 if(node.type=="channel"){
