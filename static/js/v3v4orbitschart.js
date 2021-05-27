@@ -42,8 +42,8 @@ function getActiveGraphWidth(){
     return Math.ceil($("#"+activechart).width());
 }
 
-function addChannelToGraph(channel){
-    var chart = charts[activechart];
+function addChannelToGraph(channel,graph){
+    var chart = charts[graph];
     var new_chart_n = chart.name;
     if(channel.hierarchy!=null){
         if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
@@ -51,7 +51,7 @@ function addChannelToGraph(channel){
             setActiveGraphByName("chart_"+new_chart_n);
         }
     }
-    charts[activechart].addChannel(channel);
+    charts[graph].addChannel(channel);
 }
 
 function ChartChannel(name,hierarchy,datatable,dbid){
@@ -115,10 +115,10 @@ Chart.prototype.addOrbitData = function(json){
     }
     this.type = "orbit";
     if(!this.is_chart_rendered){
-        this.renderChart(json.name,json.data,json.units,json.mode,json.fullname);
+        this.renderChart(json.name,json.data,json.units,json.mode,json.fullname,json.color);
     }
     else{
-        this.addPlot(json.name,json.data,json.units,json.mode,json.fullname);
+        this.addPlot(json.name,json.data,json.units,json.mode,json.fullname,json.color);
     };
     return true;
 }
@@ -135,12 +135,11 @@ Chart.prototype.parseToArrayData = function(data){
 Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
     var id = this.channels.find((element)=>(element.name==channel)).id;
-    console.log(this.channels,id)
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
 
-Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
+Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
@@ -149,7 +148,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     data.name = channel;
     if(fullname) data.name = fullname;
     //auto generate line color with the right tone
-    var color = hsvToHex(tones[0], 80, 80)
+    //var color = hsvToHex(100, 80, 80)
     data.line = { color: color }
     data.marker = {size:3}
     this.axis_labels = [
@@ -162,7 +161,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
             yanchor:'bottom',
             text: units,
             textangle: -45,
-            font: {color: color},
+            //font: {color: color},
             showarrow: false
         }
     ];
@@ -186,8 +185,8 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
             type: "date"
         },
         yaxis: {
-            color: color,
-            linecolor: color,
+            //color: color,
+            //linecolor: color,
             domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0
@@ -200,11 +199,10 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
         }
     }
     Plotly.react(this.name, chartData, layout, config).then(function(gd) {
-        console.log(gd)
         resizeObserver.observe(gd);
       });
     this.scales_units.set(units,{
-        color: color,
+        //color: color,
         axis_n: 1
     });
     document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
@@ -228,7 +226,7 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
 //удаляет линию графика с осями и пр.
 Chart.prototype.terminatePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    console.log(id,Plotly)
+    //console.log(id,Plotly)
     Plotly.deleteTraces(this.name, id);
 }
 
@@ -253,8 +251,7 @@ Chart.prototype.setRange = function(time){
     }
 }
 
-Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
-    console.log("addplot",channel)
+Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
@@ -265,8 +262,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         var scale_num = this.scales_units.size;
         var yaxisname = "yaxis" + (scale_num+1);
         while(scale_num>=tones.length) nextTone();
-        console.log(this.scales_units)
-        var color = hsvToHex(tones[scale_num], 80, 80);
+        //var color = hsvToHex(100, 80, 80);
         var relayout_data = {
             xaxis: {
                 range: this.range,
@@ -283,15 +279,15 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         }
         relayout_data[yaxisname] = {
             overlaying: "y",
-            color: color,
-            linecolor: color,
+            //color: color,
+            //linecolor: color,
             zerolinecolor: "#ccc",
             anchor: 'free',
             side: "left",
             position: scale_num/25
         };
         scale_data = {
-            color: color,
+            //color: color,
             axis_n: scale_num+1
         };
         this.scales_units.set(units,scale_data);
@@ -305,7 +301,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
                 yanchor:'bottom',
                 text: units,
                 textangle: -45,
-                font: {color: color},
+                //font: {color: color},
                 showarrow: false
             }
         )
@@ -325,7 +321,9 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     scale_data = null;
 }
 
-var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
+var charts = {'ei_chart': new Chart('ei_chart'),'ex_chart': new Chart('ex_chart'),
+'ez_chart': new Chart('ez_chart'),'pi_chart': new Chart('pi_chart'),
+'px_chart': new Chart('px_chart'),'pz_chart': new Chart('pz_chart')}
 
 function removePlot(id){
     if(activechart){
@@ -389,7 +387,7 @@ function addChartBeforeTarget(target){
     chart_max_n++;
     $('<div id="graph' + chart_max_n
     + '" class="resizable"><div id="chart_' + chart_max_n
-    + '" class="pchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
+    + '" class="pchart"></div></div>').insertBefore(target).resizable();
     charts["chart_" + chart_max_n] = new Chart("chart_" + chart_max_n);
     return chart_max_n;
 }
@@ -459,9 +457,9 @@ $(document).ready(function(){
         },
         mirrorContainer: document.getElementById('mirror')
     });
-    $("body").on("click",".pchart",function(){
+    /*$("body").on("click",".pchart",function(){
         setActiveGraph($(this));
-    });
+    });*/
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();
     $("#add_chart").click(addChart);

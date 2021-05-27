@@ -33,12 +33,24 @@
 <div id="v4"></div>
 
 <div id="graphset" class="graphset">
-    <div id="graph1" class="resizable active">
-        <div id="chart_1" class="pchart"></div>
-        <div class="close_chart"></div>
-        <div class="handle"></div>
+    <div id="graph1" class="resizable">
+        <div id="ei_chart" class="pchart"></div>
     </div>
-    <div id="add_chart"></div>
+    <div id="graph2" class="resizable">
+        <div id="ex_chart" class="pchart"></div>
+    </div>
+    <div id="graph3" class="resizable">
+        <div id="ez_chart" class="pchart"></div>
+    </div>
+    <div id="graph1" class="resizable">
+        <div id="pi_chart" class="pchart"></div>
+    </div>
+    <div id="graph2" class="resizable">
+        <div id="px_chart" class="pchart"></div>
+    </div>
+    <div id="graph3" class="resizable">
+        <div id="pz_chart" class="pchart"></div>
+    </div>
 </div>
 <div id="mirror"></div>
 
@@ -54,7 +66,10 @@
 
     connection.onopen = function () {
         console.log("connection is opened")
-        loadSystemTable("v3v4");
+        var urlParams = new URLSearchParams(window.location.search); // supported on most modern browsers
+        var system_id = urlParams.get('system');
+        setTabs(system_id);
+        //loadSystemTable(system_id);
         // connection is opened and ready to use
     };
 
@@ -87,10 +102,10 @@
                     refreshTree(json.database,json.data);
                     break;
                 case "v3v4chan_orbits_data":
-                    refreshV3V4OrbitTable("v3v4",json.data);
+                    refreshV3V4OrbitTable("v3v4",parseToTableData("v3v4",json.data));
                     break;
                 case "v4_orbits_data":
-                    refreshV3V4OrbitTable("v4",parseToTableData(json.data));
+                    refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
                     break;
                 case "v3v4chan_pkppos_data":
                     setV3V4PkpData(json.system,json.data);

@@ -1,3 +1,7 @@
+body{
+    background-color: #fafafa;
+}
+
 .daterangepicker .drp-calendar{
     max-width: none;
 }
@@ -95,8 +99,8 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 .resizable{
     margin-top: 10px;
-    height: 300px;
-    border: 1px solid gray;
+    height: 31%;
+    border: 1px solid lightgray;
 }
 
 #test_zingchart {

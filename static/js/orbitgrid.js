@@ -24,8 +24,43 @@ function dataToW2Data(data){
     return data;
 }
 
-function parseToTableData(data){
-    var result = [];
+function parseToTableData(system,data){
+    //only time:
+    if(system=="v4"){
+        data.forEach(function(elem){
+            var values = [];
+            v4channames.forEach(function(v4){
+                values.push({
+                    'name':v4.name,
+                    'fullname':v4.fullname,
+                    'value':elem[v4.name]
+                });
+                delete elem[v4.name];
+            });
+            elem.values = values;
+        })
+        return data;
+    }
+    else if(system=="v3v4"){
+        var result = [];
+        var prev_t = "";
+        var row = {};
+        data.forEach(function(elem){
+            if(Math.floor(elem.t)!=Math.floor(prev_t)){
+                prev_t = elem.t;
+                row = {t:elem.t,values:[]};
+                result.push(row);
+            }
+            row.values.push({
+                'name':elem.name,
+                'fullname':elem.fullname,
+                'value':elem.value
+            });
+        })
+        return result;
+    }
+    //with the names of channels
+    /*var result = [];
     data.forEach(function(elem){
         v4channames.forEach(function(v4){
             result.push({
@@ -36,8 +71,7 @@ function parseToTableData(data){
             })
         })
     })
-    console.log("parsed",result);
-    return result;
+    return result;*/
 }
 
 function refreshV3V4OrbitTable(system,data){
@@ -59,12 +93,12 @@ function createV3V4OrbitTable(system,data){
         },
         multiSearch: true,
         searches: [
-            { field: 't', text: 'Date Time', type: 'text' },
-            { field: 'name', text: 'Chan Name', type: 'text' }
+            { field: 't', text: 'Date Time', type: 'text' }//,
+            //{ field: 'name', text: 'Chan Name', type: 'text' }
         ],
         columns: [
-            { field: 't', text: 'Date Time', size: '70%', sortable: true},
-            { field: 'name', text: 'Chan name', size: '30%', sortable: true }
+            { field: 't', text: 'Date Time', size: '70%', sortable: true}//,
+            //{ field: 'name', text: 'Chan name', size: '30%', sortable: true }
         ],
         records: dataToW2Data(data),
         onClick: function(event) {
@@ -83,27 +117,27 @@ function setV4OrbitsNames(data){
 }
 
 function setV3V4PkpData(system,data){
-    console.log(system,v3v4basicdata);
     v3v4basicdata[system].azimuths = data;
     console.log("v3v4pkps",data);
 }
 
 function displayOrbit(system,channel){
-    if(!activechart){
-        alert("Please choose a canvas to display the data");
-        return;
-    }
-    console.log(channel)
-    var channel_object = new ChartChannel(channel.fullname+" "+channel.t,null,null,null);
-    addChannelToGraph(channel_object);
-    var data = {
-        "name": channel_object.name,
-        "data": parseToOrbitData(channel_object.name,channel.value,v3v4basicdata[system].azimuths),
-        "units": channel.unit,
-        "chart": activechart,
-        "mode": getMode()
-    }
-    addOrbitData(data);
+    console.log("orbit",channel)
+    var color = hsvToHex(100, 80, 80);
+    channel.values.forEach(function(chan){
+        var graph_name = chan.name[0]+chan.name.slice(-1)+"_chart";
+        var channel_object = new ChartChannel(chan.fullname+" "+channel.t,null,null,null);
+        addChannelToGraph(channel_object,graph_name);
+        var data = {
+            "name": channel_object.name,
+            "data": parseToOrbitData(channel_object.name,chan.value,v3v4basicdata[system].azimuths),
+            "units": graph_name[1]=='i' ? "mA" : "mm",
+            "chart": graph_name,
+            "color": color,
+            "mode": getMode()
+        }
+        addOrbitData(data);
+    })
 }
 
 
@@ -130,11 +164,14 @@ function openNewTab(event){
     }
 }
 
+function setActiveTab(system_id){
+    w2ui['tabs'].click(system_id);
+}
 
-$(function () {
+function setTabs(system_id) {
     $('#tabs').w2tabs({
         name: 'tabs',
-        active: 'v3v4',
+        //active: system_id,
         tabs: [
             { id: 'v3v4', text: 'V3V4Chan' },
             { id: 'v4', text: 'V4' }
@@ -143,7 +180,8 @@ $(function () {
             openNewTab(event)
         }
     });
-});
+    w2ui['tabs'].click(system_id);
+}
 
 function loadSystemTable(system_id){
     sendMessageToServer(JSON.stringify({
