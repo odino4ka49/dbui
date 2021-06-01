@@ -27,19 +27,31 @@ function dataToW2Data(data){
 function parseToTableData(system,data){
     //only time:
     if(system=="v4"){
+        var result = [];
         data.forEach(function(elem){
-            var values = [];
+            var objects = [];
+            //var values = [];
+            //elem.type = elem.name.substr(2);
             v4channames.forEach(function(v4){
-                values.push({
+                var object = objects.find(x => x.type === v4.name.substr(0,2))
+                if(!object){
+                    object = {
+                        t:elem.t,
+                        values:[],
+                        type:v4.name.substr(0,2)
+                    }
+                    objects.push(object);
+                }
+                object.values.push({
                     'name':v4.name,
                     'fullname':v4.fullname,
                     'value':elem[v4.name]
                 });
-                delete elem[v4.name];
             });
-            elem.values = values;
+            result.push.apply(result,objects);
+            //elem.values = values;
         })
-        return data;
+        return result;
     }
     else if(system=="v3v4"){
         var result = [];
@@ -48,7 +60,7 @@ function parseToTableData(system,data){
         data.forEach(function(elem){
             if(Math.floor(elem.t)!=Math.floor(prev_t)){
                 prev_t = elem.t;
-                row = {t:elem.t,values:[]};
+                row = {t:elem.t,values:[],type:elem.name[0]};
                 result.push(row);
             }
             row.values.push({
@@ -93,11 +105,13 @@ function createV3V4OrbitTable(system,data){
         },
         multiSearch: true,
         searches: [
-            { field: 't', text: 'Date Time', type: 'text' }//,
+            { field: 't', text: 'Date Time', type: 'text' },
+            { field: 'type', text: 'Polarity', type: 'text' }
             //{ field: 'name', text: 'Chan Name', type: 'text' }
         ],
         columns: [
-            { field: 't', text: 'Date Time', size: '70%', sortable: true}//,
+            { field: 't', text: 'Date Time', size: '70%', sortable: true},
+            { field: 'type', text: 'Polarity',  size: '30%', sortable: true}//,
             //{ field: 'name', text: 'Chan name', size: '30%', sortable: true }
         ],
         records: dataToW2Data(data),
@@ -125,7 +139,7 @@ function displayOrbit(system,channel){
     console.log("orbit",channel)
     var color = hsvToHex(100, 80, 80);
     channel.values.forEach(function(chan){
-        var graph_name = chan.name[0]+chan.name.slice(-1)+"_chart";
+        var graph_name = system+chan.name.slice(-1)+"_chart";
         var channel_object = new ChartChannel(chan.fullname+" "+channel.t,null,null,null);
         addChannelToGraph(channel_object,graph_name);
         var data = {
@@ -153,11 +167,14 @@ function parseToOrbitData(channel,data,azimuths){
 
 function openNewTab(event){
     $('#'+event.target).show();
+    $('#'+event.target+'_graphset').show();
     if(event.target=="v3v4"){
         $("#v4").hide();
+        $("#v4_graphset").hide();
     }
     else {
         $("#v3v4").hide();
+        $("#v3v4_graphset").hide();
     }
     if(v3v4basicdata[event.target].loaded==false){
         loadSystemTable(event.target);

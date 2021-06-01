@@ -321,9 +321,9 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
     scale_data = null;
 }
 
-var charts = {'ei_chart': new Chart('ei_chart'),'ex_chart': new Chart('ex_chart'),
-'ez_chart': new Chart('ez_chart'),'pi_chart': new Chart('pi_chart'),
-'px_chart': new Chart('px_chart'),'pz_chart': new Chart('pz_chart')}
+var charts = {'v3v4i_chart': new Chart('v3v4i_chart'),'v3v4x_chart': new Chart('v3v4x_chart'),
+'v3v4z_chart': new Chart('v3v4z_chart'),'v4i_chart': new Chart('v4i_chart'),
+'v4x_chart': new Chart('v4x_chart'),'v4z_chart': new Chart('v4z_chart')}
 
 function removePlot(id){
     if(activechart){

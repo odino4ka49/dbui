@@ -5,7 +5,7 @@ body{
 .daterangepicker .drp-calendar{
     max-width: none;
 }
-#dbtree,#graphset{
+#dbtree,.graphset{
     height: 100%;
     overflow-y: scroll;
     padding: 20px;
