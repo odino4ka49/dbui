@@ -131,8 +131,13 @@ function setV4OrbitsNames(data){
 }
 
 function setV3V4PkpData(system,data){
-    v3v4basicdata[system].azimuths = data;
-    console.log("v3v4pkps",data);
+    v3v4basicdata[system].azimuths = {azimuths:[],pkps:[]};
+    //v3v4basicdata[system].azimuths = data;
+    data.forEach(function(element){
+        v3v4basicdata[system].azimuths.azimuths.push(element.azimuth);
+        v3v4basicdata[system].azimuths.pkps.push(element.pkp_name);
+    })
+    console.log("v3v4pkps",v3v4basicdata[system].azimuths);
 }
 
 function displayOrbit(system,channel){
@@ -155,14 +160,15 @@ function displayOrbit(system,channel){
 }
 
 
-function parseToOrbitData(channel,data,azimuths){
-    var x = [];
+function parseToOrbitData(channel,data,azimuths,pkps){
+    //var x = [];
+    var x = azimuths.azimuths;
     var y = [];
     data.forEach((element,i) => {
-        x.push(azimuths[i].azimuth),
+        //x.push(azimuths[i].azimuth),
         y.push(element)
     });
-    return {x: x,y: y};
+    return {x: x,y: y,text:azimuths.pkps};
 }
 
 function openNewTab(event){

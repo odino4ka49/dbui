@@ -6,7 +6,6 @@ var tones = [20];
 var mousePosition;
 var resizeObserver;
 
-
 try{
     resizeObserver = new ResizeObserver(entries => {
         for (var entry of entries) {
@@ -20,8 +19,8 @@ catch(error){
 
 function setActiveGraph(div){
     activechart = div.attr('id');
-    $(".graphset").children().removeClass('active');
-    div.parent().addClass('active');
+    //$(".graphset").children().removeClass('active');
+    //div.parent().addClass('active');
 }
 
 function setActiveGraphByName(name){
@@ -182,7 +181,8 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
         xaxis: {
             range: this.range,
             domain: [0, 1],
-            type: "date"
+            type: "date",
+            //tickvals: 
         },
         yaxis: {
             //color: color,
@@ -457,9 +457,9 @@ $(document).ready(function(){
         },
         mirrorContainer: document.getElementById('mirror')
     });
-    /*$("body").on("click",".pchart",function(){
+    $("body").on("click",".pchart",function(){
         setActiveGraph($(this));
-    });*/
+    });
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();
     $("#add_chart").click(addChart);
