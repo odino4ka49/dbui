@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dbtree.css" rel="stylesheet">
 <link href="/static/css/dragula.css" rel="stylesheet">
+<script src='/static/js/jquery.tooltip.js'></script>
 <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
 <input id="datetimerange" type="text" name="datetimes" />
@@ -29,6 +30,7 @@
 <div id="dbtree">
 <ul id="databases"></ul>
 </div>
+<div id="tooltip"></div>
 
 <div id="graphset" class="graphset">
     <div id="graph1" class="resizable active">
@@ -46,7 +48,7 @@
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');//ws://192.168.163.195:1337');//
+    var connection = new WebSocket('ws://localhost:1337');//ws://192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
     connection.onopen = function () {

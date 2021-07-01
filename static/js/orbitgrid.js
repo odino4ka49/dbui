@@ -1,5 +1,4 @@
 var v4channames;
-var v3v4pkps;
 var v3v4basicdata = {
     "v3v4": { 
         loaded: false,
@@ -16,6 +15,7 @@ function formatDate(d){
     return d.getFullYear()+"."+(d.getMonth()+1).toString().padStart(2, "0")+"."+d.getDate().toString().padStart(2, "0")+" "+d.getHours().toString().padStart(2, "0")+":"+d.getMinutes().toString().padStart(2, "0")+":"+d.getSeconds().toString().padStart(2, "0");
 }
 
+//приведение данных к надлежащему виду для библиотеки
 function dataToW2Data(data){
     for(let i=1;i<=data.length;i++){
         data[i-1].recid = i;
@@ -24,6 +24,7 @@ function dataToW2Data(data){
     return data;
 }
 
+//приведение данных к надлежащему виду для таблицы
 function parseToTableData(system,data){
     //only time:
     if(system=="v4"){
@@ -86,6 +87,7 @@ function parseToTableData(system,data){
     return result;*/
 }
 
+//обновление таблицы
 function refreshV3V4OrbitTable(system,data){
     if(v3v4basicdata[system].loaded==false){
         createV3V4OrbitTable(system,data);
@@ -95,6 +97,7 @@ function refreshV3V4OrbitTable(system,data){
     w2ui[system].add(dataToW2Data(data));
 }
 
+//создание таблицы
 function createV3V4OrbitTable(system,data){
     console.log("tabledata",data);
     $('#'+system).w2grid({
@@ -140,6 +143,7 @@ function setV3V4PkpData(system,data){
     console.log("v3v4pkps",v3v4basicdata[system].azimuths);
 }
 
+//отрисовка орбит на графиках
 function displayOrbit(system,channel){
     console.log("orbit",channel)
     var color = hsvToHex(100, 80, 80);
@@ -171,6 +175,7 @@ function parseToOrbitData(channel,data,azimuths,pkps){
     return {x: x,y: y,text:azimuths.pkps};
 }
 
+//переключение между системами
 function openNewTab(event){
     $('#'+event.target).show();
     $('#'+event.target+'_graphset').show();
@@ -191,6 +196,7 @@ function setActiveTab(system_id){
     w2ui['tabs'].click(system_id);
 }
 
+//создание табов для систем
 function setTabs(system_id) {
     $('#tabs').w2tabs({
         name: 'tabs',

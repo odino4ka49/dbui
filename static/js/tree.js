@@ -1,6 +1,6 @@
 var databases;
 
-
+//приведение данных к виду для отрисовки
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
@@ -23,6 +23,7 @@ function parseTree(data){
     return data;
 };
 
+//обновить дерево БД
 function refreshTree(dbid,data) {
     var db_li = $("#"+dbid);
     db_li.children("ul").remove();
@@ -58,6 +59,7 @@ function refreshTree(dbid,data) {
     db_tree = null;
 };
 
+//метаданные о канале
 function getDatatable(channel,dbid){
     var db_tree = $("#"+dbid+"_tree");
     var data_tbl;
@@ -79,11 +81,12 @@ function getDatatable(channel,dbid){
     return [data_tbl,hierarchy];
 }
 
+//загрузить данные о выбранном канале
 function loadChannelData(channel,dbid){
     loadChannelDataTime(channel,dbid,getDateTime());
     setRange(getDateTimeNotFormated());
 }
-//загрузить данные о канале из базы
+//загрузить данные о канале из базы с учетом времени
 function loadChannelDataTime(channel,dbid,time){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
     if(!activechart){
@@ -100,6 +103,7 @@ function loadChannelDataTime(channel,dbid,time){
     hierarchy = null;
 }
 
+//посылает запрос на данные о канале с помощью объекта канал
 function loadChannelDataObject(channel_object,time){
     var msg = {
         type: "channel_data",
@@ -116,6 +120,7 @@ function loadChannelDataObject(channel_object,time){
     msg = null;
 }
 
+//посылает запрос на данные о БД
 function loadDatabaseTree(dbid){
     document.body.style.cursor='wait';
     var msg = {
@@ -126,11 +131,12 @@ function loadDatabaseTree(dbid){
     msg = null;
 }
 
+//отрисовка дерева БД
 function displayDatabases(data){
     databases = data;
     var db_ul = $("#databases");
     data.forEach(function(db){
-        var db_li = $('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div class='refresh'>").delegate('div','click',refreshDatabaseTree).appendTo(db_ul);
+        var db_li = $('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div title='Refresh DB tree' class='refresh'>").delegate('div','click',refreshDatabaseTree).appendTo(db_ul);
         if(!db.status){
             db_li.addClass("inactive");
         }
@@ -138,12 +144,18 @@ function displayDatabases(data){
             db_li.addClass("active");
         }
     });
+    refreshTooltips();
     db_ul.children("li").not('.inactive').children("p").click(showDatabaseTree);
     data = null;
     db_ul = null;
 }
 
+//подсказка
+function refreshTooltips(){
+    $('.refresh').tooltip({align: 'right'});
+}
 
+//открывает деревовыбранной БД
 function showDatabaseTree(event){
     var db_li = $(event.target).parent();
     var dbid = db_li.attr('id');
@@ -167,6 +179,7 @@ function showDatabaseTree(event){
     db_tree = null;
 }
 
+//показывает, что БД неактивна
 function deactivateDatabase(dbid){
     $("#"+dbid).addClass("inactive").removeClass("active");
 }
@@ -187,3 +200,4 @@ function alertError(err){
     deactivateDatabase(err.dbid);
 }
 
+  

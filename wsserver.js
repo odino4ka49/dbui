@@ -1,10 +1,13 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-const model = require("./model");
+const model = require("./dbqueue");
 var dbconnection = require("./dbconnection")
 
+//список клиентов
 var clients = [];
+//счетчик запросов от клиентов
 var order = 0;
+//список запросов от клиентов
 var orders = new Map();
 
 
@@ -31,7 +34,8 @@ wsServer.on('request', function (request) {
     connection.on('message', function (msg) {
         if(msg.type=="utf8"){
             var message = JSON.parse(msg.utf8Data);
-            switch(message.type) { //depending on the msgtype we decide what to do
+            switch(message.type) { 
+                //depending on the msgtype we decide what to do
                 case 'channel_data':
                     orders.set(order,connection);
                     model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,message.mode,order);

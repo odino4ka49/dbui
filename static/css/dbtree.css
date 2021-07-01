@@ -1,3 +1,4 @@
+
 body{
     background-color: #fafafa;
 }
@@ -34,12 +35,6 @@ body{
     width: 280px;
     margin: 5px 0px;
 }
-#db-select{
-    right: 40px;
-    position: absolute;
-    top: 8px;
-}
-
 div.graphset{
     top: 28px;
     left: 350px;
@@ -154,3 +149,66 @@ div.refresh {
     cursor: pointer;
 }
 
+
+ul {
+    padding: 0;
+    list-style: none
+    }
+    .item {
+    margin-bottom: 40px
+    }
+    .item a {
+    display: inline-block;
+    margin: 1px 0;
+    padding: 3px 6px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    background-color: #222;
+    border-radius: 3px
+    }
+    .item a:hover {
+    background-color: #0ae
+    }
+    .item li a {
+    width: 60px
+    }
+    .item pre {
+    margin-top: 6px
+    }
+    .item code {
+    padding: 3px 6px;
+    background: #fafafa;
+    border: 1px solid #eee
+    }
+    input, select {
+    display: block
+    }
+    /* Tooltip -Styles */
+    .tooltip {
+    padding: 5px;
+    font-size: 11px;
+    opacity: 0.85;
+    filter: alpha(opacity=85);
+    background-repeat: no-repeat;
+    background-image: url(tooltip.gif);
+    }
+    .tooltip-inner {
+    padding: 5px 10px;
+    max-width: 200px;
+    pointer-events: none;
+    color: white;
+    text-align: center;
+    background-color: black;
+    border-radius: 3px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
+    }
+    .tooltip-bottom {
+    background-position: top center;
+    }
+    .tooltip-top {
+    background-position: bottom center;
+    }
+    .tooltip-left {
+    background-position: right center;
+    }

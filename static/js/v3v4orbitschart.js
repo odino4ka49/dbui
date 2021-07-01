@@ -165,7 +165,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
         }
     ];
     var chartData = [data];
-    var config = {responsive: true};
+    var config = {responsive: true,doubleClickDelay: 2000};
     var layout = {
         legend: {
             yanchor: "top",

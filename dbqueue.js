@@ -1,5 +1,5 @@
 const dbc = require('./dbconnection')
-const tm = require('./model_classes')
+const tm = require('./dbstructure')
 
 var databases = new Map();
 //console.log(dbc.dbs);
@@ -15,7 +15,6 @@ function parseToChartData(channel,data){
     data.forEach(element => {
         var date = new Date();
         date.setTime(element["t"]);
-        //console.log(date.toLocaleString())
         //result.push([parseInt(element["t"]),element[channel]]);
         x.push(date),
         y.push(element[channel])
@@ -50,6 +49,7 @@ function checkIfError(result,order){
     return false;
 }
 
+//загрузка начальных данных для списка орбит v3v4chan или v4
 function loadV3V4ChanOrbitsStartData(datetime,system,order){
     var db = databases.get("db1");
     if(system=="v4"){
@@ -66,6 +66,7 @@ function loadV3V4ChanOrbitsStartData(datetime,system,order){
     }
 }
 
+//загрузка азимутов для орбит v3v4chan или v4
 function loadV3V4ChanPkpPosData(datetime,system,order){
     var db = databases.get("db1");
     var systemname = (system=="v3v4") ? "orbits v3v4chan" : "orbits v4" 
@@ -79,6 +80,7 @@ function loadV3V4ChanPkpPosData(datetime,system,order){
     })
 }
 
+//загрузка табличных данных (время и имя канала) для орбит v3v4chan или v4
 function loadV3V4ChanDatetimeData(datetime,system,order){
     var db = databases.get("db1");
     if(system=="v3v4"){
@@ -103,6 +105,7 @@ function loadV3V4ChanDatetimeData(datetime,system,order){
 
 }
 
+//загрузка и парсинг данных о дереве БД
 function loadTreeData(dbid,order){
     //console.log("loadTreeData");
     var tree = new tm.SystemTree(dbid);
@@ -145,6 +148,7 @@ function loadAzimuths(db){
     });
 }
 
+//усреднение данных
 function averageData(data,y){
     if(!data || data.length==0){
         return [];
@@ -161,6 +165,7 @@ function averageData(data,y){
     return(result)
 }
 
+//фильтр данных - по точке на пиксель
 function filterData(data,pixels,chname){
     var partsize = data.length/pixels;
     var result = [];
@@ -209,6 +214,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
     loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,order,datatype,mode,0);
 }
 
+//we get all orbit data for a particular period of time
 function loadOrbitData(chart,db,datatable,channel,date,mode,order){
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
@@ -235,6 +241,7 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,order){
     }
 }
 
+//загрузка данных с канала определенного перидоа на определенное число пикселей
 function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i){
     //console.log("loadChannelData part "+i);
     var parts = dates.length-1;

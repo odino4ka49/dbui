@@ -64,7 +64,7 @@
     document.title = "DBUI: Orbits"
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.144.71:1337');//192.168.163.195:1337');//
+    var connection = new WebSocket('ws://192.168.163.195:1337');//192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
 
@@ -93,15 +93,6 @@
             var json = JSON.parse(message.data);
             //console.log("got message "+json.title)
             switch (json.title) {
-                case "channel_data":
-                    addGraphData(json);
-                    break;
-                case "orbit_data":
-                    addOrbitData(json);
-                    break;
-                case "databases":
-                    //displayDatabases(json.data);
-                    break;
                 case "tree_data":
                     refreshTree(json.database,json.data);
                     break;

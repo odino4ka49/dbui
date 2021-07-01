@@ -5,6 +5,7 @@ class SystemTree {
         this.subsystems = [];
     }
 
+    //найти подсистему
     findSS(ss_id){
         var res = this.systems.find(o => o.ss_id === ss_id);
         if(res){
@@ -17,6 +18,7 @@ class SystemTree {
         return null;
     }
 
+    //список систем в объекты
     parseSystems(data) {
         var sys_ids = [];
         var sys, subsys;
@@ -51,6 +53,7 @@ class SystemTree {
         }
     }
 
+    //список групп в объекты
     parseGroups(data){
         for(var i=0;i<data.length;i++){
             var gr = data[i];
@@ -64,6 +67,7 @@ class SystemTree {
         }
     }
 
+    //список каналов в объекты
     parseChannels(data,dbtype){
         for(var i=0;i<data.length;i++){
             var ch = data[i];

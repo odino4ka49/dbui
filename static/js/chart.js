@@ -1,12 +1,14 @@
+//полотно, которое выделено сейчас
 var activechart = 'chart_1';
+//последний индекс полотна
 var chart_max_n = 2;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
-var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+//var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+//тоны для генерации цветов графиков
 var tones = [20];
-var mousePosition;
 var resizeObserver;
 
-
+//проверка на возраст браузера
 try{
     resizeObserver = new ResizeObserver(entries => {
         for (var entry of entries) {
@@ -38,10 +40,12 @@ function parseDates(dates){
     return result;
 }
 
+//возвращает ширину полотна в пикселях
 function getActiveGraphWidth(){
     return Math.ceil($("#"+activechart).width());
 }
 
+//добавляет данные о канале к объекту Chart
 function addChannelToGraph(channel){
     var chart = charts[activechart];
     var new_chart_n = chart.name;
@@ -52,6 +56,7 @@ function addChannelToGraph(channel){
     charts[activechart].addChannel(channel);
 }
 
+//класс каналов для добавления в объект Chart
 function ChartChannel(name,hierarchy,datatable,dbid){
     this.name = name;
     this.hierarchy = hierarchy;
@@ -61,6 +66,7 @@ function ChartChannel(name,hierarchy,datatable,dbid){
     this.displayed = false;
 }
 
+//класс полотна с графиками
 function Chart (name) {
         this.name = name;
         this.is_chart_rendered = false;
@@ -83,6 +89,7 @@ Chart.prototype.getHeight = function(){
     return Math.ceil($("#"+this.name).parent().height());
 }
 
+//добавляет график 
 Chart.prototype.addGraphData = function(json){
     if(this.type=="orbit"){
         return false;
@@ -107,6 +114,7 @@ Chart.prototype.addGraphData = function(json){
     return true;
 }
 
+//добавляет график орбиты
 Chart.prototype.addOrbitData = function(json){
     if(this.type=="timeseries"){
         return false;
@@ -121,6 +129,7 @@ Chart.prototype.addOrbitData = function(json){
     return true;
 }
 
+//готовит данные для вывода в виде графика
 Chart.prototype.parseToArrayData = function(data){
     var result = []
     data.forEach(element => {
@@ -130,6 +139,7 @@ Chart.prototype.parseToArrayData = function(data){
     return result;
 }
 
+//дорисовывает график
 Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
     var id = this.channels.find((element)=>(element.name==channel)).id;
@@ -137,7 +147,7 @@ Chart.prototype.extendLine = function(channel,data,units){
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
-
+//отрисовывает полотно с первым графиком
 Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
@@ -165,7 +175,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
         }
     ];
     var chartData = [data];
-    var config = {responsive: true};
+    var config = {responsive: true,doubleClickDelay: 2000};
     var layout = {
         legend: {
             yanchor: "top",
@@ -216,6 +226,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     transform_x_scale = null;
 }
 
+//подгрузка новых данных в соответствии с зумом
 Chart.prototype.loadNewDataAfterZoom = function(eventdata){
     //console.log('zoom',this,eventdata);
     if('xaxis.range[0]' in eventdata){
@@ -225,20 +236,20 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
     }
 }
 
-//удаляет линию графика с осями и пр.
+//удаляет линию графика с осями и пр. (не сделано)
 Chart.prototype.terminatePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
     console.log(id,Plotly)
     Plotly.deleteTraces(this.name, id);
 }
 
-//удаляет только линию графика с готовностью к обновлению
+//удаляет только линию графика
 Chart.prototype.removePlot = function(id){
-    //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
     //console.log(id,this)
     Plotly.deleteTraces(this.name, id);
 }
 
+//устанавливает границы оси х
 Chart.prototype.setRange = function(time){
     this.range = time;
     if(this.is_chart_rendered && this.type!="orbit"){
@@ -253,6 +264,7 @@ Chart.prototype.setRange = function(time){
     }
 }
 
+//отрисовывает новый график на полотне
 Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     console.log("addplot",channel)
     var scale_data = this.scales_units.get(units);
@@ -325,6 +337,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     scale_data = null;
 }
 
+//начальные графики
 var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
 
 function removePlot(id){
@@ -347,6 +360,7 @@ function setRange(time){
     }
 }
 
+//добавляет график
 function addGraphData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addGraphData(json)){
@@ -365,6 +379,7 @@ function addGraphData(json){
     json = null;
 }
 
+//добавляет график орбиты
 function addOrbitData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addOrbitData(json)){
@@ -381,6 +396,7 @@ function addOrbitData(json){
     json = null;
 }
 
+//добавление полотна
 function addChart(e){
     addChartBeforeTarget(e.target);
 }
@@ -394,6 +410,7 @@ function addChartBeforeTarget(target){
     return chart_max_n;
 }
 
+//удаление полотна
 function closeChart(e){
     var graph = $(e.target).parent().children(":first");
     var name = graph.attr("id");
@@ -406,6 +423,7 @@ function closeChart(e){
     name = null;
 }
 
+//перезагрузка каждого графика
 function reloadChannels(channels,time){
     channels.forEach(function(channel){    
         channel.displayed = false;
@@ -414,6 +432,7 @@ function reloadChannels(channels,time){
     })
 }
 
+//работа с кодом цвета
 function hslToHex(h, s, l) {
     l /= 100;
     const a = s * Math.min(l, 1 - l) / 100;
@@ -424,7 +443,7 @@ function hslToHex(h, s, l) {
     };
     return `#${f(0)}${f(8)}${f(4)}`;
   }
-
+//работа с кодом цвета
 function hsvToHex(h,s,v){
     var hsv = {
         h: h,
@@ -434,7 +453,7 @@ function hsvToHex(h,s,v){
     var c = Color( hsv );
     return c.toString();
 }
-
+//выбор следующего тона
 function nextTone(){
     var size = tones.length;
     if(tones[size-1]+30 >= 360){
