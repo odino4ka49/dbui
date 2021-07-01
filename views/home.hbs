@@ -47,8 +47,7 @@
 <script>
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
-
-    var connection = new WebSocket('ws://localhost:1337');//ws://192.168.144.71:1337');//
+    var connection = new WebSocket('ws://'+window.location.hostname+':1337');//ws://192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
     connection.onopen = function () {

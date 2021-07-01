@@ -70,7 +70,7 @@
 
     connection.onopen = function () {
         console.log("connection is opened")
-        var urlParams = new URLSearchParams(window.location.search); // supported on most modern browsers
+        var urlParams = new URLSearchParams(.search); // supported on most modern browsers
         var system_id = urlParams.get('system');
         setTabs(system_id);
         //loadSystemTable(system_id);

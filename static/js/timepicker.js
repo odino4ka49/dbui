@@ -28,6 +28,7 @@ function getDateTimeNotFormated() {
     return([$('#datetimerange').data('daterangepicker').startDate._d,$('#datetimerange').data('daterangepicker').endDate._d]);
 }
 
+//линиями или точками
 function getMode(){
     return($('input[name="linetype"]:checked').val());
 }
