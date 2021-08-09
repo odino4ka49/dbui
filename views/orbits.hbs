@@ -5,8 +5,8 @@
 <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.5.min.js"></script>
 <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.5.min.css" />
 <script src="/static/js/v3v4orbitschart.js"></script>
-<script src="/static/js/orbitgrid.js"></script>
 <script src="/static/js/timepicker.js"></script>
+<script src="/static/js/orbitgrid.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/js/color.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
@@ -15,7 +15,8 @@
 <link href="/static/css/dragula.css" rel="stylesheet">
 <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
-<input id="datetimerange" type="text" name="datetimes" />
+<input id="v3v4dtr" type="text" name="datetimes" />
+<input id="v4dtr" type="text" name="datetimes" />
 <div id="linetype">
     <div>
         <input type="radio" id="markers" name="linetype" value="markers" >
@@ -64,16 +65,18 @@
     document.title = "DBUI: Orbits"
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://192.168.163.195:1337');//192.168.144.71:1337');//
+    var connection = new WebSocket('ws://'+window.location.hostname+':1337');//192.168.144.71:1337');//
 // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
 
     connection.onopen = function () {
         console.log("connection is opened")
-        var urlParams = new URLSearchParams(.search); // supported on most modern browsers
+        var urlParams = new URLSearchParams(window.location.search); // supported on most modern browsers
         var system_id = urlParams.get('system');
+        if (system_id==null) system_id = "v3v4";
         setTabs(system_id);
-        //loadSystemTable(system_id);
+        //loadOrbitsLastTime(system_id);
+        loadStartSystemTable(system_id);
         // connection is opened and ready to use
     };
 
@@ -97,10 +100,19 @@
                     refreshTree(json.database,json.data);
                     break;
                 case "v3v4chan_orbits_data":
+                    if(json.last){
+                        initV3V4Time("v3v4",json.data[0].t)
+                    }
                     refreshV3V4OrbitTable("v3v4",parseToTableData("v3v4",json.data));
                     break;
                 case "v4_orbits_data":
+                    if(json.last){
+                        initV3V4Time("v4",json.data[0].t);
+                    }
                     refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
+                    break;
+                case "v3v4_firstrecord":
+                    setFirstRecTime(json.system,json.data);
                     break;
                 case "v3v4chan_pkppos_data":
                     setV3V4PkpData(json.system,json.data);
@@ -123,6 +135,6 @@
         connection.send(message);
     }
 
-    initPicker();
+    //initPicker();
 
 </script>

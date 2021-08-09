@@ -34,7 +34,7 @@ function refreshTree(dbid,data) {
             levels: 1,
             //multiSelect: true,
             onNodeSelected: function(event, node) {
-                console.log(dbid,node);
+                //console.log(dbid,node);
                 if(dbid=="db1"){
                     if(node.name=="orbits v3v4chan"){
                         window.open(window.location.href+"orbits?system=v3v4")
@@ -83,8 +83,8 @@ function getDatatable(channel,dbid){
 
 //загрузить данные о выбранном канале
 function loadChannelData(channel,dbid){
-    loadChannelDataTime(channel,dbid,getDateTime());
-    setRange(getDateTimeNotFormated());
+    loadChannelDataTime(channel,dbid,timepicker.getDateTime());
+    setRange(timepicker.getDateTimeNotFormated());
 }
 //загрузить данные о канале из базы с учетом времени
 function loadChannelDataTime(channel,dbid,time){
@@ -94,7 +94,7 @@ function loadChannelDataTime(channel,dbid,time){
         return;
     }
     if(datatable){
-        console.log("datatable",datatable)
+        //console.log("datatable",datatable)
         var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid);
         addChannelToGraph(channel_object);
         loadChannelDataObject(channel_object,time);
@@ -105,6 +105,7 @@ function loadChannelDataTime(channel,dbid,time){
 
 //посылает запрос на данные о канале с помощью объекта канал
 function loadChannelDataObject(channel_object,time){
+    console.log(time);
     var msg = {
         type: "channel_data",
         hierarchy: channel_object.hierarchy,
@@ -136,7 +137,7 @@ function displayDatabases(data){
     databases = data;
     var db_ul = $("#databases");
     data.forEach(function(db){
-        var db_li = $('<li>').attr('id',db.id).append("<p>"+db.name+"</p>").append("<div title='Refresh DB tree' class='refresh'>").delegate('div','click',refreshDatabaseTree).appendTo(db_ul);
+        var db_li = $('<li>').attr('id',db.id).append("<div class='plus'/><p>"+db.name+"</p>").append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree).appendTo(db_ul);
         if(!db.status){
             db_li.addClass("inactive");
         }
@@ -145,7 +146,7 @@ function displayDatabases(data){
         }
     });
     refreshTooltips();
-    db_ul.children("li").not('.inactive').children("p").click(showDatabaseTree);
+    db_ul.children("li").not('.inactive').children(".plus").click(showDatabaseTree);
     data = null;
     db_ul = null;
 }
@@ -157,6 +158,7 @@ function refreshTooltips(){
 
 //открывает деревовыбранной БД
 function showDatabaseTree(event){
+    console.log("show")
     var db_li = $(event.target).parent();
     var dbid = db_li.attr('id');
     var db_tree = db_li.children("ul")[0];
@@ -200,4 +202,3 @@ function alertError(err){
     deactivateDatabase(err.dbid);
 }
 
-  

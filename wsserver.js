@@ -46,9 +46,15 @@ wsServer.on('request', function (request) {
                     model.loadTreeData(message.database,order);
                     order++;
                     break;
+                case 'v3v4chan_orbits_start_data':
+                    orders.set(order,connection);
+                    model.loadV3V4ChanOrbitsStartData(message.system,order);
+                    order++;
+                    break;
                 case 'v3v4chan_orbits_data':
                     orders.set(order,connection);
-                    model.loadV3V4ChanOrbitsStartData(message.datetime,message.system,order);
+                    console.log("datetime"+message.datetime)
+                    model.loadV3V4ChanDatetimeData(message.system,message.datetime,order);
                     order++;
                     break;
             }

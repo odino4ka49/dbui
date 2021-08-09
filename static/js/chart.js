@@ -96,8 +96,9 @@ Chart.prototype.addGraphData = function(json){
     }
     json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element)=>(element.name==json.name));
+    console.log("CHANNEL",channel);
     var chan_name = json.name
-    if(channel){ 
+    if(channel){
         if(channel.displayed){
             this.extendLine(chan_name,json.data,json.units,json.fullname)
         }
@@ -143,7 +144,7 @@ Chart.prototype.parseToArrayData = function(data){
 Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
     var id = this.channels.find((element)=>(element.name==channel)).id;
-    console.log(this.channels,id)
+    //console.log(this.channels,id)
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
@@ -208,7 +209,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
         }
     }
     Plotly.react(this.name, chartData, layout, config).then(function(gd) {
-        console.log(gd)
+        //console.log(gd)
         resizeObserver.observe(gd);
       });
     this.scales_units.set(units,{
@@ -239,7 +240,7 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
 //удаляет линию графика с осями и пр. (не сделано)
 Chart.prototype.terminatePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    console.log(id,Plotly)
+    //console.log(id,Plotly)
     Plotly.deleteTraces(this.name, id);
 }
 
@@ -266,7 +267,7 @@ Chart.prototype.setRange = function(time){
 
 //отрисовывает новый график на полотне
 Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
-    console.log("addplot",channel)
+    //console.log("addplot",channel)
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
@@ -277,7 +278,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         var scale_num = this.scales_units.size;
         var yaxisname = "yaxis" + (scale_num+1);
         while(scale_num>=tones.length) nextTone();
-        console.log(this.scales_units)
+        //console.log(this.scales_units)
         var color = hsvToHex(tones[scale_num], 80, 80);
         var relayout_data = {
             xaxis: {

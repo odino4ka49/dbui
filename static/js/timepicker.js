@@ -1,34 +1,58 @@
-var datetimerange = [];
+var timepicker;
 
-function initPicker() {
-    $('#datetimerange').daterangepicker({
+function TimePicker(div_id){
+    this.datetimerange = [];
+    this.div = div_id;
+}
+
+TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined) {
+    $(this.div).daterangepicker({
         timePicker: true,
         timePicker24Hour: true,
-        startDate: moment().subtract(1, 'days'),
-        endDate: moment(),
-        minYear: 2017,
+        timePickerSeconds: true,
+        startDate: start,
+        endDate: end,
+        //minYear: 2017,
+        minDate: firstrec,
+        maxDate: lastrec,
         locale: {
             format: 'YYYY-MM-DD HH:mm:ss'
         }
     });
-    datetimerange.push($('#datetimerange').data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm:ss'));
-    datetimerange.push($('#datetimerange').data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm:ss'));
-    $('#datetimerange').on('apply.daterangepicker', function(ev, picker) {
-        datetimerange[0] = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
-        datetimerange[1] = picker.endDate.format('YYYY-MM-DD HH:mm:ss');
+    this.datetimerange.push($(this.div).data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm:ss'));
+    this.datetimerange.push($(this.div).data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm:ss'));
+    $(this.div).on('apply.daterangepicker', function(ev, picker) {
+        var datetime = timepicker;
+        var datetimerange = [];
+        if(ev.target.id=="v4dtr"){
+            datetime = getTimePicker("v4");
+        }
+        else if(ev.target.id=="v3v4dtr"){
+            datetime = getTimePicker("v3v4");
+        }
+        if("datetimerange" in datetime) {
+            datetimerange = datetime.datetimerange;
+            datetimerange[0] = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
+            datetimerange[1] = picker.endDate.format('YYYY-MM-DD HH:mm:ss');
+        }
     });
   }
 
 
-function getDateTime() {
-    return datetimerange;
+TimePicker.prototype.getDateTime = function() {
+    return this.datetimerange;
 }
 
-function getDateTimeNotFormated() {
-    return([$('#datetimerange').data('daterangepicker').startDate._d,$('#datetimerange').data('daterangepicker').endDate._d]);
+TimePicker.prototype.getDateTimeNotFormated = function() {
+    return([$(this.div).data('daterangepicker').startDate._d,$(this.div).data('daterangepicker').endDate._d]);
 }
 
 //линиями или точками
 function getMode(){
     return($('input[name="linetype"]:checked').val());
+}
+
+function initPicker(div){
+    timepicker = new TimePicker(div);
+    timepicker.init();
 }

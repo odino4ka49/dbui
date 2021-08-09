@@ -3,16 +3,25 @@ var v3v4basicdata = {
     "v3v4": { 
         loaded: false,
         system: "orbits v3v4chan",
-        azimuths: []
+        timepicker: new TimePicker("#v3v4dtr"),
+        azimuths: [],
+        firstrec: null
     },
     "v4": { 
         loaded: false,
         system: "orbits v4",
-        azimuths: []}
-    };
+        timepicker: new TimePicker("#v4dtr"),
+        azimuths: [],
+        firstrec: null
+    }
+};
 
 function formatDate(d){
     return d.getFullYear()+"."+(d.getMonth()+1).toString().padStart(2, "0")+"."+d.getDate().toString().padStart(2, "0")+" "+d.getHours().toString().padStart(2, "0")+":"+d.getMinutes().toString().padStart(2, "0")+":"+d.getSeconds().toString().padStart(2, "0");
+}
+
+function getTimePicker(system){
+    return v3v4basicdata[system].timepicker;
 }
 
 //приведение данных к надлежащему виду для библиотеки
@@ -87,10 +96,26 @@ function parseToTableData(system,data){
     return result;*/
 }
 
+function initV3V4Time(system,time){
+    var start = time-86400000;
+    if(v3v4basicdata[system].firstrec>start){
+        start = v3v4basicdata[system].firstrec
+    }
+    if(v3v4basicdata[system].loaded==false){
+        v3v4basicdata[system].timepicker.init(new Date(start-25200000),new Date(time-25200000),new Date(v3v4basicdata[system].firstrec-25200000),new Date(time-25200000));
+    }
+}
+
+function setFirstRecTime(system,time){
+    v3v4basicdata[system].firstrec = time;
+}
+
 //обновление таблицы
 function refreshV3V4OrbitTable(system,data){
     if(v3v4basicdata[system].loaded==false){
         createV3V4OrbitTable(system,data);
+       // v3v4basicdata[system].timepicker.init(new Date(data[0].t));
+        v3v4basicdata[system].loaded = true;
         return;
     }
     w2ui[system].clear();
@@ -99,7 +124,7 @@ function refreshV3V4OrbitTable(system,data){
 
 //создание таблицы
 function createV3V4OrbitTable(system,data){
-    console.log("tabledata",data);
+    //("tabledata",data);
     $('#'+system).w2grid({
         name: system,
         header: 'Orbits V3V4',
@@ -125,12 +150,12 @@ function createV3V4OrbitTable(system,data){
             loadSystemTable(system)
         }
     });
-    v3v4basicdata[system].loaded = true;
+    //v3v4basicdata[system].loaded = true;
 }
 
 function setV4OrbitsNames(data){
     v4channames = data;
-    console.log("v4names",data);
+    //console.log("v4names",data);
 }
 
 function setV3V4PkpData(system,data){
@@ -140,12 +165,12 @@ function setV3V4PkpData(system,data){
         v3v4basicdata[system].azimuths.azimuths.push(element.azimuth);
         v3v4basicdata[system].azimuths.pkps.push(element.pkp_name);
     })
-    console.log("v3v4pkps",v3v4basicdata[system].azimuths);
+    //console.log("v3v4pkps",v3v4basicdata[system].azimuths);
 }
 
 //отрисовка орбит на графиках
 function displayOrbit(system,channel){
-    console.log("orbit",channel)
+    //console.log("orbit",channel)
     var color = hsvToHex(100, 80, 80);
     channel.values.forEach(function(chan){
         var graph_name = system+chan.name.slice(-1)+"_chart";
@@ -179,16 +204,20 @@ function parseToOrbitData(channel,data,azimuths,pkps){
 function openNewTab(event){
     $('#'+event.target).show();
     $('#'+event.target+'_graphset').show();
+    $('#'+event.target+'dtr').show();
     if(event.target=="v3v4"){
         $("#v4").hide();
         $("#v4_graphset").hide();
+        $("#v4dtr").hide();
     }
     else {
         $("#v3v4").hide();
         $("#v3v4_graphset").hide();
+        $("#v3v4dtr").hide();
     }
     if(v3v4basicdata[event.target].loaded==false){
-        loadSystemTable(event.target);
+        loadStartSystemTable(event.target);
+        //v3v4basicdata[event.target].loaded==true;
     }
 }
 
@@ -212,10 +241,18 @@ function setTabs(system_id) {
     w2ui['tabs'].click(system_id);
 }
 
+function loadStartSystemTable(system_id){
+    sendMessageToServer(JSON.stringify({
+        type: "v3v4chan_orbits_start_data",
+        system: system_id
+    }))
+}
+
 function loadSystemTable(system_id){
     sendMessageToServer(JSON.stringify({
         type: "v3v4chan_orbits_data",
         system: system_id,
-        datetime: getDateTime()
+        datetime: v3v4basicdata[system_id].timepicker.getDateTime()
     }))
 }
+

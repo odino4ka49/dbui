@@ -50,7 +50,7 @@ function checkIfError(result,order){
 }
 
 //загрузка начальных данных для списка орбит v3v4chan или v4
-function loadV3V4ChanOrbitsStartData(datetime,system,order){
+function loadV3V4ChanOrbitsStartData(system,order){
     var db = databases.get("db1");
     if(system=="v4"){
         db.sendRequest('select "03_chan".id,name,fullname from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits v4\'',order,function(result){
@@ -58,16 +58,16 @@ function loadV3V4ChanOrbitsStartData(datetime,system,order){
                 "title": "v4orbits_start_data",
                 "data": result
             },order,false);
-            loadV3V4ChanPkpPosData(datetime,system,order);
+            loadV3V4ChanPkpPosData(system,order);
         })
     }
     else{
-        loadV3V4ChanPkpPosData(datetime,system,order);
+        loadV3V4ChanPkpPosData(system,order);
     }
 }
 
 //загрузка азимутов для орбит v3v4chan или v4
-function loadV3V4ChanPkpPosData(datetime,system,order){
+function loadV3V4ChanPkpPosData(system,order){
     var db = databases.get("db1");
     var systemname = (system=="v3v4") ? "orbits v3v4chan" : "orbits v4" 
     db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".sys_id = "04_pkp_position".sys_id where "01_system".system = \''+systemname+'\'',order,function(result){
@@ -76,19 +76,55 @@ function loadV3V4ChanPkpPosData(datetime,system,order){
             "system": system,
             "data": result//result.map(x => x.azimuth)
         },order,false);
-        loadV3V4ChanDatetimeData(datetime,system,order);
+        loadFirstRecortTime(system,order)
+        //loadV3V4ChanLastDatetimeData(system,order);
     })
 }
 
-//загрузка табличных данных (время и имя канала) для орбит v3v4chan или v4
-function loadV3V4ChanDatetimeData(datetime,system,order){
+//загрузка времени последней записи
+function loadFirstRecortTime(system,order){
     var db = databases.get("db1");
     if(system=="v3v4"){
-        
+        db.sendRequest(
+            'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".name FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id order by "14_orb_v3v4chan".date_time asc limit 1;',order,function(result){
+                //console.log(result);
+                wsServer.sendData({
+                    "title": "v3v4_firstrecord",
+                    "system": system,
+                    "data": result[0].t
+                },order,false);
+                //var date1 = new Date(result[0].t-86400000);
+                //var date2 = new Date(result[0].t);
+                //var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, ''),date2.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
+                loadV3V4ChanLastDatetimeData(system,order);
+            })
+    }
+    else if(system=="v4"){
+        db.sendRequest(
+            'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t FROM "15_orb_v4" order by "15_orb_v4".date_time asc limit 1;',order,function(result){
+                //console.log(result);
+                wsServer.sendData({
+                    "title": "v3v4_firstrecord",
+                    "system": system,
+                    "data": result[0].t
+                },order,false);
+                //var date1 = new Date(result[0].t-86400000);
+                //var date2 = new Date(result[0].t);
+                //var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, ''),date2.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
+                loadV3V4ChanLastDatetimeData(system,order);
+            })
+    }
+}
+
+//загрузка табличных данных (время и имя канала) для орбит v3v4chan или v4 за последние доступные сутки
+function loadV3V4ChanDatetimeData(system,datetime,order){
+    var db = databases.get("db1");
+    if(system=="v3v4"){
         db.sendRequest(
             'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time desc;',order,function(result){
                 wsServer.sendData({
                     "title": "v3v4chan_orbits_data",
+                    "last": false,
                     "data": result
                 },order,true);
             })
@@ -98,6 +134,36 @@ function loadV3V4ChanDatetimeData(datetime,system,order){
             'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t,* FROM "15_orb_v4" where "15_orb_v4".date_time >=\''+datetime[0]+'\' and "15_orb_v4".date_time <= \''+datetime[1]+'\' order by "15_orb_v4".date_time desc;',order,function(result){
                 wsServer.sendData({
                     "title": "v4_orbits_data",
+                    "last": false,
+                    "data": result
+                },order,true);
+            })
+    }
+
+}
+
+
+//загрузка табличных данных (время и имя канала) для орбит v3v4chan или v4
+function loadV3V4ChanLastDatetimeData(system,order){
+    var db = databases.get("db1");
+    if(system=="v3v4"){
+        db.sendRequest(
+            //'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >=\''+datetime[0]+'\' and "14_orb_v3v4chan".date_time <= \''+datetime[1]+'\' order by "14_orb_v3v4chan".date_time desc;',order,function(result){
+            'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".fullname,"03_chan".unit,"03_chan".name,"14_orb_v3v4chan".value FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id and "14_orb_v3v4chan".date_time >= ((select date_time from "14_orb_v3v4chan" order by date_time desc limit 1) - \'1 day\'::interval) and "14_orb_v3v4chan".date_time <= (select date_time from "14_orb_v3v4chan" order by date_time desc limit 1) order by "14_orb_v3v4chan".date_time desc;',order,function(result){
+                wsServer.sendData({
+                    "title": "v3v4chan_orbits_data",
+                    "last": true,
+                    "data": result
+                },order,true);
+            })
+    }
+    else if(system=="v4"){
+        db.sendRequest(
+            //'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t,* FROM "15_orb_v4" where "15_orb_v4".date_time >=\''+datetime[0]+'\' and "15_orb_v4".date_time <= \''+datetime[1]+'\' order by "15_orb_v4".date_time desc;',order,function(result){
+            'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t,* FROM "15_orb_v4" where "15_orb_v4".date_time >=((select date_time from "15_orb_v4" order by date_time desc limit 1) - \'1 day\'::interval) and "15_orb_v4".date_time <= (select date_time from "15_orb_v4" order by date_time desc limit 1) order by "15_orb_v4".date_time desc;',order,function(result){
+                wsServer.sendData({
+                    "title": "v4_orbits_data",
+                    "last": true,
                     "data": result
                 },order,true);
             })
@@ -202,7 +268,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if(db.type == "pickups"){    
+    if(db.type == "pickups" || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
         }
@@ -247,6 +313,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
+    console.log(subsystem);
     if(subsystem){
         chan_name = subsystem.name+": "+chan_name;
         req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
@@ -257,7 +324,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
     try{
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
-                console.log("problema")
+                console.log("problem")
                 wsServer.sendError(result,order)
             }
             else{
@@ -275,7 +342,8 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                     "index": i,
                     "chart": chart,
                     "mode": mode,
-                    "dbid": db.id
+                    "dbid": db.id,
+                    "parts": parts
                 }
                 if(i==parts-1){
                     wsServer.sendData(channel_data,order,true);
@@ -324,6 +392,7 @@ initDatabases();
 module.exports = {
     loadTreeData: loadTreeData,
     loadV3V4ChanOrbitsStartData: loadV3V4ChanOrbitsStartData,
+    loadV3V4ChanDatetimeData: loadV3V4ChanDatetimeData,
     getSensors: getSensors,
     getChannelData: getChannelData,
     getDatabasesInfo: getDatabasesInfo
