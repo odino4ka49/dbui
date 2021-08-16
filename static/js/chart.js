@@ -7,6 +7,8 @@ var chart_max_n = 2;
 //тоны для генерации цветов графиков
 var tones = [20];
 var resizeObserver;
+var orders = [];
+var orders_max_n = 0;
 
 //проверка на возраст браузера
 try{
@@ -18,6 +20,12 @@ try{
 }
 catch(error){
     alert("This browser is outdated. Some of the functions are not going to work. We recommend you to use Chrome 64+ or Firefox 69+ versions.");
+}
+
+function defaultCursor(){
+    if(orders.length==0){
+        document.body.style.cursor='default';
+    }
 }
 
 function setActiveGraph(div){

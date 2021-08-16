@@ -116,6 +116,14 @@ function loadChannelDataObject(channel_object,time){
         pixels: getActiveGraphWidth()-10,
         mode: getMode()                                                                      
     };
+    orders.push({
+        number: orders_max_n,
+        parts_num: null,
+        chart: activechart,
+        mode: getMode(),
+        parts: []
+    })
+    orders_max_n++;
     document.body.style.cursor='wait';
     sendMessageToServer(JSON.stringify(msg));
     msg = null;
