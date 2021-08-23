@@ -104,7 +104,7 @@ Chart.prototype.addGraphData = function(json){
     }
     json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element)=>(element.name==json.name));
-    console.log("CHANNEL",channel);
+    //console.log("CHANNEL",channel);
     var chan_name = json.name
     if(channel){
         if(channel.displayed){
@@ -375,8 +375,10 @@ function addGraphDataInOrder(json){
     order.parts_num = json.parts;
     order.parts[json.index]=json;
     var i = 0;
+    console.log("got",json.index);
     if(order.last_displayed!=null) i=order.last_displayed+1;
     for(;i<=json.index;i++){
+        console.log("draw",i);
         if(order.parts[i]!=undefined){
             addGraphData(order.parts[i]);
             order.last_displayed = i;
