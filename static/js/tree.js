@@ -114,13 +114,15 @@ function loadChannelDataObject(channel_object,time){
         dbid: channel_object.dbid,
         chart: activechart,
         pixels: getActiveGraphWidth()-10,
-        mode: getMode()                                                                      
+        mode: getMode(),
+        ordernum: orders_max_n                                                                      
     };
     orders.push({
         number: orders_max_n,
         parts_num: null,
         chart: activechart,
         mode: getMode(),
+        last_displayed: null,
         parts: []
     })
     orders_max_n++;

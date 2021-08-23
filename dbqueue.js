@@ -242,7 +242,7 @@ function filterData(data,pixels,chname){
 }
 
 //we get all channel data for a particular period of time
-function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,order){
+function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,ordernum,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
@@ -273,15 +273,15 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             subsystem = hierarchy.subsystem
         }
         else{
-            loadOrbitData(chart,db,datatable,channel,null,mode,order);
+            loadOrbitData(chart,db,datatable,channel,null,mode,ordernum,order);
             return;
         }
     }
-    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,order,datatype,mode,0);
+    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,0);
 }
 
 //we get all orbit data for a particular period of time
-function loadOrbitData(chart,db,datatable,channel,date,mode,order){
+function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
@@ -296,7 +296,8 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,order){
                     "units": "mm",
                     "chart": chart,
                     "mode": mode,
-                    "dbid": db.id
+                    "dbid": db.id,
+                    "ordernum": ordernum
                 }
                 wsServer.sendData(channel_data,order,true);
             }
@@ -308,12 +309,11 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,order){
 }
 
 //загрузка данных с канала определенного перидоа на определенное число пикселей
-function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i){
+function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
     //console.log("loadChannelData part "+i);
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
-    console.log(subsystem);
     if(subsystem){
         chan_name = subsystem.name+": "+chan_name;
         req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
@@ -343,6 +343,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                     "chart": chart,
                     "mode": mode,
                     "dbid": db.id,
+                    "ordernum": ordernum,
                     "parts": parts
                 }
                 if(i==parts-1){
@@ -350,7 +351,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order,datatype,mode,i+1)
+                    loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i+1)
                 }
             }
         });

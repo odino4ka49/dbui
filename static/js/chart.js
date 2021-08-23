@@ -370,6 +370,23 @@ function setRange(time){
 }
 
 //добавляет график
+function addGraphDataInOrder(json){
+    var order = orders.filter(obj => {  return obj.number === json.ordernum})[0];
+    order.parts_num = json.parts;
+    order.parts[json.index]=json;
+    var i = 0;
+    if(order.last_displayed!=null) i=order.last_displayed+1;
+    for(;i<=json.index;i++){
+        if(order.parts[i]!=undefined){
+            addGraphData(order.parts[i]);
+            order.last_displayed = i;
+            order.parts[i]=1;
+        }
+    }
+    if(order.last_displayed==order.parts_num-1) orders.splice(orders.indexOf(order),1);
+    defaultCursor();
+}
+
 function addGraphData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addGraphData(json)){
@@ -390,6 +407,7 @@ function addGraphData(json){
 
 //добавляет график орбиты
 function addOrbitData(json){
+    var order = orders.filter(obj => {  return obj.number === json.ordernum})[0];
     if(json.chart in charts){
         if(!charts[json.chart].addOrbitData(json)){
             var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
@@ -402,6 +420,8 @@ function addOrbitData(json){
         alert("Please choose a canvas to display the data");
         document.body.style.cursor='default';
     }
+    orders.splice(orders.indexOf(order),1);
+    defaultCursor();
     json = null;
 }
 
