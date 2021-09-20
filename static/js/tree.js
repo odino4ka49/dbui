@@ -215,29 +215,30 @@ function alertError(err){
 
 function searchAll(){
     var results = [];
-    search_results = {};
+    //search_results = {};
     var results_n = 0;
-    var output = "";
+    //var output = "";
 
     databases.forEach(function(db){
-        var db_tree = $("#"+db.id+"_tree");
+        //var db_tree = $("#"+db.id+"_tree");
+        search(db.id);
         results = search(db.id);
         results_n+=results.length;
-        search_results[db.id] = results;
-        console.log(db,results);
-        $.each(results, function (index, result) {
-            var parent = result;
-            var line = parent.text + '</p>';
-            while(parent.type!="system"){
-                line = parent.text + ': '+line;
-                parent = db_tree.treeview('getParent', parent);
-                console.log(parent);
-            }
-            output += "<p>"+db.name+": "+line;
-        });
+        //search_results[db.id] = results;
+        //console.log(db,results);
+        //$.each(results, function (index, result) {
+            //var parent = result;
+            //var line = parent.text + '</p>';
+            //while(parent.type!="system"){
+            //    line = parent.text + ': '+line;
+            //    parent = db_tree.treeview('getParent', parent);
+             //   console.log(parent);
+            //}
+            //output += "<p>"+db.name+": "+line;
+        //});
     })
     
-    var output = '<p>' + results_n + ' matches found:</p>'+output;
+    var output = '<p>' + results_n + ' matches found</p>';//+output;
     
     $('#search_output').html(output);
 }
@@ -248,7 +249,7 @@ function search(dbid) {
     var options = {
       ignoreCase: true,
       exactMatch: false,
-      revealResults: false
+      revealResults: true
     };
     var result = db_tree.treeview('search', [ pattern, options ]);
     return (result instanceof Array) ? result : [];
