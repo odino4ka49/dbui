@@ -1,4 +1,5 @@
 var databases;
+var search_results = {};
 
 //приведение данных к виду для отрисовки
 function parseTree(data){
@@ -212,3 +213,47 @@ function alertError(err){
     deactivateDatabase(err.dbid);
 }
 
+function searchAll(){
+    var results = [];
+    search_results = {};
+    var results_n = 0;
+    var output = "";
+
+    databases.forEach(function(db){
+        var db_tree = $("#"+db.id+"_tree");
+        results = search(db.id);
+        results_n+=results.length;
+        search_results[db.id] = results;
+        console.log(db,results);
+        $.each(results, function (index, result) {
+            var parent = result;
+            var line = parent.text + '</p>';
+            while(parent.type!="system"){
+                line = parent.text + ': '+line;
+                parent = db_tree.treeview('getParent', parent);
+                console.log(parent);
+            }
+            output += "<p>"+db.name+": "+line;
+        });
+    })
+    
+    var output = '<p>' + results_n + ' matches found:</p>'+output;
+    
+    $('#search_output').html(output);
+}
+
+function search(dbid) {
+    var db_tree = $("#"+dbid+"_tree");
+    var pattern = $('#input_search').val();
+    var options = {
+      ignoreCase: true,
+      exactMatch: false,
+      revealResults: false
+    };
+    var result = db_tree.treeview('search', [ pattern, options ]);
+    return (result instanceof Array) ? result : [];
+
+}
+
+
+$('#input-search').on('keyup', searchAll);

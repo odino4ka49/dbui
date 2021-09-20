@@ -462,5 +462,8 @@ $(document).ready(function(){
     });
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();
+    $('.resizable_hor').resizable({
+        handles: 'e, w'
+    });
     $("#add_chart").click(addChart);
 });

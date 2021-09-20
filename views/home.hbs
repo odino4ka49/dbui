@@ -27,19 +27,29 @@
     </div>
 </div>
 
-<div id="dbtree">
-<ul id="databases"></ul>
-</div>
-<div id="tooltip"></div>
-
-<div id="graphset" class="graphset">
-    <div id="graph1" class="resizable active">
-        <div id="chart_1" class="pchart"></div>
-        <div class="close_chart"></div>
-        <div class="handle"></div>
-    </div>
-    <div id="add_chart"></div>
-</div>
+<table>
+    <tr>
+        <td>
+            <div><input id="input_search" placeholder="Search..." value="">
+            <button id="btn_search" onclick="searchAll()">Search</button></div>
+            <div id="search_output"></div>
+            <div id="dbtree" class="resizable_hor">
+            <ul id="databases"></ul>
+            </div>
+            <div id="tooltip"></div>
+        </td>
+        <td id="graphset_td">
+            <div id="graphset" class="graphset">
+                <div id="graph1" class="resizable active">
+                    <div id="chart_1" class="pchart"></div>
+                    <div class="close_chart"></div>
+                    <div class="handle"></div>
+                </div>
+                <div id="add_chart"></div>
+            </div>
+        </td>
+    </tr>
+</table>
 <div id="mirror"></div>
 
 <br/>

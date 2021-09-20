@@ -19,27 +19,36 @@ body{
 ::-webkit-resizer { background-color: #666;}
 
 #dbtree{
-    width: 350px;
+    width: 125%;
+    height:800px;
 }
 #v3v4,#v4{
+    width: 100%;
+    height: 100%;
+}
+#orbits_table{
     width: 350px;
-    height: 80%;
+    height: 800px;
 }
 #tabs{
-    width: 350px;
+    width: 100%;
 }
 #databases{
-    width: 250px;
+    width: 100%;
 }
 #datetimerange,#v3v4dtr,#v4dtr{
-    width: 280px;
+    width: 320px;
     margin: 5px 0px;
 }
+#graphset_td{
+    width:100%;
+    height:100%;
+    padding-left: 1%;
+}
+
 div.graphset{
-    top: 28px;
-    left: 350px;
-    width: 78%;
-    position: absolute;
+    height:100%;
+    width: 100%;
 }
 div.pchart{
     width: 100%;
@@ -126,7 +135,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     height: 40px;
     font-size: 15pt;
     display: table;
-    width: 250px;
+    width: 100%;
 }
 
 #databases li .plus{
@@ -168,7 +177,7 @@ div.refresh {
     width: 20px;
     height: 20px;
     position: absolute;
-    right: 0;
+    right: 5px;
     top: 0;
     background-size: cover;
     background-repeat: no-repeat;

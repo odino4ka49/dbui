@@ -72,6 +72,7 @@ function ChartChannel(name,hierarchy,datatable,dbid){
     this.dbid = dbid;
     this.id = null;
     this.displayed = false;
+    this.color = null;
 }
 
 //класс полотна с графиками
@@ -104,7 +105,7 @@ Chart.prototype.addGraphData = function(json){
     }
     json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element)=>(element.name==json.name));
-    //console.log("CHANNEL",channel);
+    console.log("CHANNEL",channel);
     var chan_name = json.name
     if(channel){
         if(channel.displayed){
@@ -167,6 +168,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     if(fullname) data.name = fullname;
     //auto generate line color with the right tone
     var color = hsvToHex(tones[0], 80, 80)
+    chan_data.color = color;
     data.line = { color: color }
     data.marker = {size:3}
     this.axis_labels = [
@@ -288,6 +290,7 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         while(scale_num>=tones.length) nextTone();
         //console.log(this.scales_units)
         var color = hsvToHex(tones[scale_num], 80, 80);
+        if(chan_data.color==null) chan_data.color = color;
         var relayout_data = {
             xaxis: {
                 range: this.range,
@@ -333,12 +336,13 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         Plotly.update(this.name,[], relayout_data);
         scale_num = null;
     }
-    else{
-        scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+    else if(chan_data.color==null){
+        //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+        chan_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
     }
     data.mode = mode//'markers'; //type of plot
     data.name = channel;
-    data.line = {color: scale_data.color};
+    data.line = {color: chan_data.color};
     data.marker = {size:3}; //size of markers
     data.yaxis = "y"+scale_data.axis_n;
     Plotly.addTraces(this.name, data);
@@ -382,11 +386,22 @@ function addGraphDataInOrder(json){
         if(order.parts[i]!=undefined){
             addGraphData(order.parts[i]);
             order.last_displayed = i;
-            order.parts[i]=1;
+            //order.parts[i]=1;
         }
     }
-    if(order.last_displayed==order.parts_num-1) orders.splice(orders.indexOf(order),1);
-    defaultCursor();
+    if(order.last_displayed==order.parts_num-1)
+    {
+        var no_data = true;
+        console.log(order.parts);
+        for(i=0;i<=order.last_displayed;i++){
+            if(order.parts[i].data.x.length!=0){
+                no_data = false;
+            }
+        }
+        if(no_data) alert("Sorry, no data to display");
+        orders.splice(orders.indexOf(order),1);
+        defaultCursor();
+    }
 }
 
 function addGraphData(json){
@@ -456,6 +471,7 @@ function closeChart(e){
 
 //перезагрузка каждого графика
 function reloadChannels(channels,time){
+    console.log(channels);
     channels.forEach(function(channel){    
         channel.displayed = false;
         removePlot(0);
@@ -514,5 +530,8 @@ $(document).ready(function(){
     });
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();
+    $('.resizable_hor').resizable({
+        handles: 'e, w'
+    });
     $("#add_chart").click(addChart);
 });
