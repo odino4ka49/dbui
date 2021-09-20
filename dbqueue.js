@@ -177,11 +177,11 @@ function loadTreeData(dbid,order){
     var tree = new tm.SystemTree(dbid);
     var db = databases.get(dbid);
     if(db.type == 'v4'){
-        db.sendRequest('SELECT * FROM "01_system"',order,function(result){
+        db.sendRequest('SELECT * FROM "01_system order by id"',order,function(result){
             tree.parseSystems(result);
-            db.sendRequest('SELECT * FROM "02_group"',order,function(result){
+            db.sendRequest('SELECT * FROM "02_group" order by ss_id,group_id',order,function(result){
                 tree.parseGroups(result);
-                db.sendRequest('SELECT * FROM "03_chan"',order,function(result){
+                db.sendRequest('SELECT * FROM "03_chan" order by id',order,function(result){
                     tree.parseChannels(result);
                     wsServer.sendData({
                         "title": "tree_data",
@@ -193,7 +193,7 @@ function loadTreeData(dbid,order){
         })
     }
     else if(db.type == 'pickups'){
-        db.sendRequest('SELECT * FROM "01_system"',order,function(result){
+        db.sendRequest('SELECT * FROM "01_system" order by id',order,function(result){
             tree.parseSystems(result);
             tree.setOneDatatable("03_v4pkpmea");
             db.sendRequest('SELECT * FROM "02_chan"',order,function(result){
