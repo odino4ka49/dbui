@@ -73,6 +73,40 @@ function ChartChannel(name,hierarchy,datatable,dbid){
     this.id = null;
     this.displayed = false;
     this.color = null;
+    this.data = [];
+}
+
+ChartChannel.prototype.addData = function(newdata){
+    this.data = this.data.concat(newdata).sort(function(a,b){
+        if (a.t < b.t) {
+            return -1;
+        }
+        if (a.t > b.t) {
+        return 1;
+        }
+        return 0;
+    });
+    this.removeDuplicates();
+}
+
+ChartChannel.prototype.removeDuplicates = function(){
+    var newList = [];
+    var list = this.data;
+    if (list) {
+        newList.push(list[0]);
+        for (var a,b,i=1; i < list.length; i++) {
+            a = list[i];
+            b = list[i-1];
+            if (a.t!==b.t) {
+                newList.push(a);
+            }
+        }
+    }
+    this.data = newList;
+}
+
+ChartChannel.prototype.getData = function(dates){
+    var result = this.data.filter(el => ((el.t > dates[0])&&(el.t<dates[1])))
 }
 
 //класс полотна с графиками

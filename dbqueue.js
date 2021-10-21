@@ -19,7 +19,7 @@ function parseToChartData(channel,data){
         x.push(date),
         y.push(element[channel])
     });
-    return {x: x,y: y};
+    return {x: x,y: y}; 
 }
 
 function parseToOrbitData(channel,data,azimuths){
@@ -242,7 +242,7 @@ function filterData(data,pixels,chname){
 }
 
 //we get all channel data for a particular period of time
-function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,ordernum,order){
+function getChannelData(chart,dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
@@ -273,15 +273,44 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             subsystem = hierarchy.subsystem
         }
         else{
-            loadOrbitData(chart,db,datatable,channel,null,mode,ordernum,order);
+            loadOrbitData(chart,db,datatable,channel,null,ordernum,order);
             return;
         }
     }
-    loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,0);
+    loadChannelData(chart,db,datatable,channel,subsystem,dates,ordernum,order,datatype,0);
 }
 
 //we get all orbit data for a particular period of time
-function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
+function loadOrbitData(chart,db,datatable,channel,date,ordernum,order){
+    var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
+    try{
+        db.sendRequest(req,order,function(result){
+            if(result.type=="err"){
+                //console.log(result)
+            }
+            else{
+                var channel_data = {
+                    "title": "orbit_data",
+                    "name": channel.name,
+                    "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
+                    "units": "mm",
+                    "chart": chart,
+                    //"mode": mode,
+                    "dbid": db.id,
+                    "ordernum": ordernum
+                }
+                wsServer.sendData(channel_data,order,true);
+            }
+        });
+    }
+    catch(e){
+        console.log(e);
+    }
+}
+
+/*
+//we get all orbit data for a particular period of time
+function loadOrbitData(chart,db,datatable,channel,date,ordernum,order){
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
@@ -306,10 +335,63 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
     catch(e){
         console.log(e);
     }
+}*/
+
+//загрузка данных с канала определенного перидоа на определенное число пикселей
+function loadChannelData(chart,db,datatable,channel,subsystem,dates,ordernum,order,datatype,i){
+    //console.log("loadChannelData part "+i);
+    var parts = dates.length-1;
+    var req;
+    var chan_name = channel.name;
+    if(subsystem){
+        chan_name = subsystem.name+": "+chan_name;
+        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+    }
+    else{
+        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+    }
+    try{
+        db.sendRequest(req,order,function(result){
+            if(result.type=="err"){
+                console.log("problem")
+                wsServer.sendError(result,order)
+            }
+            else{
+                //var filtered_data = e;
+                /*if(result.length==0){
+                    wsServer.sendError({"text":"There is no data on this period"},order)
+                }*/
+                //filtered_data = filterData(result,pixels,chan_name);
+                var channel_data = {
+                    "title": "channel_data",
+                    "fullname": chan_name,
+                    "name": channel.name,
+                    "data":  result,//parseToChartData(chan_name, filtered_data),
+                    "units": channel.unit,
+                    "index": i,
+                    "chart": chart,
+                    //"mode": mode,
+                    "dbid": db.id,
+                    "ordernum": ordernum,
+                    "parts": parts
+                }
+                if(i==parts-1){
+                    wsServer.sendData(channel_data,order,true);
+                }
+                else{
+                    wsServer.sendData(channel_data,order,false);
+                    loadChannelData(chart,db,datatable,channel,subsystem,dates,ordernum,order,datatype,i+1)
+                }
+            }
+        });
+    }
+    catch(e){
+        console.log(e);
+    }
 }
 
 //загрузка данных с канала определенного перидоа на определенное число пикселей
-function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
+/*function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
     //console.log("loadChannelData part "+i);
     var parts = dates.length-1;
     var req;
@@ -329,9 +411,6 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
             }
             else{
                 var filtered_data = [];
-                /*if(result.length==0){
-                    wsServer.sendError({"text":"There is no data on this period"},order)
-                }*/
                 filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
@@ -359,7 +438,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
     catch(e){
         console.log(e);
     }
-}
+}*/
 
 function getSensors(magnet_name){
     var sensors = systems.find(o => o.name === "Temperature").findAll(magnet_name)
