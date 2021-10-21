@@ -17,12 +17,12 @@
 <input id="datetimerange" type="text" name="datetimes" />
 <div id="linetype">
     <div>
-        <input type="radio" id="markers" name="linetype" value="markers" checked>
+        <input type="radio" id="markers" name="linetype" value="markers">
         <label for="markers">Markers</label>
     </div>
 
     <div>
-        <input type="radio" id="line" name="linetype" value="line">
+        <input type="radio" id="line" name="linetype" value="line"  checked>
         <label for="line">Line</label>
     </div>
 </div>
@@ -34,8 +34,8 @@
             <button id="btn_search" onclick="searchAll()"></button></div>
             <br class="clearBoth"/>
             <div id="search_output"></div>
-            <div id="dbtree" class="resizable_hor">
-                <table id="databases"></table>
+            <div id="dbtree">
+                <table id="databases" class="resizable_hor"></table>
             </div>
             <div id="tooltip"></div>
         </td>

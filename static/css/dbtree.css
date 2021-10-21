@@ -6,7 +6,12 @@ body{
 .daterangepicker .drp-calendar{
     max-width: none;
 }
-#dbtree,.graphset{
+.graphset{
+    overflow-y: scroll;
+    padding: 20px;
+}
+#dbtree
+{
     height: 100%;
     overflow-y: scroll;
     padding: 20px;
@@ -47,7 +52,7 @@ body{
 }
 
 div.graphset{
-    height:100%;
+    height: 800px;
     width: 100%;
 }
 div.pchart{
@@ -186,7 +191,10 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 
 #input_search{
-    float: left;}
+    float: left;
+    width: 270px;
+    height: 25px;
+}
 #btn_search{
     float: left;
     background-image: url('https://static.tildacdn.com/tild3832-6637-4337-a163-373538633566/img_548928.png');
