@@ -64,6 +64,12 @@ function addChannelToGraph(channel){
     charts[activechart].addChannel(channel);
 }
 
+//класс данных канала с соответствующим временем
+function ChannelTimeData(dates,data){
+    this.dates = dates;
+    this.data = data;
+}
+
 //класс каналов для добавления в объект Chart
 function ChartChannel(name,hierarchy,datatable,dbid){
     this.name = name;
@@ -76,8 +82,18 @@ function ChartChannel(name,hierarchy,datatable,dbid){
     this.data = [];
 }
 
+//добавление новых данных
 ChartChannel.prototype.addData = function(newdata){
-    this.data = this.data.concat(newdata).sort(function(a,b){
+    //предполагая, что данные отсортированы по времени, создаем слепок времени (начало-конец) в милисекундах
+    dates = [newdata[0].t,newdata[newdata.length-1].t]
+    console.log(dates);
+    //сравним время новых данных со временами данных, которые у нас имеются
+    this.data.forEach(piece => {
+        console.log(piece.dates)
+        //сравнить время
+        //if()
+    })
+    /*this.data = this.data.concat(newdata).sort(function(a,b){
         if (a.t < b.t) {
             return -1;
         }
@@ -86,10 +102,10 @@ ChartChannel.prototype.addData = function(newdata){
         }
         return 0;
     });
-    this.removeDuplicates();
+    this.removeDuplicates();*/
 }
 
-ChartChannel.prototype.removeDuplicates = function(){
+/*ChartChannel.prototype.removeDuplicates = function(){
     var newList = [];
     var list = this.data;
     if (list) {
@@ -103,7 +119,7 @@ ChartChannel.prototype.removeDuplicates = function(){
         }
     }
     this.data = newList;
-}
+}*/
 
 ChartChannel.prototype.getData = function(dates){
     var result = this.data.filter(el => ((el.t > dates[0])&&(el.t<dates[1])))
