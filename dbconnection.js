@@ -20,7 +20,7 @@ class DBConnection {
             process.exit(-1);
         })
     }
-    sendRequest(request,order,callback){
+    sendRequest(request,order,callback,clientordernum){
         console.log(request,order)
         this.pool.connect()
             .then(client => {
@@ -33,8 +33,8 @@ class DBConnection {
                     .catch(err => {
                         client.release();
                         this.status = false;
-                        //console.log(request);
-                        wsServer.sendError(err,order);
+                        console.log("uhu2")
+                        wsServer.sendError(err,order,clientordernum);
                     })
             })
             .catch(err => {
@@ -54,7 +54,7 @@ class DBConnection {
                     }
                     err.dbid = this.id;
                     console.log(err);
-                    wsServer.sendError(err,order);
+                    wsServer.sendError(err,order,clientordernum);
                 }
             })
     }

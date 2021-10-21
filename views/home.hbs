@@ -31,10 +31,11 @@
     <tr>
         <td>
             <div><input id="input_search" placeholder="Search..." value="">
-            <button id="btn_search" onclick="searchAll()">Search</button></div>
+            <button id="btn_search" onclick="searchAll()"></button></div>
+            <br class="clearBoth"/>
             <div id="search_output"></div>
             <div id="dbtree" class="resizable_hor">
-            <ul id="databases"></ul>
+                <table id="databases"></table>
             </div>
             <div id="tooltip"></div>
         </td>
@@ -94,6 +95,9 @@
                     refreshTree(json.database,json.data);
                     break;
                 case "error":
+                    if(json.clientordernum!=undefined){
+                        removeOrder(json.clientordernum);
+                    }
                     alertError(json.data);
                     break;
             }

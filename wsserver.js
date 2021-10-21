@@ -77,13 +77,14 @@ wsServer.sendData = function(data,ordernum,end){
     }
 }
 
-wsServer.sendError = function(err,ordernum){
+wsServer.sendError = function(err,ordernum,clientordernum){
     var connection = orders.get(ordernum);
     if (!err.text) err.text = "Error: "+err+". Please let us know about the incident: khudayb@inp.nsk.su";
-    console.log(err)
+    console.log(err,clientordernum)
     connection.sendUTF(JSON.stringify({
         "title": "error",
-        "data": err
+        "data": err,
+        "clientordernum": clientordernum
     }));
     removeOrder(ordernum);
 }

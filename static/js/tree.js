@@ -27,8 +27,11 @@ function parseTree(data){
 //обновить дерево БД
 function refreshTree(dbid,data) {
     var db_li = $("#"+dbid);
-    db_li.children("ul").remove();
-    var db_tree = $("<ul>").attr("id",dbid+"_tree").appendTo(db_li);
+    db_li.siblings("#treefor_"+dbid).remove();
+    var treedb_tr = $("<tr>").attr("id","treefor_"+dbid).append("<td>");
+    var db_tree = $("<ul>").attr("id",dbid+"_tree");
+    treedb_tr.children("td").append(db_tree);
+    db_li.after(treedb_tr);
     db_tree.treeview(
         {
             data: parseTree(data),
@@ -134,6 +137,7 @@ function loadChannelDataObject(channel_object,time){
 
 //посылает запрос на данные о БД
 function loadDatabaseTree(dbid){
+    console.log(dbid);
     document.body.style.cursor='wait';
     var msg = {
         type: "tree_data", //type of msg: get tree of this
@@ -146,20 +150,21 @@ function loadDatabaseTree(dbid){
 //отрисовка дерева БД
 function displayDatabases(data){
     databases = data;
-    var db_ul = $("#databases");
+    var db_table = $("#databases");
     data.forEach(function(db){
-        var db_li = $('<li>').attr('id',db.id).append("<div class='plus'/><p>"+db.name+"</p>").append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree).appendTo(db_ul);
+        var refresh_td = $('<td >').append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree);
+        var db_tr = $('<tr>').attr('id',db.id).append("<td><div class='plus'/></td><td>"+db.name+"</td>").append(refresh_td).appendTo(db_table);
         if(!db.status){
-            db_li.addClass("inactive");
+            db_tr.addClass("inactive");
         }
         else{
-            db_li.addClass("active");
+            db_tr.addClass("active");
         }
     });
     refreshTooltips();
-    db_ul.children("li").not('.inactive').children(".plus").click(showDatabaseTree);
+    db_table.children("tr").not('.inactive').children("td").children(".plus").click(showDatabaseTree);
     data = null;
-    db_ul = null;
+    db_table = null;
 }
 
 //подсказка
@@ -167,27 +172,26 @@ function refreshTooltips(){
     $('.refresh').tooltip({align: 'right'});
 }
 
-//открывает деревовыбранной БД
+//открывает дерево выбранной БД
 function showDatabaseTree(event){
-    console.log("show")
-    var db_li = $(event.target).parent();
-    var dbid = db_li.attr('id');
-    var db_tree = db_li.children("ul")[0];
+    var db_tr = $(event.target).parent().parent();
+    var dbid = db_tr.attr('id');
+    var db_tree = $("#treefor_"+dbid)[0];
     if(db_tree){
-        if(db_li.hasClass("opened")){
+        if(db_tr.hasClass("opened")){
             $(db_tree).hide();
-            db_li.removeClass("opened");
+            db_tr.removeClass("opened");
         }
         else{
             $(db_tree).show();
-            db_li.addClass("opened");
+            db_tr.addClass("opened");
         }
     }
 
     else{
         loadDatabaseTree(dbid);
     }
-    db_li = null;
+    db_tr = null;
     dbid = null;
     db_tree = null;
 }
@@ -200,9 +204,9 @@ function deactivateDatabase(dbid){
 // connected to refresh db button
 function refreshDatabaseTree(event){
     event.stopPropagation();
-    var dbid = $(event.target).parent().attr('id');
+    var dbid = $(event.target).parent().parent().attr('id');
     //makes db name active
-    $(event.target).parent().addClass("active").removeClass("inactive");
+    $(event.target).parent().parent().addClass("active").removeClass("inactive");
     //tries to load db tree
     loadDatabaseTree(dbid);
     dbid = null;
@@ -215,15 +219,19 @@ function alertError(err){
 
 function searchAll(){
     var results = [];
+    var isAnyDbLoaded = false;
     //search_results = {};
     var results_n = 0;
-    //var output = "";
+    var output = "";
 
     databases.forEach(function(db){
         //var db_tree = $("#"+db.id+"_tree");
-        search(db.id);
+        //search(db.id);
         results = search(db.id);
-        results_n+=results.length;
+        if(results){
+            isAnyDbLoaded = true;
+            results_n+=results.length;
+        }
         //search_results[db.id] = results;
         //console.log(db,results);
         //$.each(results, function (index, result) {
@@ -238,13 +246,22 @@ function searchAll(){
         //});
     })
     
-    var output = '<p>' + results_n + ' matches found</p>';//+output;
+    if(isAnyDbLoaded){
+        output = '<p>' + results_n + ' matches found</p>';//+output;
+    }
+    else{
+        output = "There are no loaded DBs."
+    }
     
     $('#search_output').html(output);
 }
 
 function search(dbid) {
     var db_tree = $("#"+dbid+"_tree");
+    if(!db_tree.length){
+        return false;
+        //console.log("dbtree",db_tree)
+    }
     var pattern = $('#input_search').val();
     var options = {
       ignoreCase: true,
@@ -252,9 +269,13 @@ function search(dbid) {
       revealResults: true
     };
     var result = db_tree.treeview('search', [ pattern, options ]);
+    db_tree.treeview('hideAll');
     return (result instanceof Array) ? result : [];
-
 }
 
 
-$('#input-search').on('keyup', searchAll);
+$('#input_search').on('keyup', function(e){
+    if (e.key === 'Enter' || e.keyCode === 13) {
+        //searchAll();
+    };
+});

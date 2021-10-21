@@ -442,6 +442,14 @@ function addOrbitData(json){
     json = null;
 }
 
+//удалить заказ
+function removeOrder(ordernum){
+    console.log(ordernum)
+    var order = orders.filter(obj => {  return obj.number === ordernum})[0];
+    orders.splice(orders.indexOf(order),1);
+    defaultCursor();
+}
+
 //добавление полотна
 function addChart(e){
     addChartBeforeTarget(e.target);

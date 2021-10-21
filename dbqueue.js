@@ -286,7 +286,8 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
     try{
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
-                //console.log(result)
+                console.log("problem")
+                wsServer.sendError(result,order)
             }
             else{
                 var channel_data = {
@@ -301,7 +302,7 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
                 }
                 wsServer.sendData(channel_data,order,true);
             }
-        });
+        },ordernum);
     }
     catch(e){
         console.log(e);
@@ -354,7 +355,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                     loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i+1)
                 }
             }
-        });
+        },ordernum);
     }
     catch(e){
         console.log(e);
