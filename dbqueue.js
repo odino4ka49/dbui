@@ -312,6 +312,7 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
 //загрузка данных с канала определенного перидоа на определенное число пикселей
 function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
     //console.log("loadChannelData part "+i);
+    console.log("dates",dates);
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;

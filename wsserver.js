@@ -38,6 +38,7 @@ wsServer.on('request', function (request) {
                 //depending on the msgtype we decide what to do
                 case 'channel_data':
                     orders.set(order,connection);
+                    console.log("datetime",message.datetime);
                     model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,message.mode,message.ordernum,order);
                     order++;
                     break;
