@@ -247,8 +247,8 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
     var subsystem = null;
-    var date1 = new Date(datetime[0]);
-    var date2 = new Date(datetime[1]);
+    var date1 = new Date(datetime[0]+"Z");
+    var date2 = new Date(datetime[1]+"Z");
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
