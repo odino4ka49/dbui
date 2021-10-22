@@ -252,6 +252,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
+    console.log("dates",dates);
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
             datatable = "v4cod";
