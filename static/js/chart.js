@@ -155,6 +155,8 @@ Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
     var id = this.channels.find((element)=>(element.name==channel)).id;
     //console.log(this.channels,id)
+    data.x.push(null);
+    data.y.push(null);
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
@@ -172,6 +174,8 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     chan_data.color = color;
     data.line = { color: color }
     data.marker = {size:3}
+    data.x.push(null);
+    data.y.push(null);
     this.axis_labels = [
         {
             xref:'paper',
@@ -346,6 +350,8 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     data.line = {color: chan_data.color};
     data.marker = {size:3}; //size of markers
     data.yaxis = "y"+scale_data.axis_n;
+    data.x.push(null);
+    data.y.push(null);
     Plotly.addTraces(this.name, data);
     chan_data.displayed = true;
     scale_data = null;

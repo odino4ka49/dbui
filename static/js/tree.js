@@ -219,7 +219,7 @@ function alertError(err){
 
 function searchAll(){
     var results = [];
-    var isAnyDbLoaded = false;
+    var isAnyDbOpened = false;
     //search_results = {};
     var results_n = 0;
     var output = "";
@@ -229,7 +229,7 @@ function searchAll(){
         //search(db.id);
         results = search(db.id);
         if(results){
-            isAnyDbLoaded = true;
+            isAnyDbOpened = true;
             results_n+=results.length;
         }
         //search_results[db.id] = results;
@@ -246,11 +246,11 @@ function searchAll(){
         //});
     })
     
-    if(isAnyDbLoaded){
+    if(isAnyDbOpened){
         output = '<p>' + results_n + ' matches found</p>';//+output;
     }
     else{
-        output = "There are no loaded DBs."
+        output = "There are no opened Databases."
     }
     
     $('#search_output').html(output);
@@ -258,7 +258,8 @@ function searchAll(){
 
 function search(dbid) {
     var db_tree = $("#"+dbid+"_tree");
-    if(!db_tree.length){
+    //if(!db_tree.length){
+    if(db_tree.is(":hidden")){
         return false;
         //console.log("dbtree",db_tree)
     }
@@ -274,8 +275,8 @@ function search(dbid) {
 }
 
 
-$('#input_search').on('keyup', function(e){
-    if (e.key === 'Enter' || e.keyCode === 13) {
-        //searchAll();
+$('#input_search').keyup(function(e){
+    if (e.key === 'Enter' || e.which === 13) {
+        searchAll();
     };
 });
