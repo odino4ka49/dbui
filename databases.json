@@ -1,6 +1,6 @@
 {
     "db2": {
-        "name": "v4_Sep2015-now",
+        "name": "v4_Sep2015-July2021",
         "user": "vepp4",
         "port": 5432,
         "host": "vepp4-pg",
@@ -9,7 +9,7 @@
         "active": true
     },
     "db1": {
-        "name": "v4_Jun2019-July2021",
+        "name": "v4_Jun2019-now",
         "user": "vepp4",
         "port": 5432,
         "host": "192.168.144.4",

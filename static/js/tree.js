@@ -259,9 +259,9 @@ function searchAll(){
 function search(dbid) {
     var db_tree = $("#"+dbid+"_tree");
     //if(!db_tree.length){
-    if(db_tree.is(":hidden")){
+    console.log(db_tree)
+    if((!db_tree.length)||(db_tree.is(":hidden"))){
         return false;
-        //console.log("dbtree",db_tree)
     }
     var pattern = $('#input_search').val();
     var options = {
@@ -270,15 +270,17 @@ function search(dbid) {
       revealResults: true
     };
     var result = db_tree.treeview('search', [ pattern, options ]);
-    db_tree.treeview('hideAll');
+    //db_tree.treeview('hideAll');
     return (result instanceof Array) ? result : [];
 }
 
-
-$('#input_search').keyup(function(e){
-    console.log("search_keyup")
-    if (e.key === 'Enter' || e.which === 13 || (e.keyCode == 13)) {
-        searchAll();
-    };
+$(document).ready(function(){
+    $('#input_search').keyup(function(e){
+        console.log("search_keyup")
+        if (e.key === 'Enter' || e.which === 13 || (e.keyCode == 13)) {
+            searchAll();
+        };
+    });
 });
+
 
