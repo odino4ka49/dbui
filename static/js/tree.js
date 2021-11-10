@@ -276,7 +276,9 @@ function search(dbid) {
 
 
 $('#input_search').keyup(function(e){
-    if (e.key === 'Enter' || e.which === 13) {
+    console.log("search_keyup")
+    if (e.key === 'Enter' || e.which === 13 || (e.keyCode == 13)) {
         searchAll();
     };
 });
+
