@@ -42,9 +42,10 @@ function setActiveGraphByName(name){
 
 function parseDates(dates){
     var result = [];
+    console.log(dates);
     dates.forEach(element => {
-        console.log(element);
-        result.push(new Date(element));
+        //console.log(element);
+        result.push( Date.parse(element.substring(0, element.length - 1)));
     });
     return result;
 }
