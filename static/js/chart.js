@@ -1,5 +1,5 @@
 //полотно, которое выделено сейчас
-var activechart = 'chart_1';
+var activeplot = 'chart_1';
 //последний индекс полотна
 var chart_max_n = 2;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
@@ -28,16 +28,18 @@ function defaultCursor(){
     }
 }
 
-function setActiveGraph(div){
-    activechart = div.attr('id');
+function setActivePlot(div){
+    activeplot = div.attr('id');
     $(".graphset").children().removeClass('active');
     div.parent().addClass('active');
+    (document).trigger("activePlotSet");
 }
 
-function setActiveGraphByName(name){
-    activechart = name;
+function setActivePlotByName(name){
+    activeplot = name;
     $(".graphset").children().removeClass('active');
     $("#"+name).parent().addClass('active');
+    (document).trigger("activePlotSet");
 }
 
 function parseDates(dates){
@@ -51,28 +53,29 @@ function parseDates(dates){
 }
 
 //возвращает ширину полотна в пикселях
-function getActiveGraphWidth(){
-    return Math.ceil($("#"+activechart).width());
+function getActivePlotWidth(){
+    return Math.ceil($("#"+activeplot).width());
 }
 
 //добавляет данные о канале к объекту Chart
 function addChannelToGraph(channel){
-    var chart = charts[activechart];
+    var chart = charts[activeplot];
     var new_chart_n = chart.name;
     if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
         new_chart_n = addChartBeforeTarget($("#"+chart.name).parent());
-        setActiveGraphByName("chart_"+new_chart_n);
+        setActivePlotByName("chart_"+new_chart_n);
     }
-    charts[activechart].addChannel(channel);
+    charts[activeplot].addChannel(channel);
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name,hierarchy,datatable,dbid){
+function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
-    this.id = null;
+    this.id = null; //?
+    this.nodeid = nodeid;
     this.displayed = false;
     this.color = null;
 }
@@ -98,6 +101,10 @@ Chart.prototype.getWidth = function(){
 
 Chart.prototype.getHeight = function(){
     return Math.ceil($("#"+this.name).parent().height());
+}
+
+Chart.prototype.getChannels = function(){
+    return this.channels;
 }
 
 //добавляет график 
@@ -247,7 +254,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
 Chart.prototype.loadNewDataAfterZoom = function(eventdata){
     //console.log('zoom',this,eventdata);
     if('xaxis.range[0]' in eventdata){
-        setActiveGraphByName(this.name);
+        setActivePlotByName(this.name);
         this.max_id = 0;
         reloadChannels(this.channels,[eventdata['xaxis.range[0]'],eventdata['xaxis.range[1]']]);
     }
@@ -279,6 +286,11 @@ Chart.prototype.setRange = function(time){
         }
         Plotly.update(this.name,[], relayout_data);
     }
+}
+
+//возвращает границы оси х
+Chart.prototype.getRange = function(){
+    return this.range;
 }
 
 //отрисовывает новый график на полотне
@@ -362,23 +374,57 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
 var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
 
 function removePlot(id){
-    if(activechart){
-        charts[activechart].removePlot(id);
+    if(activeplot){
+        charts[activeplot].removePlot(id);
     }
 }
 
 function terminatePlot(id){
-    if(activechart){
-        charts[activechart].terminatePlot(id);
+    if(activeplot){
+        charts[activeplot].terminatePlot(id);
     }
 }
 
 
-//sets variable range of the active chart
+//sets variable range of the active plot
 function setRange(time){
-    if(activechart){
-        charts[activechart].setRange(time);
+    if(activeplot){
+        charts[activeplot].setRange(time);
     }
+}
+
+function getActivePlotRange(){
+    if(activeplot){
+        return charts[activeplot].getRange();
+    }
+}
+
+//returns channels of the active plot
+function getActivePlotChanels(){
+    if(activeplot){
+        return charts[activeplot].getChanels();
+    }
+}
+
+Array.prototype.unique = function() {
+    //TODO: check
+    var a = this.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+    return a;
+};
+
+//returns channels of all the plots
+function getAllPlotsChannels(){
+    var channels = [];
+    for(var i=0;i<charts.length;i++){
+        channels.concat(charts[i].getChannels()).unique();
+    }
+    return channels;
 }
 
 //добавляет график
@@ -415,9 +461,9 @@ function addGraphDataInOrder(json){
 function addGraphData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addGraphData(json)){
-            if(!charts[activechart].addGraphData(json)){
+            if(!charts[activeplot].addGraphData(json)){
                 var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
-                setActiveGraphByName("chart_"+new_chart_n);
+                setActivePlotByName("chart_"+new_chart_n);
                 charts["chart_"+new_chart_n].addGraphData(json);
                 new_chart_n = null;
             }
@@ -436,7 +482,7 @@ function addOrbitData(json){
     if(json.chart in charts){
         if(!charts[json.chart].addOrbitData(json)){
             var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
-            setActiveGraphByName("chart_"+new_chart_n);
+            setActivePlotByName("chart_"+new_chart_n);
             charts["chart_"+new_chart_n].addOrbitData(json);
             new_chart_n = null;
         }
@@ -479,8 +525,8 @@ function closeChart(e){
     resizeObserver.unobserve(graph[0]);
     $(e.target).parent().remove();
     delete charts[name];
-    if(activechart == name){
-        activechart = null;
+    if(activeplot == name){
+        activeplot = null;
     }
     name = null;
 }
@@ -542,7 +588,7 @@ $(document).ready(function(){
         mirrorContainer: document.getElementById('mirror')
     });
     $("body").on("click",".pchart",function(){
-        setActiveGraph($(this));
+        setActivePlot($(this));
     });
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();

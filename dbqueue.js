@@ -295,7 +295,7 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
                     "title": "orbit_data",
                     "name": channel.name,
                     "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
-                    "units": "mA",
+                    "units": "mm",
                     "chart": chart,
                     "mode": mode,
                     "dbid": db.id,

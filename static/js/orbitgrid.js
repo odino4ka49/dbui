@@ -179,7 +179,7 @@ function displayOrbit(system,channel){
         var data = {
             "name": channel_object.name,
             "data": parseToOrbitData(channel_object.name,chan.value,v3v4basicdata[system].azimuths),
-            "units": graph_name[1]=='i' ? "mA" : "mm",
+            "units": /*graph_name[1]*/chan.name.slice(-1)=='i' ? "mA" : "mm",
             "chart": graph_name,
             "color": color,
             "mode": getMode()

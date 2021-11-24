@@ -35,6 +35,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
             datetimerange[0] = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
             datetimerange[1] = picker.endDate.format('YYYY-MM-DD HH:mm:ss');
         }
+        (document).trigger("dateTimeApplied");
     });
   }
 
@@ -46,6 +47,12 @@ TimePicker.prototype.getDateTime = function() {
 TimePicker.prototype.getDateTimeNotFormated = function() {
     return([$(this.div).data('daterangepicker').startDate._d,$(this.div).data('daterangepicker').endDate._d]);
 }
+
+TimePicker.prototype.setDateTime = function(start,end) {
+    $(this.div).data('daterangepicker').setStartDate(start);
+    $(this.div).data('daterangepicker').setEndDate(end);
+}
+
 
 //линиями или точками
 function getMode(){

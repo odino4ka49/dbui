@@ -35,8 +35,10 @@ function refreshTree(dbid,data) {
     db_tree.treeview(
         {
             data: parseTree(data),
-            levels: 1,
-            //multiSelect: true,
+            levels: 1,          
+            selectedColor: "white",
+            selectedBackColor: "lightblue",
+            multiSelect: true,
             onNodeSelected: function(event, node) {
                 console.log(dbid,node);
                 if(dbid=="db1"){
@@ -63,6 +65,27 @@ function refreshTree(dbid,data) {
     db_tree = null;
 };
 
+//выделить нужные каналы во всех деревьях
+function selectChannelsByDB(channels,dbid){
+    //unselect all trees
+    var db_tree = $("#"+databases[i].id+"_tree");
+    var selectednodes = db_tree.treeview('getSelected');
+    for(var j=0; j<selectednodes.length;j++){
+        db_tree.treeview('unselectNode', [ selectednodes[i], { silent: true } ]);
+    }
+    for(var i = 0; i < channels.length; i++){
+        db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
+    }
+}
+
+function selectChannelsInAllTrees(channels){
+    for(var i = 0; i < databases.length; i++){
+        var dbid = databases[i].id;
+        var dbchannels = channels.filter(chan => chan.dbid==dbid);
+        selectChannelsByDB(dbchannels,dbid);
+    }
+}
+
 //метаданные о канале
 function getDatatable(channel,dbid){
     var db_tree = $("#"+dbid+"_tree");
@@ -88,18 +111,18 @@ function getDatatable(channel,dbid){
 //загрузить данные о выбранном канале
 function loadChannelData(channel,dbid){
     loadChannelDataTime(channel,dbid,timepicker.getDateTime());
-    setRange(timepicker.getDateTimeNotFormated());
+    //setRange(timepicker.getDateTimeNotFormated());
 }
 //загрузить данные о канале из базы с учетом времени
 function loadChannelDataTime(channel,dbid,time){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
-    if(!activechart){
+    if(!activeplot){
         alert("Please choose a canvas to display the data");
         return;
     }
     if(datatable){
         //console.log("datatable",datatable)
-        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid);
+        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.id);
         addChannelToGraph(channel_object);
         loadChannelDataObject(channel_object,time);
     }
@@ -116,7 +139,7 @@ function loadChannelDataObject(channel_object,time){
         datatable: channel_object.datatable,
         datetime: time,
         dbid: channel_object.dbid,
-        chart: activechart,
+        chart: activeplot,
         pixels: getActiveGraphWidth()-10,
         mode: getMode(),
         ordernum: orders_max_n                                                                      
@@ -124,7 +147,7 @@ function loadChannelDataObject(channel_object,time){
     orders.push({
         number: orders_max_n,
         parts_num: null,
-        chart: activechart,
+        chart: activeplot,
         mode: getMode(),
         last_displayed: null,
         parts: []
@@ -151,7 +174,7 @@ function loadDatabaseTree(dbid){
 function displayDatabases(data){
     databases = data;
     var db_table = $("#databases");
-    data.forEach(function(db){
+    databases.forEach(function(db){
         var refresh_td = $('<td >').append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree);
         var db_tr = $('<tr>').attr('id',db.id).append("<td><div class='plus'/></td><td>"+db.name+"</td>").append(refresh_td).appendTo(db_table);
         if(!db.status){
@@ -269,6 +292,7 @@ function search(dbid) {
       exactMatch: false,
       revealResults: true
     };
+    db_tree.treeview('collapseAll', { silent: true });
     var result = db_tree.treeview('search', [ pattern, options ]);
     //db_tree.treeview('hideAll');
     return (result instanceof Array) ? result : [];
