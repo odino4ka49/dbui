@@ -35,7 +35,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
             datetimerange[0] = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
             datetimerange[1] = picker.endDate.format('YYYY-MM-DD HH:mm:ss');
         }
-        (document).trigger("dateTimeApplied");
+        $(document).trigger("dateTimeApplied");
     });
   }
 

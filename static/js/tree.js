@@ -140,7 +140,7 @@ function loadChannelDataObject(channel_object,time){
         datetime: time,
         dbid: channel_object.dbid,
         chart: activeplot,
-        pixels: getActiveGraphWidth()-10,
+        pixels: getActivePlotWidth()-10,
         mode: getMode(),
         ordernum: orders_max_n                                                                      
     };

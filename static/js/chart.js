@@ -32,14 +32,14 @@ function setActivePlot(div){
     activeplot = div.attr('id');
     $(".graphset").children().removeClass('active');
     div.parent().addClass('active');
-    (document).trigger("activePlotSet");
+    $(document).trigger("activePlotSet");
 }
 
 function setActivePlotByName(name){
     activeplot = name;
     $(".graphset").children().removeClass('active');
     $("#"+name).parent().addClass('active');
-    (document).trigger("activePlotSet");
+    $(document).trigger("activePlotSet");
 }
 
 function parseDates(dates){
