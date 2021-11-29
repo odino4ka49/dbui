@@ -402,7 +402,7 @@ function getActivePlotRange(){
 //returns channels of the active plot
 function getActivePlotChanels(){
     if(activeplot){
-        return charts[activeplot].getChanels();
+        return charts[activeplot].getChannels();
     }
 }
 

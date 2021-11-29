@@ -68,12 +68,14 @@ function refreshTree(dbid,data) {
 //выделить нужные каналы во всех деревьях
 function selectChannelsByDB(channels,dbid){
     //unselect all trees
-    var db_tree = $("#"+databases[i].id+"_tree");
+    var db_tree = $("#"+dbid+"_tree");
     var selectednodes = db_tree.treeview('getSelected');
     for(var j=0; j<selectednodes.length;j++){
-        db_tree.treeview('unselectNode', [ selectednodes[i], { silent: true } ]);
+        //console.lo
+        db_tree.treeview('unselectNode', [ selectednodes[j], { silent: true } ]);
     }
     for(var i = 0; i < channels.length; i++){
+        console.log(channels[i].nodeid)
         db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
     }
 }
@@ -121,8 +123,8 @@ function loadChannelDataTime(channel,dbid,time){
         return;
     }
     if(datatable){
-        //console.log("datatable",datatable)
-        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.id);
+        console.log("channel",channel)
+        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.nodeId);
         addChannelToGraph(channel_object);
         loadChannelDataObject(channel_object,time);
     }

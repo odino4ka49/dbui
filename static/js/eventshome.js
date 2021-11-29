@@ -1,4 +1,4 @@
-(document).on("activePlotSet",function(event){
+$(document).on("activePlotSet",function(event){
     var time = getActivePlotRange();
     console.log(time);
     timepicker.setDateTime(time[0],time[1]);
@@ -7,7 +7,7 @@
 });
 
 
-(document).on("dateTimeApplied",function(event){
+$(document).on("dateTimeApplied",function(event){
     var time = timepicker.getDateTime();
     setRange(time);
 });
