@@ -285,6 +285,7 @@ Chart.prototype.setRange = function(time){
             }
         }
         Plotly.update(this.name,[], relayout_data);
+        //TODO: call for more data if needed
     }
 }
 

@@ -37,7 +37,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
         }
         $(document).trigger("dateTimeApplied");
     });
-  }
+}
 
 
 TimePicker.prototype.getDateTime = function() {
