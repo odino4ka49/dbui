@@ -1,7 +1,7 @@
 //полотно, которое выделено сейчас
 var activeplot = 'chart_1';
 //последний индекс полотна
-var chart_max_n = 2;
+var chart_max_n = 0;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
 //var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
 //тоны для генерации цветов графиков
@@ -44,7 +44,6 @@ function setActivePlotByName(name){
 
 function parseDates(dates){
     var result = [];
-    console.log(dates);
     dates.forEach(element => {
         //console.log(element);
         result.push( Date.parse(element.substring(0, element.length - 1)));
@@ -87,7 +86,7 @@ function Chart (name) {
         this.scales_units = new Map();
         this.channels = [];
         this.axis_labels = [];
-        this.range = [];
+        this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'),moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
         this.max_id = 0;
     }
 
@@ -291,7 +290,9 @@ Chart.prototype.setRange = function(time){
 
 //возвращает границы оси х
 Chart.prototype.getRange = function(){
-    return this.range;
+    //var start = (' ' + this.range[0]).slice(1);
+    //var end = (' ' + this.range[1]).slice(1);
+    return this.range;//[start,end];
 }
 
 //отрисовывает новый график на полотне
@@ -372,7 +373,12 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
 }
 
 //начальные графики
-var charts = {'chart_1': new Chart('chart_1'),'chart_2': new Chart('chart_2')}
+var charts = {}
+
+function initCharts(){
+    charts['chart_1'] = new Chart('chart_1');
+    chart_max_n++;
+}
 
 function removePlot(id){
     if(activeplot){
@@ -391,6 +397,9 @@ function terminatePlot(id){
 function setRange(time){
     if(activeplot){
         charts[activeplot].setRange(time);
+    }
+    for(ch in charts){
+        console.log(ch,charts[ch].getRange());
     }
 }
 
@@ -447,7 +456,7 @@ function addGraphDataInOrder(json){
     if(order.last_displayed==order.parts_num-1)
     {
         var no_data = true;
-        console.log(order.parts);
+        //console.log(order.parts);
         for(i=0;i<=order.last_displayed;i++){
             if(order.parts[i].data.x.length!=0){
                 no_data = false;

@@ -41,7 +41,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
 
 
 TimePicker.prototype.getDateTime = function() {
-    return this.datetimerange;
+    return [this.datetimerange[0].slice(),this.datetimerange[1].slice()];
 }
 
 TimePicker.prototype.getDateTimeNotFormated = function() {
@@ -59,7 +59,10 @@ function getMode(){
     return($('input[name="linetype"]:checked').val());
 }
 
-function initPicker(div){
+function initPicker(div,time=null){
     timepicker = new TimePicker(div);
     timepicker.init();
+    if(time!=null){
+        timepicker.setDateTime(time[0],time[1]);
+    }
 }

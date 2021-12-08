@@ -34,14 +34,14 @@ class SystemTree {
                     this.systems.push(sys);
                 }
                 if(ss.subsys_id){
-                    subsys = new Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status);
+                    subsys = new Subsystem(ss.subsys_id,ss.sys_id,ss.subsystem,ss.data_tbl,ss.status);
                     sys.appendSubsystem(subsys);
                     this.subsystems.push(subsys);
                 }
                 else{
                     sys.setDatatable(ss.data_tbl);
                     sys.status = ss.status;
-                    sys.ss_id = ss.id; 
+                    sys.ss_id = ss.sys_id; 
                 }
             //}
         }
@@ -60,6 +60,7 @@ class SystemTree {
             //if(!("status" in gr) || gr.status){
                 var group = new Group(gr.group_id,gr.name,gr.status);
                 var ss = this.findSS(gr.ss_id);
+                //if(gr.ss_id==8){console.log(ss);}
                 if(ss){
                     ss.appendGroup(group);
                 }

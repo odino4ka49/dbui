@@ -2,9 +2,9 @@
 <script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<script src="/static/js/chart.js"></script>
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/timepicker.js"></script>
+<script src="/static/js/chart.js"></script>
 <script src="/static/js/eventshome.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/js/color.js"></script>
@@ -113,6 +113,7 @@
         connection.send(message);
     }
 
-    initPicker("#datetimerange");
+    initCharts();
+    initPicker("#datetimerange",getActivePlotRange());
 
 </script>

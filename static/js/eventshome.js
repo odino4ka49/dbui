@@ -9,5 +9,6 @@ $(document).on("activePlotSet",function(event){
 
 $(document).on("dateTimeApplied",function(event){
     var time = timepicker.getDateTime();
+    console.log("time",time);
     setRange(time);
 });
