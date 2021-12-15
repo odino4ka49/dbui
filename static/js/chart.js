@@ -56,9 +56,14 @@ function getActivePlotWidth(){
     return Math.ceil($("#"+activeplot).width());
 }
 
-//добавляет данные о канале к объекту Chart
-function addChannelToGraph(channel){
+//добавляет новый канал на активный Plot
+function addChannelToActivePlot(channel_node,hierarchy,datatable,dbid){
+    if(!activeplot){
+        alert("Please choose a canvas to display the data");
+        return;
+    }
     var chart = charts[activeplot];
+    var channel = new ChartChannel(channel_node.name,hierarchy,datatable,dbid,channel_node.nodeId);
     var new_chart_n = chart.name;
     if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
         new_chart_n = addChartBeforeTarget($("#"+chart.name).parent());
@@ -77,6 +82,7 @@ function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
     this.nodeid = nodeid;
     this.displayed = false;
     this.color = null;
+    this.data = [];
 }
 
 //класс полотна с графиками
@@ -90,8 +96,16 @@ function Chart (name) {
         this.max_id = 0;
     }
 
+//добавляет новый канал на канвас
 Chart.prototype.addChannel = function(channel){
+    //TODO: check if channel is in plot
+    var result = this.channels.find(obj => {
+        return ((obj.name == channel.name)&&(obj.dbid == channel.dbid))
+    })
+    if(result) return;
+    //TODO: if it is not, put new channel in plot and ask to load
     this.channels.push(channel);
+    this.loadNewData(channel);
 }
 
 Chart.prototype.getWidth = function(){
@@ -105,6 +119,8 @@ Chart.prototype.getHeight = function(){
 Chart.prototype.getChannels = function(){
     return this.channels;
 }
+
+//загружает информацию о канале из БД
 
 //добавляет график 
 Chart.prototype.addGraphData = function(json){
@@ -272,6 +288,11 @@ Chart.prototype.removePlot = function(id){
     Plotly.deleteTraces(this.name, id);
 }
 
+//удаление канала
+Chart.prototype.removePlot = function(id){
+    //TODO
+}
+
 //устанавливает границы оси х
 Chart.prototype.setRange = function(time){
     this.range = time;
@@ -383,6 +404,12 @@ function initCharts(){
 function removePlot(id){
     if(activeplot){
         charts[activeplot].removePlot(id);
+    }
+}
+
+function removeChanFromActivePlot(node,dbid){
+    if(activeplot){
+        charts[activeplot].removeChannel(node,dbid);
     }
 }
 
@@ -588,6 +615,35 @@ function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+}
+
+
+//посылает запрос на данные о канале с помощью объекта канал
+function loadChannelDataObject(channel_object,time,chartname){
+    //console.log(time);
+    var msg = {
+        type: "channel_data",
+        hierarchy: channel_object.hierarchy,
+        datatable: channel_object.datatable,
+        datetime: time,
+        dbid: channel_object.dbid,
+        //chart: plot,
+        //pixels: getActivePlotWidth()-10,
+        //mode: getMode(),
+        ordernum: orders_max_n                                                                      
+    };
+    orders.push({
+        number: orders_max_n,
+        parts_num: null,
+        chart: chartname,
+        mode: getMode(),
+        last_displayed: null,
+        parts: []
+    })
+    orders_max_n++;
+    document.body.style.cursor='wait';
+    sendMessageToServer(JSON.stringify(msg));
+    msg = null;
 }
 
 $(document).ready(function(){

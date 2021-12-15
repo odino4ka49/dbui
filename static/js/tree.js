@@ -53,12 +53,15 @@ function refreshTree(dbid,data) {
                     loadChannelData(node,dbid);
                     //$("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                 }
-            },
-            /*onNodeUnselected: function (event, node) {
-                if(node.type=="channel"){
-                    removePlot(node.text);
+                else{
+                    $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                 }
-            }*/
+            },
+            onNodeUnselected: function (event, node) {
+                if(node.type=="channel"){
+                    removeChanFromActivePlot(node,dbid);
+                }
+            }
         });
     db_li.addClass("opened");
     db_li = null;
@@ -111,53 +114,25 @@ function getDatatable(channel,dbid){
 }
 
 //загрузить данные о выбранном канале
-function loadChannelData(channel,dbid){
+/*function loadChannelData(channel,dbid){
     loadChannelDataTime(channel,dbid,timepicker.getDateTime());
     //setRange(timepicker.getDateTimeNotFormated());
-}
+}*/
 //загрузить данные о канале из базы с учетом времени
-function loadChannelDataTime(channel,dbid,time){
+function addChannelToActivePlot(channel,dbid){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
-    if(!activeplot){
+    /*if(!activeplot){
         alert("Please choose a canvas to display the data");
         return;
-    }
+    }*/
     if(datatable){
-        console.log("channel",channel)
-        var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.nodeId);
-        addChannelToGraph(channel_object);
-        loadChannelDataObject(channel_object,time);
+        addChannelToActivePlot(channel,hierarchy,datatable,dbid)
+        //console.log("channel",channel)
+        //var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.nodeId);
+        //loadChannelDataObject(channel_object,time);
     }
     datatable = null;
     hierarchy = null;
-}
-
-//посылает запрос на данные о канале с помощью объекта канал
-function loadChannelDataObject(channel_object,time){
-    console.log(time);
-    var msg = {
-        type: "channel_data",
-        hierarchy: channel_object.hierarchy,
-        datatable: channel_object.datatable,
-        datetime: time,
-        dbid: channel_object.dbid,
-        chart: activeplot,
-        pixels: getActivePlotWidth()-10,
-        mode: getMode(),
-        ordernum: orders_max_n                                                                      
-    };
-    orders.push({
-        number: orders_max_n,
-        parts_num: null,
-        chart: activeplot,
-        mode: getMode(),
-        last_displayed: null,
-        parts: []
-    })
-    orders_max_n++;
-    document.body.style.cursor='wait';
-    sendMessageToServer(JSON.stringify(msg));
-    msg = null;
 }
 
 //посылает запрос на данные о БД
