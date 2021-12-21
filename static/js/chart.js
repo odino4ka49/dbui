@@ -105,7 +105,7 @@ Chart.prototype.addChannel = function(channel){
     if(result) return;
     //TODO: if it is not, put new channel in plot and ask to load
     this.channels.push(channel);
-    this.loadNewData(channel);
+    loadChannelDataObject(channel,time,this.name);
 }
 
 Chart.prototype.getWidth = function(){
@@ -464,8 +464,40 @@ function getAllPlotsChannels(){
     return channels;
 }
 
-//добавляет график
-function addGraphDataInOrder(json){
+
+//добавляет данные о канале
+function addChannelDataInOrder(json){
+    var order = orders.filter(obj => {  return obj.number === json.ordernum})[0];
+    order.parts_num = json.parts;
+    order.parts[json.index]=json;
+    var i = 0;
+    console.log("got",json.index);
+    if(order.last_displayed!=null) i=order.last_displayed+1;
+    for(;i<=json.index;i++){
+        console.log("draw",i);
+        if(order.parts[i]!=undefined){
+            addChannelData(order.parts[i],order.chart,order.mode);
+            order.last_displayed = i;
+            //order.parts[i]=1;
+        }
+    }
+    if(order.last_displayed==order.parts_num-1)
+    {
+        var no_data = true;
+        //console.log(order.parts);
+        for(i=0;i<=order.last_displayed;i++){
+            if(order.parts[i].data.x.length!=0){
+                no_data = false;
+            }
+        }
+        if(no_data) alert("Sorry, no data to display");
+        orders.splice(orders.indexOf(order),1);
+        defaultCursor();
+    }
+}
+
+//добавляет график: old
+/*function addGraphDataInOrder(json){
     var order = orders.filter(obj => {  return obj.number === json.ordernum})[0];
     order.parts_num = json.parts;
     order.parts[json.index]=json;
@@ -493,11 +525,12 @@ function addGraphDataInOrder(json){
         orders.splice(orders.indexOf(order),1);
         defaultCursor();
     }
-}
+}*/
 
-function addGraphData(json){
-    if(json.chart in charts){
-        if(!charts[json.chart].addGraphData(json)){
+function addChannelData(json,chart,mode){
+    if(chart in charts){
+        //TODO:remake
+        if(!charts[chart].addGraphData(json)){
             if(!charts[activeplot].addGraphData(json)){
                 var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
                 setActivePlotByName("chart_"+new_chart_n);
@@ -571,10 +604,12 @@ function closeChart(e){
 //перезагрузка каждого графика
 function reloadChannels(channels,time){
     console.log(channels);
-    channels.forEach(function(channel){    
-        channel.displayed = false;
-        removePlot(0);
-        loadChannelDataObject(channel,time);
+    channels.forEach(function(channel){
+        //TODO:reloadallthegraphs    
+
+        //channel.displayed = false;
+        //removePlot(0);
+        //loadChannelDataObject(channel,time);
     })
 }
 
@@ -622,7 +657,7 @@ function getRandomInt(min, max) {
 function loadChannelDataObject(channel_object,time,chartname){
     //console.log(time);
     var msg = {
-        type: "channel_data",
+        type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
         datatable: channel_object.datatable,
         datetime: time,

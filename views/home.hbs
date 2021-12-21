@@ -84,7 +84,10 @@
             //console.log("got message "+json.title)
             switch (json.title) {
                 case "channel_data":
-                    addGraphDataInOrder(json);
+                    addChannelDataInOrder(json);
+                    break;
+                case "full_channel_data":
+                    addChannelDataInOrder(json);
                     break;
                 case "orbit_data":
                     addOrbitData(json);

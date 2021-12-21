@@ -242,6 +242,47 @@ function filterData(data,pixels,chname){
 }
 
 //we get all channel data for a particular period of time
+function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
+    var channel = hierarchy.channel;
+    var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
+    var db = databases.get(dbid);
+    var subsystem = null;
+    var date1 = new Date(datetime[0]+"Z");
+    var date2 = new Date(datetime[1]+"Z");
+    var hours = Math.abs(date1 - date2) / 36e5;
+    var parts = Math.ceil(hours/12.0);
+    var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
+    console.log("dates",dates);
+    if(datatable == "v4cod,v4-new"){
+        if(channel.name.endsWith("set")){
+            datatable = "v4cod";
+        }
+        else{
+            datatable = "v4-new";
+        }
+    }
+    for(var i=0;i<parts;i++){
+        if(i==parts-1){
+            dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        }
+        else{
+            dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
+        }
+    }
+    if(db.type == "pickups" || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
+        if("subsystem" in hierarchy){
+            subsystem = hierarchy.subsystem
+        }
+        else{
+            loadOrbitData(db,datatable,channel,null,ordernum,order);
+            //TODO: change function
+            return;
+        }
+    }
+    loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,0);
+}
+
+//we get average channel data for a particular period of time considering mode and chart size
 function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,ordernum,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
@@ -282,7 +323,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
 }
 
 //we get all orbit data for a particular period of time
-function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
+function loadOrbitData(db,datatable,channel,date,ordernum,order){
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
@@ -296,12 +337,62 @@ function loadOrbitData(chart,db,datatable,channel,date,mode,ordernum,order){
                     "name": channel.name,
                     "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
                     "units": "mm",
-                    "chart": chart,
-                    "mode": mode,
+                    //"chart": chart,
+                    //"mode": mode,
                     "dbid": db.id,
                     "ordernum": ordernum
                 }
                 wsServer.sendData(channel_data,order,true);
+            }
+        },ordernum);
+    }
+    catch(e){
+        console.log(e);
+    }
+}
+
+
+//загрузка данных с канала определенного перидоа
+function loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i){
+    var parts = dates.length-1;
+    var req;
+    var chan_name = channel.name;
+    if(subsystem){
+        chan_name = subsystem.name+": "+chan_name;
+        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+    }
+    else{
+        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+    }
+    try{
+        db.sendRequest(req,order,function(result){
+            if(result.type=="err"){
+                console.log("problem")
+                wsServer.sendError(result,order)
+            }
+            else{
+                /*if(result.length==0){
+                    wsServer.sendError({"text":"There is no data on this period"},order)
+                }*/
+                var channel_data = {
+                    "title": "full_channel_data",
+                    "fullname": chan_name,
+                    "name": channel.name,
+                    "data": result,
+                    "units": channel.unit,
+                    "index": i,
+                    "chart": chart,
+                    "dbid": db.id,
+                    "ordernum": ordernum,
+                    "parts": parts
+                }
+                if(i==parts-1){
+                    wsServer.sendData(channel_data,order,true);
+                }
+                else{
+                    wsServer.sendData(channel_data,order,false);
+                    loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i+1)
+                }
             }
         },ordernum);
     }
