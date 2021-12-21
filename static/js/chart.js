@@ -123,12 +123,13 @@ Chart.prototype.getChannels = function(){
 //загружает информацию о канале из БД
 
 //добавляет график 
-Chart.prototype.addGraphData = function(json){
+Chart.prototype.addChartData = function(json,chart,mode){
     if(this.type=="orbit"){
         return false;
     }
-    json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element)=>(element.name==json.name));
+    //TODO: add data to channel 
+    json.data.x = parseDates(json.data.x);
     console.log("CHANNEL",channel);
     var chan_name = json.name
     if(channel){
@@ -149,7 +150,7 @@ Chart.prototype.addGraphData = function(json){
 }
 
 //добавляет график орбиты
-Chart.prototype.addOrbitData = function(json){
+Chart.prototype.addOrbitData = function(json,chart,mode){
     if(this.type=="timeseries"){
         return false;
     }
@@ -530,20 +531,16 @@ function addChannelDataInOrder(json){
 function addChannelData(json,chart,mode){
     if(chart in charts){
         //TODO:remake
-        if(!charts[chart].addGraphData(json)){
+        charts[chart].addChannelData(json,chart,mode);
+        /*if(!charts[chart].addGraphData(json,chart,mode)){
             if(!charts[activeplot].addGraphData(json)){
                 var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
                 setActivePlotByName("chart_"+new_chart_n);
                 charts["chart_"+new_chart_n].addGraphData(json);
                 new_chart_n = null;
             }
-        }
+        }*/
     }
-    else{
-        //alert("Please choose a canvas to display the data");
-        document.body.style.cursor='default';
-    }
-    json = null;
 }
 
 //добавляет график орбиты

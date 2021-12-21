@@ -119,12 +119,12 @@ function getDatatable(channel,dbid){
     //setRange(timepicker.getDateTimeNotFormated());
 }*/
 //загрузить данные о канале из базы с учетом времени
-function addChannelToActivePlot(channel,dbid){
+/*function addChannelToActivePlot(channel,dbid){
     var [datatable,hierarchy] = getDatatable(channel,dbid);
     /*if(!activeplot){
         alert("Please choose a canvas to display the data");
         return;
-    }*/
+    }
     if(datatable){
         addChannelToActivePlot(channel,hierarchy,datatable,dbid)
         //console.log("channel",channel)
@@ -133,7 +133,7 @@ function addChannelToActivePlot(channel,dbid){
     }
     datatable = null;
     hierarchy = null;
-}
+}*/
 
 //посылает запрос на данные о БД
 function loadDatabaseTree(dbid){
