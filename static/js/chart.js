@@ -85,6 +85,46 @@ function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
     this.data = [];
 }
 
+ChartChannel.prototype.addData = function(newdata){
+    console.log(newdata);
+    var data_str = {'period':[newdata[0][t],newdata[newdata.length-1][t]],'data':newdata};
+    for(var i=0;i < this.data.length;i++){
+        var piece = this.data[i];
+        if((piece.period[0]<data_str.period[0])&&(piece.period[1]>data_str.period[0])){
+            //remove duplicates
+            data_str.splice(0,data_str.findIndex((element)=>(element.t>piece.period[1])));
+        }
+        else if((piece.period[0]<data_str.period[1])&&(piece.period[1]>data_str.period[1])){
+            //remove duplicates
+            var ind=data_str.findIndex((element)=>(element.t>piece.period[0]));
+            data_str.splice(ind,9e9);
+        }
+        else if((piece.period[0]<data_str.period[1])&&(piece.period[0]>data_str.period[0])&&(piece.period[1]<data_str.period[1])&&(piece.period[1]>data_str.period[0])){
+            this.data.splice(this.data.findIndex(piece),1);
+        }
+    }
+    //insert data_str
+    if(this.data[0].period[0]>data_str.period[1]){
+        //remove duplicates
+        data_str.unshift(data_str);
+    }
+    else if(this.data[this.data.length-1].period[1]<data_str.period[0]){
+        //remove duplicates
+        data_str.push(data_str);
+    }
+    else{
+        for(var i=0;i < this.data.length-1;i++){
+            if((this.data[i].period[1]<data_str.period[0])&&(this.data[i+1].period[0]>data_str.period[1])){
+                data_str.splice(i+1,0,data_str);
+            }
+        }
+    }
+}
+
+ChartChannel.prototype.getData = function(time,pixels){
+    console.log(time);
+}
+
 //класс полотна с графиками
 function Chart (name) {
         this.name = name;
@@ -530,7 +570,6 @@ function addChannelDataInOrder(json){
 
 function addChannelData(json,chart,mode){
     if(chart in charts){
-        //TODO:remake
         charts[chart].addChannelData(json,chart,mode);
         /*if(!charts[chart].addGraphData(json,chart,mode)){
             if(!charts[activeplot].addGraphData(json)){
