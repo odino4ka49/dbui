@@ -85,6 +85,104 @@ function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
     this.data = [];
 }
 
+ChartChannel.prototype.addData = function(newdata){
+    console.log(newdata);
+    var data_str = {'period':[newdata[0][t],newdata[newdata.length-1][t]],'data':newdata};
+    for(var i=0;i < this.data.length;i++){
+        var piece = this.data[i];
+        if((piece.period[0]<data_str.period[0])&&(piece.period[1]>data_str.period[0])){
+            //remove duplicates
+            data_str.splice(0,data_str.findIndex((element)=>(element.t>piece.period[1])));
+        }
+        else if((piece.period[0]<data_str.period[1])&&(piece.period[1]>data_str.period[1])){
+            //remove duplicates
+            var ind=data_str.findIndex((element)=>(element.t>piece.period[0]));
+            data_str.splice(ind,9e9);
+        }
+        else if((piece.period[0]<data_str.period[1])&&(piece.period[0]>data_str.period[0])&&(piece.period[1]<data_str.period[1])&&(piece.period[1]>data_str.period[0])){
+            this.data.splice(this.data.findIndex(piece),1);
+        }
+    }
+    //insert data_str
+    if(this.data[0].period[0]>data_str.period[1]){
+        //remove duplicates
+        data_str.unshift(data_str);
+    }
+    else if(this.data[this.data.length-1].period[1]<data_str.period[0]){
+        //remove duplicates
+        data_str.push(data_str);
+    }
+    else{
+        for(var i=0;i < this.data.length-1;i++){
+            if((this.data[i].period[1]<data_str.period[0])&&(this.data[i+1].period[0]>data_str.period[1])){
+                data_str.splice(i+1,0,data_str);
+            }
+        }
+    }
+}
+
+ChartChannel.prototype.getData() = function(time){
+    console.log(time);
+    var result = [];
+    //put in result all the needed data
+    for(var i=0;i < this.data.length;i++){
+        var piece = this.data[i];
+        if((piece.period[0]>time[0])&&(piece.period[1]<time[1])){
+            result.concat(piece.data);
+        }
+        else if((piece.period[0]>time[0])&&(piece.period[0]<time[1])&&(piece.period[1]>time[1])){
+            result.concat(piece.data.splice(0,piece.data.findIndex((element)=>(element.t>time[1]))));
+        }
+        else if((piece.period[0]<time[0])&&(piece.period[1]<time[1])&&(piece.period[1]>time[0])){
+            var ind=piece.data.findIndex((element)=>(element.t>time[0]));
+            result.concat(piece.data.splice(ind,9e9));
+        }
+    }
+}
+
+ChartChannel.prototype.getFilteredData = function(time,pixels){
+    console.log(time);//assume time is in ms, otherwise we will change it to ms
+    var result = [];
+    //find time for every pixel
+    var ms_in_px = (time[1]-time[0])/pixels;
+    for(var i=0;i < pixels-1;i++){
+        time[0]+ms_in_px*i//get average data for every pixel
+        result.concat(this.averageData([time[0]+ms_in_px*i,time[0]+ms_in_px*(i+1)]))
+    }
+    return result;
+}
+
+
+//усреднение данных
+ChartChannel.prototype.averageData = function(time){
+    var data = this.getData(time);
+    if(!data || data.length==0){
+        return [];
+    }
+    var min = data[0];
+    var max = data[0];
+    //console.log(data)
+    console.log(data[0],this.name)
+    var y = this.name;
+    for (var i=0;i<data.length;i++){
+        if(min[y]>data[i][y]) min = data[i];
+        if(max[y]<data[i][y]) max = data[i];
+    }
+    if(min[y]==max[y]) min = data[0];
+    var result = min.t>max.t? [max,min] : [min,max]
+    return(result)
+}
+
+//фильтр данных - по точке на пиксель
+ChartChannel.prototype.filterData = function(data,pixels,chname){
+    var partsize = data.length/pixels;
+    var result = [];
+    for (var i=0;i<pixels;i++){
+        result = result.concat(this.averageData(data.slice(i*partsize,(i+1)*partsize-1),chname));
+    }
+    return(result);
+}
+
 //класс полотна с графиками
 function Chart (name) {
         this.name = name;
@@ -531,7 +629,6 @@ function addChannelDataInOrder(json){
 
 function addChannelData(json,chart,mode){
     if(chart in charts){
-        //TODO:remake
         charts[chart].addChannelData(json,chart,mode);
         /*if(!charts[chart].addGraphData(json,chart,mode)){
             if(!charts[activeplot].addGraphData(json)){
