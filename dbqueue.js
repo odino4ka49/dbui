@@ -353,7 +353,7 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
 
 
 //загрузка данных с канала определенного перидоа
-function loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i){
+function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i){
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
@@ -381,7 +381,7 @@ function loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,dat
                     "data": result,
                     "units": channel.unit,
                     "index": i,
-                    "chart": chart,
+                    //"chart": chart,
                     "dbid": db.id,
                     "ordernum": ordernum,
                     "parts": parts
@@ -391,7 +391,7 @@ function loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,dat
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i+1)
+                    loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i+1)
                 }
             }
         },ordernum);
@@ -490,5 +490,6 @@ module.exports = {
     loadV3V4ChanDatetimeData: loadV3V4ChanDatetimeData,
     getSensors: getSensors,
     getChannelData: getChannelData,
+    getFullChannelData: getFullChannelData,
     getDatabasesInfo: getDatabasesInfo
 }

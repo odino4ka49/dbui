@@ -50,7 +50,8 @@ function refreshTree(dbid,data) {
                     }
                 }
                 if(node.type=="channel"){
-                    loadChannelData(node,dbid);
+                    $(document).trigger("treeChannelChosen",[node,dbid]);
+                    //loadChannelData(node,dbid);
                     //$("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                 }
                 else{

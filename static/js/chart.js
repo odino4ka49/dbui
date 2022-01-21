@@ -105,7 +105,7 @@ Chart.prototype.addChannel = function(channel){
     if(result) return;
     //TODO: if it is not, put new channel in plot and ask to load
     this.channels.push(channel);
-    loadChannelDataObject(channel,time,this.name);
+    loadChannelDataObject(channel,this.range,this.name);
 }
 
 Chart.prototype.getWidth = function(){
@@ -123,12 +123,13 @@ Chart.prototype.getChannels = function(){
 //загружает информацию о канале из БД
 
 //добавляет график 
-Chart.prototype.addChartData = function(json,chart,mode){
+Chart.prototype.addChannelData = function(json,chart,mode){
     if(this.type=="orbit"){
         return false;
     }
     var channel = this.channels.find((element)=>(element.name==json.name));
     //TODO: add data to channel 
+    console.log(json.data)
     json.data.x = parseDates(json.data.x);
     console.log("CHANNEL",channel);
     var chan_name = json.name

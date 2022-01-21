@@ -10,3 +10,12 @@ $(document).on("dateTimeApplied",function(event){
     var time = timepicker.getDateTime();
     setRange(time);
 });
+
+
+//происходит, если выбрано дерево канала 
+$(document).on("treeChannelChosen",function(event,node,dbid){
+    var [datatable,hierarchy] = getDatatable(node,dbid);
+    addChannelToActivePlot(node,hierarchy,datatable,dbid);
+});
+
+
