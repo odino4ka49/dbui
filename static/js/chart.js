@@ -121,7 +121,7 @@ ChartChannel.prototype.addData = function(newdata){
     }
 }
 
-ChartChannel.prototype.getData() = function(time){
+ChartChannel.prototype.getData = function(time){
     console.log(time);
     var result = [];
     //put in result all the needed data
