@@ -44,6 +44,7 @@ function setActivePlotByName(name){
 
 function parseDates(dates){
     var result = [];
+    console.log("dates",dates)
     dates.forEach(element => {
         //console.log(element);
         result.push( Date.parse(element.substring(0, element.length - 1)));
@@ -85,9 +86,8 @@ function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
     this.data = [];
 }
 
-ChartChannel.prototype.addData = function(newdata){
-    console.log(newdata);
-    var data_str = {'period':[newdata[0][t],newdata[newdata.length-1][t]],'data':newdata};
+ChartChannel.prototype.addData = function(newdata,datetime){
+    var data_str = {'period': datetime/*[newdata[0][t],newdata[newdata.length-1][t]]*/,'data':newdata};
     for(var i=0;i < this.data.length;i++){
         var piece = this.data[i];
         if((piece.period[0]<data_str.period[0])&&(piece.period[1]>data_str.period[0])){
@@ -104,50 +104,58 @@ ChartChannel.prototype.addData = function(newdata){
         }
     }
     //insert data_str
+    if(this.data.length==0){
+        this.data.push(data_str);
+        return;
+    }
     if(this.data[0].period[0]>data_str.period[1]){
-        //remove duplicates
-        data_str.unshift(data_str);
+        this.data.unshift(data_str);
     }
     else if(this.data[this.data.length-1].period[1]<data_str.period[0]){
-        //remove duplicates
-        data_str.push(data_str);
+        this.data.push(data_str);
     }
     else{
         for(var i=0;i < this.data.length-1;i++){
             if((this.data[i].period[1]<data_str.period[0])&&(this.data[i+1].period[0]>data_str.period[1])){
-                data_str.splice(i+1,0,data_str);
+                this.data.splice(i+1,0,data_str);
             }
         }
     }
 }
 
 ChartChannel.prototype.getData = function(time){
-    console.log(time);
     var result = [];
     //put in result all the needed data
     for(var i=0;i < this.data.length;i++){
         var piece = this.data[i];
+        console.log(piece.period[0],time[0],piece.period[1],time[1])
         if((piece.period[0]>time[0])&&(piece.period[1]<time[1])){
-            result.concat(piece.data);
+            result = result.concat(piece.data);
         }
         else if((piece.period[0]>time[0])&&(piece.period[0]<time[1])&&(piece.period[1]>time[1])){
-            result.concat(piece.data.splice(0,piece.data.findIndex((element)=>(element.t>time[1]))));
+            result = result.concat(piece.data.slice(0,piece.data.findIndex((element)=>(element.t>time[1]))));
         }
         else if((piece.period[0]<time[0])&&(piece.period[1]<time[1])&&(piece.period[1]>time[0])){
             var ind=piece.data.findIndex((element)=>(element.t>time[0]));
-            result.concat(piece.data.splice(ind,9e9));
+            result = result.concat(piece.data.slice(ind,9e9));
+        }
+        else if((piece.period[0]<=time[0])&&(piece.period[1]>=time[1])){
+            var ind=piece.data.findIndex((element)=>(element.t>=time[0]));
+            result = result.concat(piece.data.slice(ind,piece.data.findIndex((element)=>(element.t>time[1]))));
         }
     }
+    return result;
 }
 
 ChartChannel.prototype.getFilteredData = function(time,pixels){
-    console.log(time);//assume time is in ms, otherwise we will change it to ms
+    //time = [Date.parse(time[0]),Date.parse(time[1])];
+    //assume time is in ms, otherwise we will change it to ms
     var result = [];
     //find time for every pixel
     var ms_in_px = (time[1]-time[0])/pixels;
     for(var i=0;i < pixels-1;i++){
         time[0]+ms_in_px*i//get average data for every pixel
-        result.concat(this.averageData([time[0]+ms_in_px*i,time[0]+ms_in_px*(i+1)]))
+        result = result.concat(this.averageData([time[0]+ms_in_px*i,time[0]+ms_in_px*(i+1)]))
     }
     return result;
 }
@@ -156,32 +164,33 @@ ChartChannel.prototype.getFilteredData = function(time,pixels){
 //усреднение данных
 ChartChannel.prototype.averageData = function(time){
     var data = this.getData(time);
+    //console.log(data);
     if(!data || data.length==0){
         return [];
     }
     var min = data[0];
     var max = data[0];
     //console.log(data)
-    console.log(data[0],this.name)
+    //console.log(data[0],this.name)
     var y = this.name;
     for (var i=0;i<data.length;i++){
         if(min[y]>data[i][y]) min = data[i];
         if(max[y]<data[i][y]) max = data[i];
     }
-    if(min[y]==max[y]) min = data[0];
     var result = min.t>max.t? [max,min] : [min,max]
+    if(min[y]==max[y]) result = [max];   
     return(result)
 }
 
 //фильтр данных - по точке на пиксель
-ChartChannel.prototype.filterData = function(data,pixels,chname){
+/*ChartChannel.prototype.filterData = function(data,pixels,chname){
     var partsize = data.length/pixels;
     var result = [];
     for (var i=0;i<pixels;i++){
         result = result.concat(this.averageData(data.slice(i*partsize,(i+1)*partsize-1),chname));
-    }
+    }         
     return(result);
-}
+}*/
 
 //класс полотна с графиками
 function Chart (name) {
@@ -220,15 +229,13 @@ Chart.prototype.getChannels = function(){
 
 //загружает информацию о канале из БД
 
-//добавляет график 
-Chart.prototype.addChannelData = function(json,chart,mode){
+//добавляет график, старая функция
+Chart.prototype.addGraphData = function(json){
     if(this.type=="orbit"){
         return false;
     }
-    var channel = this.channels.find((element)=>(element.name==json.name));
-    //TODO: add data to channel 
-    console.log(json.data)
     json.data.x = parseDates(json.data.x);
+    var channel = this.channels.find((element)=>(element.name==json.name));
     console.log("CHANNEL",channel);
     var chan_name = json.name
     if(channel){
@@ -248,6 +255,38 @@ Chart.prototype.addChannelData = function(json,chart,mode){
     return true;
 }
 
+//добавляет данные из БД, запоминает и отрисовывает
+Chart.prototype.addChannelData = function(json,mode){
+    if(this.type=="orbit"){
+        return false;
+    }
+    var channel = this.channels.find((element)=>(element.name==json.name));
+    //TODO: add data to channel 
+    var datetime = [Date.parse(json.datetime[0]+"Z"),Date.parse(json.datetime[1]+"Z")];
+    channel.addData(json.data,datetime);
+    console.log("datetime",datetime)
+
+    var chan_name = json.name;
+    var pixels = this.getWidth()/(Date.parse(this.range[1])-Date.parse(this.range[0])) * (datetime[1]-datetime[0]);
+    if(channel){
+        var data_to_display = this.parseToChartData(chan_name,channel.getFilteredData(datetime,pixels));
+        console.log(data_to_display)
+        if(channel.displayed){
+            this.extendLine(chan_name,data_to_display,json.units,json.fullname)
+        }
+        else{
+            if(!this.is_chart_rendered){
+                this.type = "timeseries";
+                this.renderChart(chan_name,data_to_display,json.units,mode,json.fullname);
+            }
+            else{
+                this.addPlot(chan_name,data_to_display,json.units,mode,json.fullname);
+            };
+        }
+    }
+    return true;
+}
+
 //добавляет график орбиты
 Chart.prototype.addOrbitData = function(json,chart,mode){
     if(this.type=="timeseries"){
@@ -261,6 +300,19 @@ Chart.prototype.addOrbitData = function(json,chart,mode){
         this.addPlot(json.name,json.data,json.units,json.mode,json.fullname);
     };
     return true;
+}
+
+Chart.prototype.parseToChartData = function(channel,data){
+    var x = [];
+    var y = [];
+    data.forEach(element => {
+        var date = new Date();
+        date.setTime(element["t"]);
+        //result.push([parseInt(element["t"]),element[channel]]);
+        x.push(date),
+        y.push(element[channel])
+    });
+    return {x: x,y: y};
 }
 
 //готовит данные для вывода в виде графика
@@ -571,7 +623,8 @@ function addChannelDataInOrder(json){
     order.parts_num = json.parts;
     order.parts[json.index]=json;
     var i = 0;
-    console.log("got",json.index);
+    console.log("order",order);
+    console.log("got",json);
     if(order.last_displayed!=null) i=order.last_displayed+1;
     for(;i<=json.index;i++){
         console.log("draw",i);
@@ -586,7 +639,7 @@ function addChannelDataInOrder(json){
         var no_data = true;
         //console.log(order.parts);
         for(i=0;i<=order.last_displayed;i++){
-            if(order.parts[i].data.x.length!=0){
+            if(order.parts[i].data.length!=0){
                 no_data = false;
             }
         }
@@ -627,9 +680,11 @@ function addChannelDataInOrder(json){
     }
 }*/
 
+//добавляет и отрисовывает данные
 function addChannelData(json,chart,mode){
     if(chart in charts){
-        charts[chart].addChannelData(json,chart,mode);
+        charts[chart].addChannelData(json,mode);
+        //charts[chart].
         /*if(!charts[chart].addGraphData(json,chart,mode)){
             if(!charts[activeplot].addGraphData(json)){
                 var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());

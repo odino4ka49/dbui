@@ -252,7 +252,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
-    console.log("dates",dates);
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
             datatable = "v4cod";
@@ -374,6 +373,8 @@ function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order
                 /*if(result.length==0){
                     wsServer.sendError({"text":"There is no data on this period"},order)
                 }*/
+                console.log("REQ",req)
+                console.log("RESULT",result)
                 var channel_data = {
                     "title": "full_channel_data",
                     "fullname": chan_name,
@@ -381,6 +382,7 @@ function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order
                     "data": result,
                     "units": channel.unit,
                     "index": i,
+                    "datetime": [dates[i],dates[i+1]],
                     //"chart": chart,
                     "dbid": db.id,
                     "ordernum": ordernum,
