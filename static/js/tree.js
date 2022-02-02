@@ -40,7 +40,7 @@ function refreshTree(dbid,data) {
             selectedBackColor: "lightblue",
             multiSelect: true,
             onNodeSelected: function(event, node) {
-                console.log(dbid,node);
+                //console.log(dbid,node);
                 if(dbid=="db1"){
                     if(node.name=="orbits v3v4chan"){
                         window.open(window.location.href+"orbits?system=v3v4")
@@ -79,7 +79,7 @@ function selectChannelsByDB(channels,dbid){
         db_tree.treeview('unselectNode', [ selectednodes[j], { silent: true } ]);
     }
     for(var i = 0; i < channels.length; i++){
-        console.log(channels[i].nodeid)
+        //console.log(channels[i].nodeid)
         db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
     }
 }
@@ -138,7 +138,7 @@ function getDatatable(channel,dbid){
 
 //посылает запрос на данные о БД
 function loadDatabaseTree(dbid){
-    console.log(dbid);
+    //console.log(dbid);
     document.body.style.cursor='wait';
     var msg = {
         type: "tree_data", //type of msg: get tree of this
@@ -260,7 +260,7 @@ function searchAll(){
 function search(dbid) {
     var db_tree = $("#"+dbid+"_tree");
     //if(!db_tree.length){
-    console.log(db_tree)
+    //console.log(db_tree)
     if((!db_tree.length)||(db_tree.is(":hidden"))){
         return false;
     }
@@ -278,7 +278,7 @@ function search(dbid) {
 
 $(document).ready(function(){
     $('#input_search').keyup(function(e){
-        console.log("search_keyup")
+        //console.log("search_keyup")
         if (e.key === 'Enter' || e.which === 13 || (e.keyCode == 13)) {
             searchAll();
         };

@@ -139,6 +139,7 @@ Chart.prototype.extendLine = function(channel,data,units){
 
 
 Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
+    console.log("channeldata",channel,data);
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
@@ -252,6 +253,7 @@ Chart.prototype.setRange = function(time){
 }
 
 Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
+    console.log("channeldata",channel,data);
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;

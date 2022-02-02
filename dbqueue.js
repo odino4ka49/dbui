@@ -53,7 +53,7 @@ function checkIfError(result,order){
 function loadV3V4ChanOrbitsStartData(system,order){
     var db = databases.get("db1");
     if(system=="v4"){
-        db.sendRequest('select "03_chan".id,name,fullname from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits v4\'',order,function(result){
+        db.sendRequest('select "03_chan".id,name,fullname from "03_chan" join "01_system" on "01_system".id = "03_chan".ss_id where "01_system".system = \'orbits\' and "01_system".subsystem=\'v4\'',order,function(result){
             wsServer.sendData({
                 "title": "v4orbits_start_data",
                 "data": result
@@ -69,8 +69,8 @@ function loadV3V4ChanOrbitsStartData(system,order){
 //загрузка азимутов для орбит v3v4chan или v4
 function loadV3V4ChanPkpPosData(system,order){
     var db = databases.get("db1");
-    var systemname = (system=="v3v4") ? "orbits v3v4chan" : "orbits v4" 
-    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".sys_id = "04_pkp_position".sys_id where "01_system".system = \''+systemname+'\'',order,function(result){
+    var subsystemname = (system=="v3v4") ? "v3v4chan" : "v4" 
+    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".system = \'orbits\' and "01_system".subsystem = \''+subsystemname+'\' order by azimuth',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_pkppos_data",
             "system": system,
@@ -292,7 +292,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
-    console.log("dates",dates);
+    //console.log("dates",dates);
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
             datatable = "v4cod";
@@ -358,10 +358,10 @@ function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order
     var chan_name = channel.name;
     if(subsystem){
         chan_name = subsystem.name+": "+chan_name;
-        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+        req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
     }
     else{
-        req = 'select extract(epoch from date_time)*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+        req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
     }
     try{
         db.sendRequest(req,order,function(result){
@@ -373,8 +373,8 @@ function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order
                 /*if(result.length==0){
                     wsServer.sendError({"text":"There is no data on this period"},order)
                 }*/
-                console.log("REQ",req)
-                console.log("RESULT",result)
+                //console.log("REQ",req)
+                //console.log("RESULT",result)
                 var channel_data = {
                     "title": "full_channel_data",
                     "fullname": chan_name,

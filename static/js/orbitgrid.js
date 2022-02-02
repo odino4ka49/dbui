@@ -159,6 +159,7 @@ function setV4OrbitsNames(data){
 }
 
 function setV3V4PkpData(system,data){
+    console.log("azimuths",data)
     v3v4basicdata[system].azimuths = {azimuths:[],pkps:[]};
     //v3v4basicdata[system].azimuths = data;
     data.forEach(function(element){
