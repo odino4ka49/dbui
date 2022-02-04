@@ -97,7 +97,7 @@ function parseToTableData(system,data){
 }
 
 function initV3V4Time(system,time){
-    var start = time-86400000;
+    var start = time-21600000;
     if(v3v4basicdata[system].firstrec>start){
         start = v3v4basicdata[system].firstrec
     }
