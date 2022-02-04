@@ -129,9 +129,11 @@ function createV3V4OrbitTable(system,data){
         name: system,
         header: 'Orbits V3V4',
         show: { 
-            toolbar: true
+            toolbar: true,
+            selectColumn: true
         },
         multiSearch: true,
+        multiSelect: true,
         searches: [
             { field: 't', text: 'Date Time', type: 'text' },
             { field: 'type', text: 'Polarity', type: 'text' }
@@ -143,7 +145,7 @@ function createV3V4OrbitTable(system,data){
             //{ field: 'name', text: 'Chan name', size: '30%', sortable: true }
         ],
         records: dataToW2Data(data),
-        onClick: function(event) {
+        onSelect/*Click*/: function(event) {
             displayOrbit(system,this.get(Number(event.recid)));
         },
         onReload: function(event) {
