@@ -177,7 +177,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
             font: {size: 12},
             orientation: "h"
         },
-        showlegend: true,
+        showlegend: false,
         margin: { l: 20, r: 10, b: 40, t: 40},
         xaxis: {
             range: this.range,
