@@ -64,7 +64,7 @@ function addChannelToActivePlot(channel_node,hierarchy,datatable,dbid){
         return;
     }
     var chart = charts[activeplot];
-    var channel = new ChartChannel(channel_node.name,hierarchy,datatable,dbid,channel_node.nodeId);
+    var channel = new ChartChannel(channel_node.name,hierarchy,datatable,dbid,channel_node.nodeId,activeplot);
     var new_chart_n = chart.name;
     if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
         new_chart_n = addChartBeforeTarget($("#"+chart.name).parent());
@@ -74,16 +74,19 @@ function addChannelToActivePlot(channel_node,hierarchy,datatable,dbid){
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name,hierarchy,datatable,dbid,nodeid){
+function ChartChannel(name,hierarchy,datatable,dbid,nodeid,chartname){
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
+    this.fullname;
     this.id = null; //?
     this.nodeid = nodeid;
     this.displayed = false;
     this.color = null;
     this.data = [];
+    this.units = null;
+    this.chartname = chartname;
 }
 
 ChartChannel.prototype.addData = function(newdata,datetime){
@@ -131,7 +134,9 @@ ChartChannel.prototype.addData = function(newdata,datetime){
 }
 
 ChartChannel.prototype.getData = function(time){
-    var result = [];
+    var result = []; 
+    var time_to_load = [];
+    var time_to_cut = time;
     //console.log(this.data);
     //put in result all the needed data
     for(var i=0;i < this.data.length;i++){
@@ -151,6 +156,16 @@ ChartChannel.prototype.getData = function(time){
             var ind=piece.data.findIndex((element)=>(element.t>=time[0]));
             result = result.concat(piece.data.slice(ind,piece.data.findIndex((element)=>(element.t>time[1]))));
         }
+        if(time_to_cut[0]<piece.period[0]){
+            time_to_load.push([time_to_cut[0],time_to_cut[1]]);
+        }
+        if(time_to_cut[1]>piece.period[1]){
+            time_to_cut = [piece.period[1],time_to_cut[1]];
+        }
+    }
+    console.log("time_to_load",time_to_load);
+    for(var i=0;i<time_to_load.length;i++){
+        loadChannelDataObject(this,time_to_load[i],this.chartname);
     }
     return result;
 }
@@ -273,10 +288,14 @@ Chart.prototype.addChannelData = function(json,mode){
     //TODO: add data to channel 
     var datetime = [Date.parse(json.datetime[0]),Date.parse(json.datetime[1])];
     channel.addData(json.data,datetime);
+    channel.units = json.units;
+    channel.fullname = json.fullname;
+    channel.mode = mode;
     //console.log("datetime",datetime);
     //console.log("channel.data",channel.data);
 
-    var chan_name = json.name;
+    this.drawChannelData(channel,datetime);
+    /*var chan_name = json.name;
     var pixels = Math.ceil(this.getWidth()/(Date.parse(this.range[1])-Date.parse(this.range[0])) * (datetime[1]-datetime[0]));
     if(channel){
         var data_to_display = this.parseToChartData(chan_name,channel.getFilteredData(datetime,pixels));
@@ -291,6 +310,28 @@ Chart.prototype.addChannelData = function(json,mode){
             }
             else{
                 this.addPlot(chan_name,data_to_display,json.units,mode,json.fullname);
+            };
+        }
+    }*/
+    return true;
+}
+
+Chart.prototype.drawChannelData = function(channel,datetime){
+    var chan_name = channel.name;
+    var pixels = Math.ceil(this.getWidth()/(Date.parse(this.range[1])-Date.parse(this.range[0])) * (datetime[1]-datetime[0]));
+    if(channel){
+        var data_to_display = this.parseToChartData(chan_name,channel.getFilteredData(datetime,pixels));
+        //console.log("data_to_display",data_to_display)
+        if(channel.displayed){
+            this.extendLine(chan_name,data_to_display,channel.units,channel.fullname)
+        }
+        else{
+            if(!this.is_chart_rendered){
+                this.type = "timeseries";
+                this.renderChart(chan_name,data_to_display,channel.units,channel.mode,channel.fullname);
+            }
+            else{
+                this.addPlot(chan_name,data_to_display,channel.units,channel.mode,channel.fullname);
             };
         }
     }
@@ -350,29 +391,14 @@ Chart.prototype.extendLine = function(channel,data,units){
 Chart.prototype.redrawChannels = function(datetime){
     var datetime = [Date.parse(datetime[0]),Date.parse(datetime[1])];
 
-        //channel.displayed = false;
-        //removePlot(0);
-        //loadChannelDataObject(channel,time);
-        
-    /*
-    var chan_name = json.name;
-    var pixels = Math.ceil(this.getWidth()/(Date.parse(this.range[1])-Date.parse(this.range[0])) * (datetime[1]-datetime[0]));
-    if(channel){
-        var data_to_display = this.parseToChartData(chan_name,channel.getFilteredData(datetime,pixels));
-        console.log("data_to_display",data_to_display)
-        if(channel.displayed){
-            this.extendLine(chan_name,data_to_display,json.units,json.fullname)
-        }
-        else{
-            if(!this.is_chart_rendered){
-                this.type = "timeseries";
-                this.renderChart(chan_name,data_to_display,json.units,mode,json.fullname);
-            }
-            else{
-                this.addPlot(chan_name,data_to_display,json.units,mode,json.fullname);
-            };
-        }
-    }*/
+    for(var i=0;i<this.channels.length;i++){
+        this.removePlot(0);
+    }
+    for(var i=0;i<this.channels.length;i++){
+        var channel = this.channels[i];
+        channel.displayed = false;
+        this.drawChannelData(channel,datetime);
+    }
 }
 
 //отрисовывает полотно с первым графиком
