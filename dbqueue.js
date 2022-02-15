@@ -247,6 +247,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
     var subsystem = null;
+    console.log('date1',datetime);
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
     var hours = Math.abs(date1 - date2) / 36e5;

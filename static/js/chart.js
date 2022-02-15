@@ -133,10 +133,26 @@ ChartChannel.prototype.addData = function(newdata,datetime){
     }
 }
 
-ChartChannel.prototype.getData = function(time){
-    var result = []; 
+ChartChannel.prototype.checkIfMoreDataNeeded = function(time){
     var time_to_load = [];
     var time_to_cut = time;
+    for(var i=0;i < this.data.length;i++){
+        var piece = this.data[i];
+        if(time_to_cut[0]<piece.period[0]){
+            time_to_load.push([time_to_cut[0],time_to_cut[1]]);
+        }
+        if(time_to_cut[1]>piece.period[1]){
+            time_to_cut = [piece.period[1],time_to_cut[1]];
+        }
+    }
+    console.log("time_to_load",time_to_load);
+    for(var i=0;i<time_to_load.length;i++){
+        loadChannelDataObject(this,time_to_load[i],this.chartname);
+    }
+}
+
+ChartChannel.prototype.getData = function(time){
+    var result = []; 
     //console.log(this.data);
     //put in result all the needed data
     for(var i=0;i < this.data.length;i++){
@@ -156,16 +172,6 @@ ChartChannel.prototype.getData = function(time){
             var ind=piece.data.findIndex((element)=>(element.t>=time[0]));
             result = result.concat(piece.data.slice(ind,piece.data.findIndex((element)=>(element.t>time[1]))));
         }
-        if(time_to_cut[0]<piece.period[0]){
-            time_to_load.push([time_to_cut[0],time_to_cut[1]]);
-        }
-        if(time_to_cut[1]>piece.period[1]){
-            time_to_cut = [piece.period[1],time_to_cut[1]];
-        }
-    }
-    console.log("time_to_load",time_to_load);
-    for(var i=0;i<time_to_load.length;i++){
-        loadChannelDataObject(this,time_to_load[i],this.chartname);
     }
     return result;
 }
@@ -176,6 +182,7 @@ ChartChannel.prototype.getFilteredData = function(time,pixels){
     //console.log("pixels",pixels);
     var result = [];
     //find time for every pixel
+    this.checkIfMoreDataNeeded(time);
     var ms_in_px = (time[1]-time[0])/pixels;
     for(var i=0;i <= pixels-1;i++){
         time[0]+ms_in_px*i//get average data for every pixel
@@ -873,7 +880,7 @@ function getRandomInt(min, max) {
 
 //посылает запрос на данные о канале с помощью объекта канал
 function loadChannelDataObject(channel_object,time,chartname){
-    //console.log(time);
+    console.log(time,time);
     var msg = {
         type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
