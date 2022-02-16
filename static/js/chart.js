@@ -134,21 +134,27 @@ ChartChannel.prototype.addData = function(newdata,datetime){
 }
 
 ChartChannel.prototype.checkIfMoreDataNeeded = function(time){
-    var time_to_load = [];
+    /*var time_to_load = [];
     var time_to_cut = time;
+    console.log("checkIfMoreDataNeeded",new Date(time[0]).toString(),new Date(time[1]).toString())
     for(var i=0;i < this.data.length;i++){
-        var piece = this.data[i];
+        var piece = this.data[i];    
+        console.log("piece",new Date(piece.period[0]).toString(),new Date(piece.period[1]).toString())
         if(time_to_cut[0]<piece.period[0]){
-            time_to_load.push([time_to_cut[0],time_to_cut[1]]);
+            time_to_load.push([time_to_cut[0],piece.period[0]]);
         }
         if(time_to_cut[1]>piece.period[1]){
             time_to_cut = [piece.period[1],time_to_cut[1]];
         }
+        else{
+            break;
+        }
+        console.log("time_to_cut",new Date(time_to_cut[0]).toString(),new Date(time_to_cut[1]).toString())
     }
     console.log("time_to_load",time_to_load);
     for(var i=0;i<time_to_load.length;i++){
         loadChannelDataObject(this,time_to_load[i],this.chartname);
-    }
+    }*/
 }
 
 ChartChannel.prototype.getData = function(time){
@@ -880,7 +886,7 @@ function getRandomInt(min, max) {
 
 //посылает запрос на данные о канале с помощью объекта канал
 function loadChannelDataObject(channel_object,time,chartname){
-    console.log(time,time);
+    console.log("time",time);
     var msg = {
         type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
