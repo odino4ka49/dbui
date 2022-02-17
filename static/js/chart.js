@@ -134,7 +134,7 @@ ChartChannel.prototype.addData = function(newdata,datetime){
 }
 
 ChartChannel.prototype.checkIfMoreDataNeeded = function(time){
-    /*var time_to_load = [];
+    var time_to_load = [];
     var time_to_cut = time;
     console.log("checkIfMoreDataNeeded",new Date(time[0]).toString(),new Date(time[1]).toString())
     for(var i=0;i < this.data.length;i++){
@@ -153,8 +153,9 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function(time){
     }
     console.log("time_to_load",time_to_load);
     for(var i=0;i<time_to_load.length;i++){
-        loadChannelDataObject(this,time_to_load[i],this.chartname);
-    }*/
+        console.log("moment",moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'))
+        loadChannelDataObject(this,[moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'),moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')],this.chartname);
+    }
 }
 
 ChartChannel.prototype.getData = function(time){
@@ -397,18 +398,19 @@ Chart.prototype.extendLine = function(channel,data,units){
     //console.log(this.channels,id)
     data.x.push(null);
     data.y.push(null);
+    console.log("extendLine",data,id)
     Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
 }
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function(datetime){
     var datetime = [Date.parse(datetime[0]),Date.parse(datetime[1])];
-
+    //console.log("redrawChannels",this.channels);
     for(var i=0;i<this.channels.length;i++){
         this.removePlot(0);
     }
     for(var i=0;i<this.channels.length;i++){
-        var channel = this.channels[i];
+        var channel = this.channels.find((element)=>(element.id==i));
         channel.displayed = false;
         this.drawChannelData(channel,datetime);
     }
@@ -517,12 +519,12 @@ Chart.prototype.terminatePlot = function(id){
 
 //удаляет только линию графика
 Chart.prototype.removePlot = function(id){
-    //console.log(id,this)
+    //console.log("removePlot",id,this)
     Plotly.deleteTraces(this.name, id);
 }
 
 //удаление канала
-Chart.prototype.removePlot = function(id){
+Chart.prototype.removeChannel = function(id){
     //TODO
 }
 
@@ -554,8 +556,10 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     //console.log("addplot",channel)
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
-    chan_data.id = this.max_id;
-    this.max_id++;
+    if(chan_data.id==null){
+        chan_data.id = this.max_id;
+        this.max_id++;
+    }
     if(fullname) channel = fullname;
     if(!scale_data){
         //add new scale
