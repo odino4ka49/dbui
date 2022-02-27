@@ -85,9 +85,11 @@ function selectChannelsByDB(channels,dbid){
 }
 
 function selectChannelsInAllTrees(channels){
+    console.log("channels",channels)
     for(var i = 0; i < databases.length; i++){
         var dbid = databases[i].id;
-        var dbchannels = channels.filter(chan => chan.dbid==dbid);
+        var dbchannels = channels.filter(chan => (chan.dbid==dbid));
+        console.log("dbchannels",dbid,channels,dbchannels)
         selectChannelsByDB(dbchannels,dbid);
     }
 }

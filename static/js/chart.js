@@ -394,7 +394,7 @@ Chart.prototype.parseToArrayData = function(data){
 //дорисовывает график
 Chart.prototype.extendLine = function(channel,data,units){
     data.name = channel;
-    var id = this.channels.find((element)=>(element.name==channel)).id;
+    var id = this.channels.findIndex((element)=>(element.name==channel));
     //console.log(this.channels,id)
     data.x.push(null);
     data.y.push(null);
@@ -512,8 +512,14 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
 
 //удаляет линию графика с осями и пр. (не сделано)
 Chart.prototype.terminatePlot = function(id){
-    //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
+    this.channels.splice(id, 1);
     //console.log(id,Plotly)
+    /*for(var i=0;i<this.channels.length;i++){
+        if(id<this.channels.id)
+        { 
+            this.channels.id--;
+        }
+    }*/
     Plotly.deleteTraces(this.name, id);
 }
 
