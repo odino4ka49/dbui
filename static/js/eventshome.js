@@ -1,10 +1,13 @@
 $(document).on("activePlotSet",function(event){
-    console.log("activePlotSet",getActivePlotChanels())
+    //console.log("activePlotSet",getActivePlotChanels())
     var time = getActivePlotRange();
     timepicker.setDateTime(time[0],time[1]);
     selectChannelsInAllTrees(getActivePlotChanels());
 });
 
+$(document).on("channelsUpdated",function(event){
+    selectChannelsInAllTrees(getActivePlotChanels());
+});
 
 $(document).on("dateTimeApplied",function(event){
     var time = timepicker.getDateTime();

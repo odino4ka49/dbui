@@ -80,7 +80,7 @@ function ChartChannel(name,hierarchy,datatable,dbid,nodeid,chartname){
     this.datatable = datatable;
     this.dbid = dbid;
     this.fullname;
-    this.id = null; //?
+    //this.id = null; //?
     this.nodeid = nodeid;
     this.displayed = false;
     this.color = null;
@@ -238,7 +238,7 @@ function Chart (name) {
         this.channels = [];
         this.axis_labels = [];
         this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'),moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
-        this.max_id = 0;
+        //this.max_id = 0;
     }
 
 //добавляет новый канал на канвас
@@ -393,9 +393,9 @@ Chart.prototype.parseToArrayData = function(data){
 
 //дорисовывает график
 Chart.prototype.extendLine = function(channel,data,units){
+    console.log(this.channels,channel)
     data.name = channel;
     var id = this.channels.findIndex((element)=>(element.name==channel));
-    //console.log(this.channels,id)
     data.x.push(null);
     data.y.push(null);
     console.log("extendLine",data,id)
@@ -410,7 +410,7 @@ Chart.prototype.redrawChannels = function(datetime){
         this.removePlot(0);
     }
     for(var i=0;i<this.channels.length;i++){
-        var channel = this.channels.find((element)=>(element.id==i));
+        var channel = this.channels[i];
         channel.displayed = false;
         this.drawChannelData(channel,datetime);
     }
@@ -420,8 +420,8 @@ Chart.prototype.redrawChannels = function(datetime){
 Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
-    chan_data.id = this.max_id;
-    this.max_id++;
+    //chan_data.id = this.max_id;
+    //this.max_id++;
     data.mode = mode;//'markers';//
     data.name = channel;
     if(fullname) data.name = fullname;
@@ -521,6 +521,7 @@ Chart.prototype.terminatePlot = function(id){
         }
     }*/
     Plotly.deleteTraces(this.name, id);
+    $(document).trigger("channelsUpdated");
 }
 
 //удаляет только линию графика
@@ -562,10 +563,10 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
     //console.log("addplot",channel)
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
-    if(chan_data.id==null){
+    /*if(chan_data.id==null){
         chan_data.id = this.max_id;
         this.max_id++;
-    }
+    }*/
     if(fullname) channel = fullname;
     if(!scale_data){
         //add new scale

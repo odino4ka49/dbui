@@ -59,8 +59,9 @@ function refreshTree(dbid,data) {
                 }
             },
             onNodeUnselected: function (event, node) {
+                //db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
                 if(node.type=="channel"){
-                    removeChanFromActivePlot(node,dbid);
+                    $("#"+dbid+"_tree").treeview('selectNode', [ node.nodeId, { silent: true } ]);
                 }
             }
         });
@@ -85,11 +86,10 @@ function selectChannelsByDB(channels,dbid){
 }
 
 function selectChannelsInAllTrees(channels){
-    console.log("channels",channels)
+    //console.log("channels",channels[0].name)
     for(var i = 0; i < databases.length; i++){
         var dbid = databases[i].id;
         var dbchannels = channels.filter(chan => (chan.dbid==dbid));
-        console.log("dbchannels",dbid,channels,dbchannels)
         selectChannelsByDB(dbchannels,dbid);
     }
 }
