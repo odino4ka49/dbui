@@ -6,7 +6,9 @@ function TimePicker(div_id){
 }
 
 TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined) {
-    $(this.div).daterangepicker({
+    $(this.div).daterangepicker({   
+        showDropdowns: true, 
+        autoApply: true,
         timePicker: true,
         timePicker24Hour: true,
         timePickerSeconds: true,
@@ -37,6 +39,13 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
         }
         $(document).trigger("dateTimeApplied");
     });
+    $(this.div).on('show.daterangepicker', function(ev, picker) {
+        $("div.drp-calendar.left > .calendar-time > .hourselect option[value=9]").prop('selected', true);
+        $("div.drp-calendar > .calendar-time > .minuteselect option[value=0]").prop('selected', true);
+        $("div.drp-calendar > .calendar-time > .secondselect option[value=0]").prop('selected', true);
+        $("div.drp-calendar.right > .calendar-time > .hourselect option[value=21]").prop('selected', true);
+        //picker.setStartDate(picker.startDate.format('YYYY-MM-DD ')+'09:00:00');
+    });
 }
 
 
@@ -66,3 +75,6 @@ function initPicker(div,time=null){
         timepicker.setDateTime(time[0],time[1]);
     }
 }
+
+$(document).ready(function(){
+})

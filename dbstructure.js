@@ -72,6 +72,7 @@ class SystemTree {
     parseChannels(data,dbtype){
         for(var i=0;i<data.length;i++){
             var ch = data[i];
+            if(ch.unit==null) ch.unit = "none";
             //if(!("status" in ch) || ch.status){
             var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
             var ss = this.findSS(ch.ss_id);

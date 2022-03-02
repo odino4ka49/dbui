@@ -470,7 +470,8 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
             linecolor: color,
             domain: [0, 0.9],
             zerolinecolor: "#444",
-            position: 0
+            position: 0,
+            ticklabelposition: 'inside'
         },
         annotations: this.axis_labels
     };
@@ -500,7 +501,7 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
 
 //подгрузка новых данных в соответствии с зумом
 Chart.prototype.loadNewDataAfterZoom = function(eventdata){
-    console.log('zoom',this,eventdata);
+    //console.log('zoom',this,eventdata);
     if('xaxis.range[0]' in eventdata){
         setActivePlotByName(this.name);
         //this.max_id = 0;

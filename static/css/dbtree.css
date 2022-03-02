@@ -56,7 +56,7 @@ div.pchart{
     height: 100%;
 }
 div.active{
-    border: 2px solid lightskyblue;
+    border: 4px solid black;
 }
 div.close_chart{
     background-image: url("https://static.vecteezy.com/system/resources/previews/000/366/876/original/cancel-vector-icon.jpg");
