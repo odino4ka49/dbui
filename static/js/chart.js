@@ -61,6 +61,7 @@ function getActivePlotWidth(){
 function addChannelToActivePlot(channel_node,hierarchy,datatable,dbid){
     if(!activeplot){
         alert("Please choose a canvas to display the data");
+        $(document).trigger("channelsUpdated");
         return;
     }
     var chart = charts[activeplot];
@@ -407,7 +408,7 @@ Chart.prototype.redrawChannels = function(datetime){
     var datetime = [Date.parse(datetime[0]),Date.parse(datetime[1])];
     //console.log("redrawChannels",this.channels);
     for(var i=0;i<this.channels.length;i++){
-        this.removePlot(0);
+        this.removeLine(0);
     }
     for(var i=0;i<this.channels.length;i++){
         var channel = this.channels[i];
@@ -486,10 +487,11 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname){
       });
     this.scales_units.set(units,{
         color: color,
-        axis_n: 1
+        axis_n: 1,
+        channel_counter: 1
     });
     document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
-        terminatePlot(data.curveNumber)
+        terminateChannel(data.curveNumber)
         return false;
     }).on('plotly_relayout',(eventdata) => {
         this.loadNewDataAfterZoom(eventdata);
@@ -512,8 +514,21 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
 
 
 //удаляет линию графика с осями и пр. (не сделано)
-Chart.prototype.terminatePlot = function(id){
+Chart.prototype.terminateChannel = function(id){
+    var channel = this.channels[id];
     this.channels.splice(id, 1);
+    if(this.channels.length == 0){
+        terminateChart(this.name);
+        return;
+    }
+    Plotly.deleteTraces(this.name, id);
+    //вычтем 1 из счетчика каналов на оси
+    var scales_data = this.scales_units.get(channel.units);
+    scales_data.channel_counter--;
+    if(scales_data.channel_counter == 0){
+        console.log("we need to remove axis")
+    }
+    $(document).trigger("channelsUpdated");
     //console.log(id,Plotly)
     /*for(var i=0;i<this.channels.length;i++){
         if(id<this.channels.id)
@@ -521,13 +536,11 @@ Chart.prototype.terminatePlot = function(id){
             this.channels.id--;
         }
     }*/
-    Plotly.deleteTraces(this.name, id);
-    $(document).trigger("channelsUpdated");
 }
 
 //удаляет только линию графика
-Chart.prototype.removePlot = function(id){
-    //console.log("removePlot",id,this)
+Chart.prototype.removeLine = function(id){
+    //console.log("removeLine",id,this)
     Plotly.deleteTraces(this.name, id);
 }
 
@@ -557,6 +570,62 @@ Chart.prototype.getRange = function(){
     //var start = (' ' + this.range[0]).slice(1);
     //var end = (' ' + this.range[1]).slice(1);
     return this.range;//[start,end];
+}
+
+Chart.prototype.removeAxis = function(){
+    TODO: доделать!!!
+
+    //add new scale
+    var scale_num = this.scales_units.size-1;
+    var yaxisname = "yaxis" + (scale_num+1);
+    while(scale_num>=tones.length) nextTone();
+    //console.log(this.scales_units)
+    if(chan_data.color==null) chan_data.color = color;
+    var relayout_data = {
+        xaxis: {
+            range: this.range,
+            domain: [scale_num/25,1],
+            autorange: false,
+            type: "date"
+        },
+        annotations: this.axis_labels
+    };
+    if(this.type=="orbit"){
+        relayout_data.xaxis = {
+            domain: [scale_num/25,1]
+        }
+    }
+    relayout_data[yaxisname] = {
+        overlaying: "y",
+        color: color,
+        linecolor: color,
+        zerolinecolor: "#ccc",
+        anchor: 'free',
+        side: "left",
+        position: scale_num/25
+    };
+    scale_data = {
+        color: color,
+        axis_n: scale_num+1,
+        channel_counter: 1
+    };
+    this.scales_units.set(units,scale_data);
+    this.axis_labels.push(
+        {
+            xref:'paper',
+            yref:'paper',
+            x: scale_num/25-0.02,
+            xanchor:'top',
+            y: 0.91,
+            yanchor:'bottom',
+            text: units,
+            textangle: -45,
+            font: {color: color},
+            showarrow: false
+        }
+    )
+    Plotly.update(this.name,[], relayout_data);
+    scale_num = null;
 }
 
 //отрисовывает новый график на полотне
@@ -602,7 +671,8 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         };
         scale_data = {
             color: color,
-            axis_n: scale_num+1
+            axis_n: scale_num+1,
+            channel_counter: 1
         };
         this.scales_units.set(units,scale_data);
         this.axis_labels.push(
@@ -622,9 +692,12 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname){
         Plotly.update(this.name,[], relayout_data);
         scale_num = null;
     }
-    else if(chan_data.color==null){
-        //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-        chan_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+    else {
+        scale_data.channel_counter++;
+        if(chan_data.color==null){
+            //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+            chan_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+        }
     }
     data.mode = mode//'markers'; //type of plot
     data.name = channel;
@@ -646,9 +719,10 @@ function initCharts(){
     chart_max_n++;
 }
 
-function removePlot(id){
+//удаляет линию графика
+function removeLine(id){
     if(activeplot){
-        charts[activeplot].removePlot(id);
+        charts[activeplot].removeLine(id);
     }
 }
 
@@ -658,9 +732,10 @@ function removeChanFromActivePlot(node,dbid){
     }
 }
 
-function terminatePlot(id){
+//удаляет канал
+function terminateChannel(id){
     if(activeplot){
-        charts[activeplot].terminatePlot(id);
+        charts[activeplot].terminateChannel(id);
     }
 }
 
@@ -686,6 +761,7 @@ function getActivePlotChanels(){
     if(activeplot){
         return charts[activeplot].getChannels();
     }
+    return [];
 }
 
 Array.prototype.unique = function() {
@@ -802,6 +878,7 @@ function addOrbitData(json){
     }
     else{
         alert("Please choose a canvas to display the data");
+        $(document).trigger("channelsUpdated");
         document.body.style.cursor='default';
     }
     orders.splice(orders.indexOf(order),1);
@@ -831,16 +908,23 @@ function addChartBeforeTarget(target){
     return chart_max_n;
 }
 
-//удаление полотна
 function closeChart(e){
     var graph = $(e.target).parent().children(":first");
     var name = graph.attr("id");
-    resizeObserver.unobserve(graph[0]);
-    $(e.target).parent().remove();
+    terminateChart(name);
+}
+
+//удаление полотна
+function terminateChart(name){
+    var graph = $("#"+name).parent();
+    resizeObserver.unobserve(document.getElementById(name));
+    graph.remove();
+    //$(e.target).parent().remove();
     delete charts[name];
     if(activeplot == name){
         activeplot = null;
     }
+    $(document).trigger("channelsUpdated");
     name = null;
 }
 
@@ -851,7 +935,7 @@ function reloadChannels(channels,time){
         //TODO:reloadallthegraphs    
 
         //channel.displayed = false;
-        //removePlot(0);
+        //removeLine(0);
         //loadChannelDataObject(channel,time);
     })
 }
@@ -933,7 +1017,7 @@ $(document).ready(function(){
     });
     $("body").on("click",".pchart",function(){
         setActivePlot($(this));
-    });
+    });close
     $("body").on("click",".close_chart",closeChart);
     $('.resizable').resizable();
     $('.resizable_hor').resizable({
