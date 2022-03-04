@@ -526,7 +526,7 @@ Chart.prototype.terminateChannel = function(id){
     var scales_data = this.scales_units.get(channel.units);
     scales_data.channel_counter--;
     if(scales_data.channel_counter == 0){
-        console.log("we need to remove axis")
+        this.removeAxis(channel.units);
     }
     $(document).trigger("channelsUpdated");
     //console.log(id,Plotly)
@@ -572,58 +572,46 @@ Chart.prototype.getRange = function(){
     return this.range;//[start,end];
 }
 
-Chart.prototype.removeAxis = function(){
-    TODO: доделать!!!
-
-    //add new scale
-    var scale_num = this.scales_units.size-1;
-    var yaxisname = "yaxis" + (scale_num+1);
-    while(scale_num>=tones.length) nextTone();
+Chart.prototype.removeAxis = function(units){
+    //remove the scale
+    if(this.type=="orbit"){
+        return;
+    }
+    this.scales_units.delete(units);
+    var scale_num = this.scales_units.size;
+    //while(scale_num>=tones.length) nextTone();
     //console.log(this.scales_units)
-    if(chan_data.color==null) chan_data.color = color;
+    //if(chan_data.color==null) chan_data.color = color;
+    var axis_ind = this.axis_labels.findIndex((element)=>(element.text==units));
+    this.axis_labels.splice(axis_ind,1);
+    
     var relayout_data = {
         xaxis: {
             range: this.range,
-            domain: [scale_num/25,1],
+            domain: [(scale_num-1)/25,1],
             autorange: false,
             type: "date"
         },
         annotations: this.axis_labels
     };
-    if(this.type=="orbit"){
-        relayout_data.xaxis = {
-            domain: [scale_num/25,1]
-        }
+    for(var i=axis_ind;i<scale_num;i++){
+        this.axis_labels[i].x = i/25-0.02;
+        var axis_color = this.axis_labels[i].font.color;
+        var scales_data = this.scales_units.get(this.axis_labels[i].text)
+        var yaxisname = "yaxis" + (scales_data.axis_n);
+        var ticklabelposition = (i==0) ? "inside" : "outside";
+        relayout_data[yaxisname] = {
+            overlaying: "y",
+            color: axis_color,
+            linecolor: axis_color,
+            zerolinecolor: "#ccc",
+            anchor: 'free',
+            side: "left",
+            ticklabelposition: ticklabelposition,
+            position: i/25
+        };
+    
     }
-    relayout_data[yaxisname] = {
-        overlaying: "y",
-        color: color,
-        linecolor: color,
-        zerolinecolor: "#ccc",
-        anchor: 'free',
-        side: "left",
-        position: scale_num/25
-    };
-    scale_data = {
-        color: color,
-        axis_n: scale_num+1,
-        channel_counter: 1
-    };
-    this.scales_units.set(units,scale_data);
-    this.axis_labels.push(
-        {
-            xref:'paper',
-            yref:'paper',
-            x: scale_num/25-0.02,
-            xanchor:'top',
-            y: 0.91,
-            yanchor:'bottom',
-            text: units,
-            textangle: -45,
-            font: {color: color},
-            showarrow: false
-        }
-    )
     Plotly.update(this.name,[], relayout_data);
     scale_num = null;
 }
