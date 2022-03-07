@@ -561,6 +561,7 @@ Chart.prototype.setRange = function(time){
             }
         }
         Plotly.update(this.name,[], relayout_data);
+        this.redrawChannels(time);
         //TODO: call for more data if needed
     }
 }
