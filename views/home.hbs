@@ -1,4 +1,3 @@
-
 <script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -15,25 +14,44 @@
 <script src='/static/js/jquery.tooltip.js'></script>
 <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
 
-<input id="datetimerange" type="text" name="datetimes" />
-<div id="linetype">
-    <div>
-        <input type="radio" id="markers" name="linetype" value="markers">
-        <label for="markers">Markers</label>
-    </div>
+<div id="topnav">
+    <table>
+        <tr>
+            <td>
+                <input id="datetimerange" type="text" name="datetimes" />
+            </td>
+            <td>
+                <div id="linetype">
+                    <div>
+                        <input type="radio" id="markers" name="linetype" value="markers">
+                        <label for="markers">Markers</label>
+                    </div>
 
-    <div>
-        <input type="radio" id="line" name="linetype" value="line"  checked>
-        <label for="line">Line</label>
-    </div>
+                    <div>
+                        <input type="radio" id="line" name="linetype" value="line" checked>
+                        <label for="line">Line</label>
+                    </div>
+                </div>
+            </td>
+            <td>Synchronize:
+                <label class="switch">
+                    <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
+                    <span class="slider round"></span>
+                </label>
+            </td>
+        </tr>
+
+
+    </table>
 </div>
 
 <table>
     <tr>
         <td>
             <div><input id="input_search" placeholder="Search..." value="">
-            <button id="btn_search" onclick="searchAll()"></button></div>
-            <br class="clearBoth"/>
+                <button id="btn_search" onclick="searchAll()"></button>
+            </div>
+            <br class="clearBoth" />
             <div id="search_output"></div>
             <div id="dbtree">
                 <table id="databases" class="resizable_hor"></table>
@@ -54,13 +72,13 @@
 </table>
 <div id="mirror"></div>
 
-<br/>
+<br />
 
 <script>
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
-    var connection = new WebSocket('ws://'+window.location.hostname+':1337');//ws://192.168.144.71:1337');//
-// nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
+    var connection = new WebSocket('ws://' + window.location.hostname + ':1337');//ws://192.168.144.71:1337');//
+    // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
     connection.onopen = function () {
         console.log("connection is opened")
@@ -96,10 +114,10 @@
                     displayDatabases(json.data);
                     break;
                 case "tree_data":
-                    refreshTree(json.database,json.data);
+                    refreshTree(json.database, json.data);
                     break;
                 case "error":
-                    if(json.clientordernum!=undefined){
+                    if (json.clientordernum != undefined) {
                         removeOrder(json.clientordernum);
                     }
                     alertError(json.data);
@@ -112,11 +130,11 @@
         }
     };
 
-    function sendMessageToServer(message){
+    function sendMessageToServer(message) {
         connection.send(message);
     }
 
     initCharts();
-    initPicker("#datetimerange",getActivePlotRange());
+    initPicker("#datetimerange", getActivePlotRange());
 
 </script>
