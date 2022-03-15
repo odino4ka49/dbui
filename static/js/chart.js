@@ -239,7 +239,12 @@ function Chart(name) {
     this.scales_units = new Map();
     this.channels = [];
     this.axis_labels = [];
-    this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'), moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
+    if(synched&&activeplot&&(activeplot!=this.name)){
+        this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
+    }
+    else{
+        this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'), moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
+    }
     //this.max_id = 0;
 }
 
@@ -496,7 +501,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
         return false;
     }).on('plotly_relayout', (eventdata) => {
         this.loadNewDataAfterZoom(eventdata);
-        if (synced) {
+        if (synched) {
             relayoutAllPlots(eventdata)
         }
     });
@@ -555,15 +560,14 @@ Chart.prototype.removeChannel = function (id) {
 
 //сохраняем асинхронное состояние
 Chart.prototype.saveAsyncState = function () {
-    this.last_async_range = this.range;//check if it will work
-    //test
-    this.range = [0, 0];
-    console.log(this.last_async_range);
+    this.last_async_range = [this.range[0],this.range[1]];
 }
 
 //возвращаемся в асинхронное состояние
 Chart.prototype.gotoAsyncState = function () {
-    this.range = this.last_async_range; 
+    if(this.last_async_range){
+        this.range = [this.last_async_range[0],this.last_async_range[1]];
+    }
     this.redrawChannels(this.range);
 }
 
@@ -750,8 +754,8 @@ function terminateChannel(id) {
 //sets variable range of the active plot
 function setRange(time) {
     if (synched) {
-        for (var i = 0; i < charts.length; i++) {
-            charts[i].setRange(time);
+        for (var chart in charts) {
+            charts[chart].setRange(time);
         }
     }
     else if (activeplot) {
@@ -788,8 +792,8 @@ Array.prototype.unique = function () {
 //returns channels of all the plots
 function getAllPlotsChannels() {
     var channels = [];
-    for (var i = 0; i < charts.length; i++) {
-        channels.concat(charts[i].getChannels()).unique();
+    for (var chart in charts) {
+        channels.concat(charts[chart].getChannels()).unique();
     }
     return channels;
 }
@@ -797,31 +801,43 @@ function getAllPlotsChannels() {
 //синхронизация всех холстов
 function synchronizePlots() {
     if (activeplot) {
-        var range = activeplot.getRange();
-        for (var i = 0; i < charts.length; i++) {
-            charts[i].saveAsyncState();
+        var range = charts[activeplot].getRange();
+        for (var chart in charts) {
+            charts[chart].saveAsyncState();
         }
-        for (var i = 0; i < charts.length; i++) {
-            charts[i].setRange(range);
+        for (var chart in charts) {
+            charts[chart].setRange(range);
         }
     }
 }
 
 //рассинхронизация всех холстов
 function asynchronizePlots() {
-    for (var i = 0; i < charts.length; i++) {
-        charts[i].gotoAsyncState();
+    for (var chart in charts) {
+        charts[chart].gotoAsyncState();
     }
 }
 
 //распространить зум на все холсты
 function relayoutAllPlots(ed) {
-    for (var i = 0; i < charts.length; i++) {
-        var div = document.getElementById(charts[i].name);
-        var x = div.layout.xaxis;
-        if (ed["xaxis.autorange"] && x.autorange) return;
-        if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
-            Plotly.relayout(div, ed);
+    if("yaxis.range[0]" in ed){
+        delete ed["yaxis.range[0]"];
+    }
+    if("yaxis.range[1]" in ed){
+        delete ed["yaxis.range[1]"];
+    }
+    for (var chart in charts) {
+        if(ed.autosize) return;
+        if(chart!=activeplot){
+            var div = document.getElementById(chart);
+            if(div){
+                var x = div.layout.xaxis;
+                if (ed["xaxis.autorange"] && x.autorange) return;
+                console.log("ED",div,activeplot,ed,x)
+                if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
+                    Plotly.relayout(div, ed);
+                }
+            }
         }
     }
 }

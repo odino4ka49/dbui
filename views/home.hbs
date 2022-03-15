@@ -33,7 +33,10 @@
                     </div>
                 </div>
             </td>
-            <td>Synchronize:
+            <td>
+                <p id="syncronize_text">Synchronize:</p>
+            </td>
+            <td>
                 <label class="switch">
                     <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
                     <span class="slider round"></span>
@@ -45,7 +48,7 @@
     </table>
 </div>
 
-<table>
+<table id="tree_and_plots">
     <tr>
         <td>
             <div><input id="input_search" placeholder="Search..." value="">
