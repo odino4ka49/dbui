@@ -136,26 +136,41 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
 }
 
 ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
+    //отрезки времени, которые мы будем догружать
     var time_to_load = [];
-    var time_to_cut = time;
-    console.log("checkIfMoreDataNeeded", new Date(time[0]).toString(), new Date(time[1]).toString())
-    for (var i = 0; i < this.data.length; i++) {
-        var piece = this.data[i];
-        console.log("piece", new Date(piece.period[0]).toString(), new Date(piece.period[1]).toString())
-        if (time_to_cut[0] < piece.period[0]) {
-            time_to_load.push([time_to_cut[0], piece.period[0]]);
+    //отрезок времени, из которого мы потихоньку будем отрезать проверенные части и части для загрузки
+    var time_to_cut = [time[0],time[1]];
+    //console.log("checkIfMoreDataNeeded", new Date(time[0]).toString(), new Date(time[1]).toString())
+    if((this.data.length!=0) && (time_to_cut[1]>=this.data[0].period[0]) && (time_to_cut[0]<=this.data[this.data.length-1].period[1])){
+        for (var i = 0; i < this.data.length; i++) {
+            var piece = this.data[i];
+            //console.log("piece", new Date(piece.period[0]).toString(), new Date(piece.period[1]).toString())
+            if(time_to_cut){
+                if (time_to_cut[0] < piece.period[0]) {
+                    time_to_load.push([time_to_cut[0], piece.period[0]]);
+                }
+                if (time_to_cut[1] > piece.period[1]) {
+                    time_to_cut = [piece.period[1], time_to_cut[1]];
+                }
+                else {
+                    time_to_cut = null;
+                    break;
+                }
+                //console.log("time_to_cut", new Date(time_to_cut[0]).toString(), new Date(time_to_cut[1]).toString())
+            }
         }
-        if (time_to_cut[1] > piece.period[1]) {
-            time_to_cut = [piece.period[1], time_to_cut[1]];
-        }
-        else {
-            break;
-        }
-        console.log("time_to_cut", new Date(time_to_cut[0]).toString(), new Date(time_to_cut[1]).toString())
     }
-    console.log("time_to_load", time_to_load);
+    if(time_to_cut){
+        if(time_to_cut[1]>moment()){
+            time_to_cut = [time_to_cut[0],moment()];
+        }
+        else{
+            time_to_load.push(time_to_cut);
+        }
+    }
+    //console.log("time_to_load", time_to_load);
     for (var i = 0; i < time_to_load.length; i++) {
-        console.log("moment", moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'))
+        //console.log("time_to_load", moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss'))
         loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
     }
 }
@@ -188,7 +203,7 @@ ChartChannel.prototype.getData = function (time) {
 ChartChannel.prototype.getFilteredData = function (time, pixels) {
     //time = [Date.parse(time[0]),Date.parse(time[1])];
     //assume time is in ms, otherwise we will change it to ms
-    //console.log("pixels",pixels);
+    //console.log("getFilteredData",time);
     var result = [];
     //find time for every pixel
     this.checkIfMoreDataNeeded(time);
@@ -243,7 +258,7 @@ function Chart(name) {
         this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
     }
     else{
-        this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'), moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
+        this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
     }
     //this.max_id = 0;
 }
@@ -306,14 +321,13 @@ Chart.prototype.addChannelData = function (json, mode) {
         return false;
     }
     var channel = this.channels.find((element) => (element.name == json.name));
-    //TODO: add data to channel 
     var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.addData(json.data, datetime);
     channel.units = json.units;
     channel.fullname = json.fullname;
     channel.mode = mode;
-    //console.log("datetime",datetime);
-    //console.log("channel.data",channel.data);
+    console.log("addChannelData",datetime);
+    console.log("channel.data",channel.data);
 
     this.drawChannelData(channel, datetime);
     /*var chan_name = json.name;
@@ -400,18 +414,19 @@ Chart.prototype.parseToArrayData = function (data) {
 
 //дорисовывает график
 Chart.prototype.extendLine = function (channel, data, units) {
-    console.log(this.channels, channel)
+    //console.log(this.channels, channel)
     data.name = channel;
     var id = this.channels.findIndex((element) => (element.name == channel));
     data.x.push(null);
     data.y.push(null);
-    console.log("extendLine", data, id)
+    //console.log("extendLine", data, id)
     Plotly.extendTraces(this.name, { y: [data.y], x: [data.x] }, [id])
 }
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
     var datetime = [Date.parse(datetime[0]), Date.parse(datetime[1])];
+    console.log("redrawChannels",datetime);
     //console.log("redrawChannels",this.channels);
     for (var i = 0; i < this.channels.length; i++) {
         this.removeLine(0);
@@ -478,6 +493,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
             domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0,
+            //hoverformat: ",d",
             ticklabelposition: 'inside'
         },
         annotations: this.axis_labels
@@ -566,14 +582,16 @@ Chart.prototype.saveAsyncState = function () {
 //возвращаемся в асинхронное состояние
 Chart.prototype.gotoAsyncState = function () {
     if(this.last_async_range){
-        this.range = [this.last_async_range[0],this.last_async_range[1]];
+        this.setRange([this.last_async_range[0],this.last_async_range[1]]);
+        //this.range = [this.last_async_range[0],this.last_async_range[1]];
+        //console.log(this.range);
     }
-    this.redrawChannels(this.range);
+//    this.redrawChannels(this.range);*/
 }
 
 //устанавливает границы оси х
 Chart.prototype.setRange = function (time) {
-    this.range = time;
+    this.range = [time[0],time[1]];
     if (this.is_chart_rendered && this.type != "orbit") {
         var relayout_data = {
             xaxis: {
@@ -826,16 +844,18 @@ function relayoutAllPlots(ed) {
     if("yaxis.range[1]" in ed){
         delete ed["yaxis.range[1]"];
     }
-    for (var chart in charts) {
-        if(ed.autosize) return;
-        if(chart!=activeplot){
-            var div = document.getElementById(chart);
-            if(div){
-                var x = div.layout.xaxis;
-                if (ed["xaxis.autorange"] && x.autorange) return;
-                console.log("ED",div,activeplot,ed,x)
-                if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
-                    Plotly.relayout(div, ed);
+    if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)){
+        for (var chart in charts) {
+            if(ed.autosize) return;
+            if(chart!=activeplot){
+                var div = document.getElementById(chart);
+                if(div){
+                    var x = div.layout.xaxis;
+                    if (ed["xaxis.autorange"] && x.autorange) return;
+                    //console.log("ED",div,activeplot,ed,x)
+                    if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
+                        Plotly.relayout(div, ed);
+                    }
                 }
             }
         }
@@ -848,7 +868,7 @@ function addChannelDataInOrder(json) {
     order.parts_num = json.parts;
     order.parts[json.index] = json;
     var i = 0;
-    console.log("order", order);
+    //console.log("order", order);
     console.log("got", json);
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
@@ -1037,7 +1057,6 @@ function getRandomInt(min, max) {
 
 //посылает запрос на данные о канале с помощью объекта канал
 function loadChannelDataObject(channel_object, time, chartname) {
-    console.log("time", time);
     var msg = {
         type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
@@ -1095,4 +1114,5 @@ $(document).ready(function () {
         handles: 'e, w'
     });
     $("#add_chart").click(addChart);
+    synched = ("#synchronization").checked;
 });
