@@ -93,19 +93,19 @@ function ChartChannel(name, hierarchy, datatable, dbid, nodeid, chartname) {
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
     var data_str = { 'period': datetime, 'data': newdata };/*[newdata[0][t],newdata[newdata.length-1][t]]*/
+    //console.log("adddata",data_str);
     for (var i = 0; i < this.data.length; i++) {
         var piece = this.data[i];
-        //console.log("compare",piece.period,data_str.period)
         if ((piece.period[0] < data_str.period[0]) && (piece.period[1] > data_str.period[0])) {
             //remove duplicates
             //console.log("if1")
-            data_str.splice(0, data_str.findIndex((element) => (element.t > piece.period[1])));
+            data_str.data.splice(0, data_str.data.findIndex((element) => (element.t > piece.period[1])));
         }
         else if ((piece.period[0] < data_str.period[1]) && (piece.period[1] > data_str.period[1])) {
             //remove duplicates
             //console.log("if2")
-            var ind = data_str.findIndex((element) => (element.t > piece.period[0]));
-            data_str.splice(ind, 9e9);
+            var ind = data_str.data.findIndex((element) => (element.t > piece.period[0]));
+            data_str.data.splice(ind, 9e9);
         }
         else if ((piece.period[0] < data_str.period[1]) && (piece.period[0] > data_str.period[0]) && (piece.period[1] < data_str.period[1]) && (piece.period[1] > data_str.period[0])) {
             //console.log("if3")
@@ -146,15 +146,24 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
             var piece = this.data[i];
             //console.log("piece", new Date(piece.period[0]).toString(), new Date(piece.period[1]).toString())
             if(time_to_cut){
-                if (time_to_cut[0] < piece.period[0]) {
-                    time_to_load.push([time_to_cut[0], piece.period[0]]);
+                if (time_to_cut[0] < piece.period[0])
+                {
+                    if(time_to_cut[1]>=piece.period[0]) {
+                        time_to_load.push([time_to_cut[0], piece.period[0]]);
+                        time_to_cut = null;
+                    }
+                    else{
+                        break;
+                    }
                 }
-                if (time_to_cut[1] > piece.period[1]) {
-                    time_to_cut = [piece.period[1], time_to_cut[1]];
-                }
-                else {
-                    time_to_cut = null;
-                    break;
+                else if(time_to_cut[0] < piece.period[1]){
+                    if (time_to_cut[1] > piece.period[1]) {
+                        time_to_cut = [piece.period[1], time_to_cut[1]];
+                    }
+                    else{
+                        time_to_cut = null;
+                        break;
+                    }
                 }
                 //console.log("time_to_cut", new Date(time_to_cut[0]).toString(), new Date(time_to_cut[1]).toString())
             }
@@ -168,7 +177,6 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
             time_to_load.push(time_to_cut);
         }
     }
-    //console.log("time_to_load", time_to_load);
     for (var i = 0; i < time_to_load.length; i++) {
         //console.log("time_to_load", moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss'))
         loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
@@ -206,12 +214,13 @@ ChartChannel.prototype.getFilteredData = function (time, pixels) {
     //console.log("getFilteredData",time);
     var result = [];
     //find time for every pixel
-    this.checkIfMoreDataNeeded(time);
+    //this.checkIfMoreDataNeeded(time);
     var ms_in_px = (time[1] - time[0]) / pixels;
     for (var i = 0; i <= pixels - 1; i++) {
         time[0] + ms_in_px * i//get average data for every pixel
         result = result.concat(this.averageData([time[0] + ms_in_px * i, time[0] + ms_in_px * (i + 1)]))
     }
+    //console.log(result)
     return result;
 }
 
@@ -227,13 +236,26 @@ ChartChannel.prototype.averageData = function (time) {
     var max = data[0];
     //console.log(data)
     //console.log(data[0],this.name)
-    var y = this.name;
+    var y = this.fullname;
+    //console.log(this);
     for (var i = 0; i < data.length; i++) {
         if (min[y] > data[i][y]) min = data[i];
         if (max[y] < data[i][y]) max = data[i];
+        /*if(data[i][y]!=undefined){
+            if (min[y]==undefined) {
+                min[y] = data[i][y];
+            }
+            else if (min[y] > data[i][y]) min = data[i];
+            if (!max[y]==undefined) {
+                max[y] = data[i][y];
+            }
+            else if (max[y] < data[i][y]) max = data[i];
+        }*/
     }
+    //console.log(min[y],max[y]);
     var result = min.t > max.t ? [max, min] : [min, max]
     if (min[y] == max[y]) result = [max];
+    //console.log(result)
     return (result)
 }
 
@@ -326,8 +348,8 @@ Chart.prototype.addChannelData = function (json, mode) {
     channel.units = json.units;
     channel.fullname = json.fullname;
     channel.mode = mode;
-    console.log("addChannelData",datetime);
-    console.log("channel.data",channel.data);
+    console.log("addChannelData",json.datetime);
+    //console.log("channel.data",channel.data);
 
     this.drawChannelData(channel, datetime);
     /*var chan_name = json.name;
@@ -355,7 +377,7 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
     var chan_name = channel.name;
     var pixels = Math.ceil(this.getWidth() / (Date.parse(this.range[1]) - Date.parse(this.range[0])) * (datetime[1] - datetime[0]));
     if (channel) {
-        var data_to_display = this.parseToChartData(chan_name, channel.getFilteredData(datetime, pixels));
+        var data_to_display = this.parseToChartData(channel.fullname, channel.getFilteredData(datetime, pixels));
         //console.log("data_to_display",data_to_display)
         if (channel.displayed) {
             this.extendLine(chan_name, data_to_display, channel.units, channel.fullname)
@@ -426,7 +448,7 @@ Chart.prototype.extendLine = function (channel, data, units) {
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
     var datetime = [Date.parse(datetime[0]), Date.parse(datetime[1])];
-    console.log("redrawChannels",datetime);
+    //console.log("redrawChannels",datetime);
     //console.log("redrawChannels",this.channels);
     for (var i = 0; i < this.channels.length; i++) {
         this.removeLine(0);
@@ -435,6 +457,7 @@ Chart.prototype.redrawChannels = function (datetime) {
         var channel = this.channels[i];
         channel.displayed = false;
         this.drawChannelData(channel, datetime);
+        channel.checkIfMoreDataNeeded(datetime);
     }
 }
 
@@ -869,7 +892,7 @@ function addChannelDataInOrder(json) {
     order.parts[json.index] = json;
     var i = 0;
     //console.log("order", order);
-    console.log("got", json);
+    //console.log("got", json);
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
         //console.log("draw",i);
