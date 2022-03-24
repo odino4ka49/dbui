@@ -68,9 +68,21 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var chart = charts[activeplot];
     var channel = new ChartChannel(channel_node.name, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
     var new_chart_n = chart.name;
-    if ((channel.hierarchy.channel.orbit && chart.type == "timeseries") || (!channel.hierarchy.channel.orbit && chart.type == "orbit")) {
+    /*if ((channel.hierarchy.channel.orbit && chart.type == "timeseries") || (!channel.hierarchy.channel.orbit && chart.type == "orbit")) {
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         setActivePlotByName("chart_" + new_chart_n);
+    }*/
+    //TODO:change and make opening, and mb make orbit mode
+    if ((channel_node.datatype == "orbit" && chart.type == "timeseries") || (channel_node.datatype != "orbit" && chart.type == "orbit")) {
+        if (confirm('Are you sure you want to save this thing into the database?')) {
+            // Save it!
+            console.log('Thing was saved to the database.');
+        } else {
+            // Do nothing!
+            console.log('Thing was not saved to the database.');
+        }
+        //new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
+        //setActivePlotByName("chart_" + new_chart_n);
     }
     charts[activeplot].addChannel(channel);
 }

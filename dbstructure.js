@@ -270,6 +270,10 @@ class Channel {
         this.status = status;
         this.type = "channel";
         this.checkIfDisabled();
+        //чтобы не проверять отдельно, являются ли данные орбитными, сразу укажем тип "орбиты"
+        if(this.datatype.slice(-1)=="]"){
+            this.datatype = "orbit";
+        }
     }
     check(regex){
         if(this.name.startsWith(regex)){
