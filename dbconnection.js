@@ -33,7 +33,6 @@ class DBConnection {
                     .catch(err => {
                         client.release();
                         this.status = false;
-                        console.log("uhu2")
                         wsServer.sendError(err,order,clientordernum);
                     })
             })

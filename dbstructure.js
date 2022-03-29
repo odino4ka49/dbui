@@ -271,7 +271,7 @@ class Channel {
         this.type = "channel";
         this.checkIfDisabled();
         //чтобы не проверять отдельно, являются ли данные орбитными, сразу укажем тип "орбиты"
-        if(this.datatype.slice(-1)=="]"){
+        if(this.datatype && this.datatype.slice(-1)=="]"){
             this.datatype = "orbit";
         }
     }

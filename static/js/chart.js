@@ -10,6 +10,7 @@ var resizeObserver;
 var orders = [];
 var orders_max_n = 0;
 var synched = true;
+var plots_mode;
 
 //проверка на возраст браузера
 try {
@@ -67,24 +68,34 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     }
     var chart = charts[activeplot];
     var channel = new ChartChannel(channel_node.name, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
-    var new_chart_n = chart.name;
+    //var new_chart_n = chart.name;
     /*if ((channel.hierarchy.channel.orbit && chart.type == "timeseries") || (!channel.hierarchy.channel.orbit && chart.type == "orbit")) {
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         setActivePlotByName("chart_" + new_chart_n);
     }*/
     //TODO:change and make opening, and mb make orbit mode
-    if ((channel_node.datatype == "orbit" && chart.type == "timeseries") || (channel_node.datatype != "orbit" && chart.type == "orbit")) {
-        if (confirm('Are you sure you want to save this thing into the database?')) {
+    if(plots_mode && ((channel_node.datatype == "orbit" && plots_mode != "orbits") || (channel_node.datatype != "orbit" && plots_mode == "orbits"))) 
+    {
+        if (confirm('Are you sure you want to display this orbit data? It will remove all the previous plots')) {
             // Save it!
-            console.log('Thing was saved to the database.');
-        } else {
-            // Do nothing!
-            console.log('Thing was not saved to the database.');
+            plots_mode = (channel_node.datatype == "orbit") ? "orbits" : "common";
+            terminateAllPlots();
+            var new_chart_n = addChartBeforeTarget($("#add_chart"));
+            setActivePlotByName("chart_" + new_chart_n);
+            charts[activeplot].addChannel(channel);
+        }
+        else
+        {
+            $(document).trigger("channelsUpdated");
         }
         //new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         //setActivePlotByName("chart_" + new_chart_n);
     }
-    charts[activeplot].addChannel(channel);
+    else
+    {                
+        plots_mode = (channel_node.datatype == "orbit") ? "orbits" : "common";
+        charts[activeplot].addChannel(channel);
+    }
 }
 
 //класс каналов для добавления в объект Chart
@@ -299,12 +310,10 @@ function Chart(name) {
 
 //добавляет новый канал на канвас
 Chart.prototype.addChannel = function (channel) {
-    //TODO: check if channel is in plot
     var result = this.channels.find(obj => {
         return ((obj.name == channel.name) && (obj.dbid == channel.dbid))
     })
     if (result) return;
-    //TODO: if it is not, put new channel in plot and ask to load
     this.channels.push(channel);
     loadChannelDataObject(channel, this.range, this.name);
 }
@@ -360,7 +369,7 @@ Chart.prototype.addChannelData = function (json, mode) {
     channel.units = json.units;
     channel.fullname = json.fullname;
     channel.mode = mode;
-    console.log("addChannelData",json.datetime);
+    //console.log("addChannelData",json.datetime);
     //console.log("channel.data",channel.data);
 
     this.drawChannelData(channel, datetime);
@@ -831,7 +840,6 @@ function getActivePlotChanels() {
 }
 
 Array.prototype.unique = function () {
-    //TODO: check
     var a = this.concat();
     for (var i = 0; i < a.length; ++i) {
         for (var j = i + 1; j < a.length; ++j) {
@@ -998,7 +1006,7 @@ function addOrbitData(json) {
 
 //удалить заказ
 function removeOrder(ordernum) {
-    console.log(ordernum)
+    //console.log(ordernum)
     var order = orders.filter(obj => { return obj.number === ordernum })[0];
     orders.splice(orders.indexOf(order), 1);
     defaultCursor();
@@ -1036,6 +1044,13 @@ function terminateChart(name) {
     }
     $(document).trigger("channelsUpdated");
     name = null;
+}
+
+function terminateAllPlots(){
+    for (var chart in charts) {
+        console.log(chart);
+        terminateChart(chart);
+    };
 }
 
 //перезагрузка каждого графика
