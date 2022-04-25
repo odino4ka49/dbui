@@ -61,7 +61,13 @@ class DBConnection {
         this.azimuths = az;
     }
     getAzimuths(){
-        return JSON.parse(JSON.stringify(this.azimuths));
+        console.log(this.azimuths)
+        if(this.azimuths){
+            return JSON.parse(JSON.stringify(this.azimuths));
+        }
+        else{
+            return null;
+        }
     }
 }
 

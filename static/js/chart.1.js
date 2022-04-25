@@ -56,7 +56,7 @@ Chart.prototype.addOrbitData = function(json){
     this.graphs.push(json.name);//this.graphs.set(json.name,json.data);
     if(!this.is_chart_rendered){
         this.type = "orbit";
-        this.renderChart(json.name,json.data,json.units);
+        this.renderOrbitChart(json.name,json.data,json.units);
     }
     else{
         this.addPlot(json.name,json.data,json.units);
@@ -71,6 +71,29 @@ Chart.prototype.parseToArrayData = function(data){
     });
     data = null;
     return result;
+}
+
+Chart.prototype.renderOrbitChart = function(channel,data,units){
+    console.log(data);
+    this.is_chart_rendered = true;
+    var chartData = {
+        type: 'surface',
+        legend: {
+            'max-items': 5,
+            'overflow': "scroll",
+            'draggable': true
+        },
+        z: data
+    };
+    zingchart.complete = function() {
+        document.body.style.cursor='default';
+    };
+    zingchart.render({
+        id: this.name,
+        data: chartData,
+        height: "100%",
+        width: "98%"
+    });
 }
 
 Chart.prototype.renderChart = function(channel,data,units){

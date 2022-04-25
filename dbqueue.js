@@ -23,14 +23,35 @@ function parseToChartData(channel,data){
 }
 
 function parseToOrbitData(channel,data,azimuths){
+    var records = [];
+    //console.log("DATA",data,azimuths)
+    for(var j=0;j<data.length;j++){
+        var x = [];
+        var y = [];
+        data[j][channel].forEach((element,i) => {
+            x.push( azimuths[i].azimuth),
+            y.push(element)
+        });
+        records.push({x: x,y: y,datetime:data[j]['date_time']});
+    }
+    console.log(records);
+    return records;
+}
+
+/*function parseToOrbitData(channel,data,azimuths){
     var x = [];
     var y = [];
-    data[0][channel].forEach((element,i) => {
-        x.push( azimuths[i].azimuth),
-        y.push(element)
-    });
-    return {x: x,y: y};
-}
+    var z = [];
+    for(var j=0;j<data.length;j++){
+        data[j][channel].forEach((element,i) => {
+            x.push(azimuths[i].azimuth);
+            y.push(element);
+            z.push(j);
+        });
+    }
+    console.log({x:x,y:y,z:z})
+    return {x:x,y:y,z:z};
+}*/
 
 /*function parseToOrbitData(channel,data,azimuths){
     var values = data[0][channel]
@@ -209,8 +230,9 @@ function loadTreeData(dbid,order){
 }
 
 function loadAzimuths(db){
-    db.sendRequest('SELECT * FROM "04_azimuth"',null,function(result){
-        db.setAzimuths(result);
+    //HARDCODE!!! CHANGE
+    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".system = \'orbits\' and "01_system".subsystem = \'v4\' order by azimuth',null,function(result){
+        db.setAzimuths(result); 
     });
 }
 
@@ -247,7 +269,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
     var subsystem = null;
-    console.log('date1',datetime);
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
     var hours = Math.abs(date1 - date2) / 36e5;
@@ -269,7 +290,11 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if(db.type == "pickups" || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
+    if(channel.datatype == "orbit"){
+        loadFullOrbitData(db,datatable,channel,null,ordernum,order);
+        return;
+    }
+    /*if((db.type == "pickups") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
         }
@@ -278,7 +303,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             //TODO: change function
             return;
         }
-    }
+    }*/
     loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,0);
 }
 
@@ -310,7 +335,8 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if(db.type == "pickups" || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
+    if((db.type == "pickups") || (channel.datatype == "orbit") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
+        console.log("SUBSYSTEM")
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
         }
@@ -321,6 +347,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
     }
     loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,0);
 }
+
 
 //we get all orbit data for a particular period of time
 function loadOrbitData(db,datatable,channel,date,ordernum,order){
@@ -351,6 +378,36 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
     }
 }
 
+
+//we get all orbit data for a particular period of time
+function loadFullOrbitData(db,datatable,channel,date,ordernum,order){
+    //var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
+    var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 50;'
+    try{
+        db.sendRequest(req,order,function(result){
+            if(result.type=="err"){
+                console.log("problem")
+                wsServer.sendError(result,order)
+            }
+            else{
+                var channel_data = {
+                    "title": "orbit_data",
+                    "name": channel.name,
+                    "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
+                    "units": "mm",
+                    //"chart": chart,
+                    //"mode": mode,
+                    "dbid": db.id,
+                    "ordernum": ordernum
+                }
+                wsServer.sendData(channel_data,order,true);
+            }
+        },ordernum);
+    }
+    catch(e){
+        console.log(e);
+    }
+}
 
 //загрузка данных с канала определенного перидоа
 function loadFullChannelData(db,datatable,channel,subsystem,dates,ordernum,order,datatype,i){
@@ -467,9 +524,9 @@ function initDatabases(){
     for(var i=1;i<6;i++){
         var db = new dbc.DBConnection("db"+i);
         databases.set(db.id,db);
-        if(db.type=="pickups"){
-            loadAzimuths(db);
-        }
+        //if(db.type=="pickups"){
+        loadAzimuths(db);
+        //}
     }
 }
 

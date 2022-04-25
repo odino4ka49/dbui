@@ -418,16 +418,21 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
 
 //добавляет график орбиты
 Chart.prototype.addOrbitData = function (json, chart, mode) {
+    console.log(json);
     if (this.type == "timeseries") {
         return false;
     }
     this.type = "orbit";
+    var max = json.data.length;
     if (!this.is_chart_rendered) {
-        this.renderChart(json.name, json.data, json.units, json.mode, json.fullname);
+        this.renderChart(json.name, json.data[json.data.length-1], json.units, json.mode, json.fullname);
     }
     else {
-        this.addPlot(json.name, json.data, json.units, json.mode, json.fullname);
+        this.addPlot(json.name, json.data[json.data.length-1], json.units, json.mode, json.fullname);
     };
+    for(var i=1;i<json.data.length-1;i++){
+        this.addPlot(json.name, json.data[i], json.units, json.mode, json.fullname);
+    }
     return true;
 }
 
@@ -482,6 +487,48 @@ Chart.prototype.redrawChannels = function (datetime) {
     }
 }
 
+
+Chart.prototype.renderOrbitChart = function(channel,data,units){
+    this.is_chart_rendered = true;
+    var chan_data = this.channels.find((element) => (element.name == channel));
+    data.name = channel;
+    var chartData = [{
+        z: data,
+        type: 'surface'
+    }];
+    var config = { responsive: true, doubleClickDelay: 2000 };
+    var layout = {
+        autosize: false,
+        margin: {
+            l: 65,
+            r: 50,
+            b: 65,
+            t: 90,
+
+        }
+    };
+    if (this.type == "orbit") {
+        layout.xaxis = {
+            domain: [0, 1]
+        }
+    }
+    Plotly.react(this.name, chartData, layout, config).then(function (gd) {
+        //console.log(gd)
+        resizeObserver.observe(gd);
+    });
+    document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
+        terminateChannel(data.curveNumber)
+        return false;
+    }).on('plotly_relayout', (eventdata) => {
+        this.loadNewDataAfterZoom(eventdata);
+        if (synched) {
+            relayoutAllPlots(eventdata)
+        }
+    });
+    chan_data.displayed = true;
+}
+
+
 //отрисовывает полотно с первым графиком
 Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     this.is_chart_rendered = true;
@@ -490,6 +537,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     //this.max_id++;
     data.mode = mode;//'markers';//
     data.name = channel;
+    if(this.type == "orbit") data.name = channel+":"+data.datetime;
     if (fullname) data.name = fullname;
     //auto generate line color with the right tone
     var color = hsvToHex(tones[0], 80, 80)
@@ -545,7 +593,8 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     if (this.type == "orbit") {
         layout.xaxis = {
             domain: [0, 1]
-        }
+        };
+        layout.showlegend = false;
     }
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         //console.log(gd)
@@ -556,15 +605,17 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
         axis_n: 1,
         channel_counter: 1
     });
-    document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
-        terminateChannel(data.curveNumber)
-        return false;
-    }).on('plotly_relayout', (eventdata) => {
-        this.loadNewDataAfterZoom(eventdata);
-        if (synched) {
-            relayoutAllPlots(eventdata)
-        }
-    });
+    if(this.type != "orbit"){
+        document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
+            terminateChannel(data.curveNumber)
+            return false;
+        }).on('plotly_relayout', (eventdata) => {
+            this.loadNewDataAfterZoom(eventdata);
+            if (synched) {
+                relayoutAllPlots(eventdata)
+            }
+        });
+    }
     chan_data.displayed = true;
     chartData = null;
     transform_x_scale = null;
@@ -775,6 +826,10 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
     data.mode = mode//'markers'; //type of plot
     data.name = channel;
     data.line = { color: chan_data.color };
+    if(this.type=="orbit"){
+        data.name = channel + ":" + data.datetime;
+        data.opacity = 0.15;//opacity;
+    }
     data.marker = { size: 3 }; //size of markers
     data.yaxis = "y" + scale_data.axis_n;
     data.x.push(null);
@@ -986,16 +1041,16 @@ function addChannelData(json, chart, mode) {
 //добавляет график орбиты
 function addOrbitData(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
-    if (json.chart in charts) {
-        if (!charts[json.chart].addOrbitData(json)) {
-            var new_chart_n = addChartBeforeTarget($("#" + json.chart).parent());
+    if (order.chart in charts) {
+        if (!charts[order.chart].addOrbitData(json)) {
+            var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
             setActivePlotByName("chart_" + new_chart_n);
             charts["chart_" + new_chart_n].addOrbitData(json);
-            new_chart_n = null;
         }
     }
     else {
-        alert("Please choose a canvas to display the data");
+        console.log(json.chart, charts);
+        alert("Can't find plot to display the data.");
         $(document).trigger("channelsUpdated");
         document.body.style.cursor = 'default';
     }
