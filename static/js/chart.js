@@ -1041,18 +1041,22 @@ function addChannelData(json, chart, mode) {
 //добавляет график орбиты
 function addOrbitData(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
-    if (order.chart in charts) {
-        if (!charts[order.chart].addOrbitData(json)) {
-            var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
-            setActivePlotByName("chart_" + new_chart_n);
-            charts["chart_" + new_chart_n].addOrbitData(json);
-        }
+    if(json.data.length == 0){
+        alert("Sorry, no data to display");
     }
-    else {
-        console.log(json.chart, charts);
-        alert("Can't find plot to display the data.");
-        $(document).trigger("channelsUpdated");
-        document.body.style.cursor = 'default';
+    else{
+        if (order.chart in charts) {
+            if (!charts[order.chart].addOrbitData(json)) {
+                var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
+                setActivePlotByName("chart_" + new_chart_n);
+                charts["chart_" + new_chart_n].addOrbitData(json);
+            }
+        }
+        else {
+            alert("Can't find plot to display the data.");
+            $(document).trigger("channelsUpdated");
+            document.body.style.cursor = 'default';
+        }
     }
     orders.splice(orders.indexOf(order), 1);
     defaultCursor();

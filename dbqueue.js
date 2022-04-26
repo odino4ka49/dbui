@@ -291,7 +291,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
         }
     }
     if(channel.datatype == "orbit"){
-        loadFullOrbitData(db,datatable,channel,null,ordernum,order);
+        loadFullOrbitData(db,datatable,channel,datetime,ordernum,order);
         return;
     }
     /*if((db.type == "pickups") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
@@ -380,9 +380,10 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
 
 
 //we get all orbit data for a particular period of time
-function loadFullOrbitData(db,datatable,channel,date,ordernum,order){
+function loadFullOrbitData(db,datatable,channel,dates,ordernum,order){
     //var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
-    var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 50;'
+    //var parts = dates.length-1;
+    var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' ORDER BY date_time DESC;'
     try{
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
@@ -390,6 +391,7 @@ function loadFullOrbitData(db,datatable,channel,date,ordernum,order){
                 wsServer.sendError(result,order)
             }
             else{
+                console.log("RESULT", parseToOrbitData(channel.name,result,db.getAzimuths()));
                 var channel_data = {
                     "title": "orbit_data",
                     "name": channel.name,
@@ -400,7 +402,13 @@ function loadFullOrbitData(db,datatable,channel,date,ordernum,order){
                     "dbid": db.id,
                     "ordernum": ordernum
                 }
-                wsServer.sendData(channel_data,order,true);
+                //if(i==parts-1){
+                    wsServer.sendData(channel_data,order,true);
+                /*}
+                else{
+                    wsServer.sendData(channel_data,order,false);
+                    loadFullOrbitData(db,datatable,channel,dates,ordernum,order,i+1);
+                }*/
             }
         },ordernum);
     }
