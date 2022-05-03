@@ -231,7 +231,14 @@ function loadTreeData(dbid,order){
 
 function loadAzimuths(db){
     //HARDCODE!!! CHANGE
-    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".system = \'orbits\' and "01_system".subsystem = \'v4\' order by azimuth',null,function(result){
+    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".abscissa_tbl = \'orbits\' and "01_system".subsystem = \'v4\' order by azimuth',null,function(result){
+        db.setAzimuths(result); 
+    });
+}
+
+function loadDtAzimuths(db,data_tbl){
+    //HARDCODE!!! CHANGE
+    db.sendRequest('select pkp_name,azimuth from "'+data_tbl+'" join "01_system" on "01_system".subsys_id = "'+data_tbl+'".subsys_id where "01_system".abscissa_tbl = \''+data_tbl+'\' order by azimuth',null,function(result){
         db.setAzimuths(result); 
     });
 }
@@ -533,7 +540,7 @@ function initDatabases(){
         var db = new dbc.DBConnection("db"+i);
         databases.set(db.id,db);
         //if(db.type=="pickups"){
-        loadAzimuths(db);
+        //loadAzimuths(db);
         //}
     }
 }
@@ -559,5 +566,6 @@ module.exports = {
     getSensors: getSensors,
     getChannelData: getChannelData,
     getFullChannelData: getFullChannelData,
-    getDatabasesInfo: getDatabasesInfo
+    getDatabasesInfo: getDatabasesInfo,
+    loadDtAzimuths: loadDtAzimuths
 }

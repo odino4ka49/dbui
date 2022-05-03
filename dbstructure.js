@@ -34,7 +34,7 @@ class SystemTree {
                     this.systems.push(sys);
                 }
                 if(ss.subsys_id){
-                    subsys = new Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status);
+                    subsys = new Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status,ss.data_tbl_type,ss.abscissa_tbl);
                     sys.appendSubsystem(subsys);
                     this.subsystems.push(subsys);
                 }
@@ -42,6 +42,8 @@ class SystemTree {
                     sys.setDatatable(ss.data_tbl);
                     sys.status = ss.status;
                     sys.ss_id = ss.id; 
+                    sys.data_tbl_type = ss.data_tbl_type;
+                    sys.abscissa_tbl = ss.abscissa_tbl;
                 }
             //}
         }
@@ -168,12 +170,14 @@ class System {
     }
 }
 class Subsystem {
-    constructor(id,ssid,name,data_tbl,status){
+    constructor(id,ssid,name,data_tbl,status,data_tbl_type,abscissa_tbl){
         this.id = id;
         this.ss_id = ssid;
         this.name = name;
         this.status = status;
         this.data_tbl = data_tbl;
+        this.data_tbl_type = data_tbl_type;
+        this.abscissa_tbl = abscissa_tbl;
         this.type = "subsystem";
         this.checkIfDisabled();
     }
