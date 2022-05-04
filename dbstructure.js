@@ -168,6 +168,18 @@ class System {
             }
         }
     }
+    setAzimuths(az){
+        this.azimuths = az;
+    }
+    getAzimuths(){
+        console.log(this.azimuths)
+        if(this.azimuths){
+            return JSON.parse(JSON.stringify(this.azimuths));
+        }
+        else{
+            return null;
+        }
+    }
 }
 class Subsystem {
     constructor(id,ssid,name,data_tbl,status,data_tbl_type,abscissa_tbl){
@@ -222,6 +234,18 @@ class Subsystem {
             this.state = {
                 disabled: true
             }
+        }
+    }
+    setAzimuths(az){
+        this.azimuths = az;
+    }
+    getAzimuths(){
+        console.log(this.azimuths)
+        if(this.azimuths){
+            return JSON.parse(JSON.stringify(this.azimuths));
+        }
+        else{
+            return null;
         }
     }
 }

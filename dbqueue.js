@@ -24,7 +24,7 @@ function parseToChartData(channel,data){
 
 function parseToOrbitData(channel,data,azimuths){
     var records = [];
-    //console.log("DATA",data,azimuths)
+    console.log("DATA",channel,azimuths)
     for(var j=0;j<data.length;j++){
         var x = [];
         var y = [];
@@ -273,6 +273,7 @@ function filterData(data,pixels,chname){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
+    console.log(hierarchy);
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
     var subsystem = null;

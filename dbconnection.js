@@ -57,7 +57,7 @@ class DBConnection {
                 }
             })
     }
-    setAzimuths(az){
+    /*setAzimuths(az){
         this.azimuths = az;
     }
     getAzimuths(){
@@ -68,7 +68,7 @@ class DBConnection {
         else{
             return null;
         }
-    }
+    }*/
 }
 
 module.exports = {
