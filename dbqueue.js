@@ -204,11 +204,14 @@ function loadTreeData(dbid,order){
                 tree.parseGroups(result);
                 db.sendRequest('SELECT * FROM "03_chan" order by id',order,function(result){
                     tree.parseChannels(result);
-                    wsServer.sendData({
-                        "title": "tree_data",
-                        "database": dbid,
-                        "data": tree.systems
-                    },order,true);
+                    db.sendRequest('SELECT * FROM "04_pkp_position',order,function(result){
+                        tree.parseAzimuths(result);
+                        wsServer.sendData({
+                            "title": "tree_data",
+                            "database": dbid,
+                            "data": tree.systems
+                        },order,true);
+                    })
                 })
             })
         })
@@ -273,6 +276,7 @@ function filterData(data,pixels,chname){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
+    //TODO: ПРОДОЛЖИТЬ КОПАТЬ
     console.log(hierarchy);
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
