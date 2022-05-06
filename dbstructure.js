@@ -93,6 +93,17 @@ class SystemTree {
         this.checkStatus(this.systems);
     }
 
+    parseAzimuths(data){
+        console.log(data);
+        for(var i=0;i<data.length;i++){
+            var az = data[i];
+            var ss = this.findSS(az.subsys_id);
+            if(ss){
+                ss.addAzimuths({pkp_name:az.pkp_name,azimuth:az.azimuth});
+            }
+        }
+    }
+
     checkStatus(elements){
         for (const element of elements){
             element.checkStatus();
@@ -168,8 +179,11 @@ class System {
             }
         }
     }
-    setAzimuths(az){
-        this.azimuths = az;
+    addAzimuth(az){
+        if(!("azimuths" in this)){
+            this.azimuths = [];
+        }
+        this.azimuths.push(az);
     }
     getAzimuths(){
         console.log(this.azimuths)

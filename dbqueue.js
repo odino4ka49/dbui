@@ -204,7 +204,7 @@ function loadTreeData(dbid,order){
                 tree.parseGroups(result);
                 db.sendRequest('SELECT * FROM "03_chan" order by id',order,function(result){
                     tree.parseChannels(result);
-                    db.sendRequest('SELECT * FROM "04_pkp_position',order,function(result){
+                    db.sendRequest('SELECT * FROM "04_pkp_position" order by id',order,function(result){
                         tree.parseAzimuths(result);
                         wsServer.sendData({
                             "title": "tree_data",
