@@ -94,14 +94,14 @@ class SystemTree {
     }
 
     parseAzimuths(data){
-        console.log(data);
         for(var i=0;i<data.length;i++){
             var az = data[i];
             var ss = this.findSS(az.subsys_id);
             if(ss){
-                ss.addAzimuths({pkp_name:az.pkp_name,azimuth:az.azimuth});
+                ss.addAzimuth({pkp_name:az.pkp_name,azimuth:az.azimuth});
             }
         }
+        //console.log(this.subsystems[6]);
     }
 
     checkStatus(elements){
@@ -180,10 +180,11 @@ class System {
         }
     }
     addAzimuth(az){
-        if(!("azimuths" in this)){
+        if(!this.azimuths){
             this.azimuths = [];
         }
         this.azimuths.push(az);
+        //console.log(this);
     }
     getAzimuths(){
         console.log(this.azimuths)
@@ -250,8 +251,12 @@ class Subsystem {
             }
         }
     }
-    setAzimuths(az){
-        this.azimuths = az;
+    addAzimuth(az){
+        if(!this.azimuths){
+            this.azimuths = [];
+        }
+        this.azimuths.push(az);
+        //console.log(this);
     }
     getAzimuths(){
         console.log(this.azimuths)

@@ -276,11 +276,8 @@ function filterData(data,pixels,chname){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
-    //TODO: ПРОДОЛЖИТЬ КОПАТЬ
-    console.log(hierarchy);
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
-    var subsystem = null;
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
     var hours = Math.abs(date1 - date2) / 36e5;
@@ -303,7 +300,14 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
         }
     }
     if(channel.datatype == "orbit"){
-        loadFullOrbitData(db,datatable,channel,datetime,ordernum,order);
+        var azimuths;
+        if(hierarchy.subsystem && hierarchy.subsystem.azimuths){
+            azimuths = hierarchy.subsystem.azimuths;
+        }
+        else if (hierarchy.system && hierarchy.system.azimuths){
+            azimuths = hierarchy.system.azimuths;
+        }
+        loadFullOrbitData(db,datatable,channel,azimuths,datetime,ordernum,order);
         return;
     }
     /*if((db.type == "pickups") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
@@ -392,7 +396,7 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
 
 
 //we get all orbit data for a particular period of time
-function loadFullOrbitData(db,datatable,channel,dates,ordernum,order){
+function loadFullOrbitData(db,datatable,channel,azimuths,dates,ordernum,order){
     //var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     //var parts = dates.length-1;
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' ORDER BY date_time DESC;'
@@ -403,11 +407,11 @@ function loadFullOrbitData(db,datatable,channel,dates,ordernum,order){
                 wsServer.sendError(result,order)
             }
             else{
-                console.log("RESULT", parseToOrbitData(channel.name,result,db.getAzimuths()));
+                console.log("RESULT", parseToOrbitData(channel.name,result,azimuths));
                 var channel_data = {
                     "title": "orbit_data",
                     "name": channel.name,
-                    "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
+                    "data": parseToOrbitData(channel.name,result,azimuths),
                     "units": "mm",
                     //"chart": chart,
                     //"mode": mode,

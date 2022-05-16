@@ -110,6 +110,9 @@ function getDatatable(channel,dbid){
         if("data_tbl" in parent){
             data_tbl = parent["data_tbl"];
         }
+        if("azimuths" in parent){
+            hierarchy[parent.type]["azimuths"] = parent.azimuths;
+        }
     }
     db_tree = null;
     parent = null;
