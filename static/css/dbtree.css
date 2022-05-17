@@ -56,7 +56,8 @@ div.pchart{
     height: 100%;
 }
 div.active{
-    border: 4px solid black;
+    border: 4px solid dimgray;
+    border-radius: 10px;
 }
 div.close_chart{
     background-image: url("https://static.vecteezy.com/system/resources/previews/000/366/876/original/cancel-vector-icon.jpg");
@@ -212,6 +213,10 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     position: relative;
 }
 
+#linetype label{
+    font-weight: normal;
+}
+
 #topnav{
     z-index: 10;
     position: fixed;
@@ -220,7 +225,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     width: 100%;
 }
 #topnav td{
-    padding: 5px;
+    padding: 10px;
 }
 #syncronize_text{
     margin: 0px;
@@ -276,7 +281,7 @@ input {
     pointer-events: none;
     color: white;
     text-align: center;
-    background-color: black;
+    background-color: dimgray;
     border-radius: 3px;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
 }
@@ -331,11 +336,11 @@ input {
   }
   
   input:checked + .slider {
-    background-color: darkgray;
+    background-color: dimgray;
   }
   
   input:focus + .slider {
-    box-shadow: 0 0 1px darkgray;
+    box-shadow: 0 0 1px dimgray;
   }
   
   input:checked + .slider:before {

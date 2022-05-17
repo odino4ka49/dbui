@@ -41,7 +41,7 @@ class SystemTree {
                 else{
                     sys.setDatatable(ss.data_tbl);
                     sys.status = ss.status;
-                    sys.ss_id = ss.id; 
+                    sys.ss_id = ss.id;
                     sys.data_tbl_type = ss.data_tbl_type;
                     sys.abscissa_tbl = ss.abscissa_tbl;
                 }
