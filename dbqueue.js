@@ -22,7 +22,76 @@ function parseToChartData(channel,data){
     return {x: x,y: y};
 }
 
+function findAverage(my_arr){
+    var summa = 0;
+    var summa_2 = 0;
+    var kolichestvo = 0;
+    for(var i=0;i<my_arr.length;i++){
+        var x = my_arr[i];
+        if(x){
+            summa += x;
+            summa_2 += x*x;
+            kolichestvo += 1;
+        }
+    }
+    if(kolichestvo==0){
+        return [null,null];
+    }
+    var srednee = summa/kolichestvo;
+    var srednee_2 = summa_2/kolichestvo;
+    var otklonenie = (srednee_2 - srednee**2)**0.5;
+    return [srednee,otklonenie];
+}
+
+//returns just medium
 function parseToOrbitData(channel,data,azimuths){
+    //var records = [];
+    console.log("DATA",channel,azimuths)
+    var x = [];
+    var y = [];
+    var y_res = [];
+    var sigma = [];
+    var len = azimuths.length;
+    for(var i=0;i<len;i++){
+        x.push(azimuths[i].azimuth)
+    }
+    for(var j=0;j<data.length;j++){
+        data[j][channel].forEach((element,i) => {
+            y[j].push(element);
+        });
+    }
+    for(var i=0;i<len;i++){
+        var result = findAverage(y[i]);
+        y_res.push(result[0]);
+        sigma.push(result[1]);
+    }
+    return {x: x,y: y_res,sigma:sigma};
+    /*var error = [];
+    var counter = [];
+    var len = data[0][channel].length;
+    for(var i=0; i<len;i++){
+        y.push(0);
+    }
+    for(var i=0;i<azimuths.length;i++){
+        x.push(azimuths[i].azimuth)
+    }
+    for(var j=0;j<data.length;j++){
+        data[j][channel].forEach((element,i) => {
+            if(element){
+                y[i]+=element;
+                counter++;
+            }
+        });
+    }
+    for(var i=0; i<len;i++){
+        y.push(0);
+    }*/
+    //console.log(records);
+    //return records;
+}
+
+//returns all data as arrays
+/*function parseToOrbitData(channel,data,azimuths){
     var records = [];
     console.log("DATA",channel,azimuths)
     for(var j=0;j<data.length;j++){
@@ -36,7 +105,7 @@ function parseToOrbitData(channel,data,azimuths){
     }
     console.log(records);
     return records;
-}
+}*/
 
 /*function parseToOrbitData(channel,data,azimuths){
     var x = [];

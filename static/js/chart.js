@@ -112,6 +112,7 @@ function ChartChannel(name, hierarchy, datatable, dbid, nodeid, chartname) {
     this.data = [];
     this.units = null;
     this.chartname = chartname;
+    this.type = null;
 }
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
@@ -282,6 +283,14 @@ ChartChannel.prototype.averageData = function (time) {
     return (result)
 }
 
+ChartChannel.prototype.setType = function(type){
+    this.type = type;
+}
+
+ChartChannel.prototype.setData = function(data){
+    this.data = data;
+}
+
 //фильтр данных - по точке на пиксель
 /*ChartChannel.prototype.filterData = function(data,pixels,chname){
     var partsize = data.length/pixels;
@@ -360,7 +369,7 @@ Chart.prototype.addGraphData = function (json) {
 
 //добавляет данные из БД, запоминает и отрисовывает
 Chart.prototype.addChannelData = function (json, mode) {
-    if (this.type == "orbit") {
+    if (this.type != "orbit") {
         return false;
     }
     var channel = this.channels.find((element) => (element.name == json.name));
@@ -368,7 +377,7 @@ Chart.prototype.addChannelData = function (json, mode) {
     channel.addData(json.data, datetime);
     channel.units = json.units;
     channel.fullname = json.fullname;
-    channel.mode = mode;
+    //channel.mode = mode;
     //console.log("addChannelData",json.datetime);
     //console.log("channel.data",channel.data);
 
@@ -391,6 +400,27 @@ Chart.prototype.addChannelData = function (json, mode) {
             };
         }
     }*/
+    return true;
+}
+
+Chart.prototype.drawOrbitData = function(channel){
+    var chan_name = channel.name;
+    if (channel) {
+        var data_to_display = channel.data;
+        console.log("data_to_display",data_to_display)
+        if (channel.displayed) {
+            //this.removeLine()
+        }
+        else {
+            if (!this.is_chart_rendered) {
+                this.type = "orbit";
+                this.renderChart(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+            }
+            else {
+                this.addPlot(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+            };
+        }
+    }
     return true;
 }
 
@@ -423,8 +453,22 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
         return false;
     }
     this.type = "orbit";
-    var max = json.data.length;
-    if (!this.is_chart_rendered) {
+
+    var channel = this.channels.find((element) => (element.name == json.name));
+    console.log(this.channels,json.name);
+    //var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
+    chsnnel.setType('orbit');
+    channel.setData(json.data);
+    channel.units = json.units;
+    channel.fullname = json.name;
+    //channel.mode = mode;
+    //console.log("addChannelData",json.datetime);
+    //console.log("channel.data",channel.data);
+
+    this.drawOrbitData(channel, datetime);
+
+    /*var max = json.data.length;
+    (if (!this.is_chart_rendered) {
         this.renderChart(json.name, json.data[json.data.length-1], json.units, json.mode, json.fullname);
     }
     else {
@@ -432,7 +476,7 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
     };
     for(var i=1;i<json.data.length-1;i++){
         this.addPlot(json.name, json.data[i], json.units, json.mode, json.fullname);
-    }
+    }*/
     return true;
 }
 
@@ -537,7 +581,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     //this.max_id++;
     data.mode = mode;//'markers';//
     data.name = channel;
-    if(this.type == "orbit") data.name = channel+":"+data.datetime;
+    //if(this.type == "orbit") data.name = channel+":"+data.datetime;
     if (fullname) data.name = fullname;
     //auto generate line color with the right tone
     var color = hsvToHex(tones[0], 80, 80)
@@ -546,6 +590,13 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     data.marker = { size: 3 }
     data.x.push(null);
     data.y.push(null);
+    if(this.type == "orbit"){
+        data.error_y = {
+            type: 'data',
+            array: data.sigma,
+            visible: true
+        }
+    }
     this.axis_labels = [
         {
             xref: 'paper',
