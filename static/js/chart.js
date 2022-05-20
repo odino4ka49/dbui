@@ -454,7 +454,7 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
 
 //добавляет график орбиты
 Chart.prototype.addOrbitData = function (json, chart, mode) {
-    console.log(json);
+   //console.log(json);
     if (this.type == "timeseries") {
         return false;
     }
@@ -1113,9 +1113,10 @@ function addOrbitData(json) {
     else{
         if (order.chart in charts) {
             if (!charts[order.chart].addOrbitData(json)) {
-                var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
+                console.log("error");
+                /*var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
                 setActivePlotByName("chart_" + new_chart_n);
-                charts["chart_" + new_chart_n].addOrbitData(json);
+                charts["chart_" + new_chart_n].addOrbitData(json);*/
             }
         }
         else {
