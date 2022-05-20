@@ -369,7 +369,7 @@ Chart.prototype.addGraphData = function (json) {
 
 //добавляет данные из БД, запоминает и отрисовывает
 Chart.prototype.addChannelData = function (json, mode) {
-    if (this.type != "orbit") {
+    if (this.type == "orbit") {
         return false;
     }
     var channel = this.channels.find((element) => (element.name == json.name));
@@ -457,7 +457,7 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
     var channel = this.channels.find((element) => (element.name == json.name));
     console.log(this.channels,json.name);
     //var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
-    chsnnel.setType('orbit');
+    channel.setType('orbit');
     channel.setData(json.data);
     channel.units = json.units;
     channel.fullname = json.name;
@@ -465,7 +465,7 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
     //console.log("addChannelData",json.datetime);
     //console.log("channel.data",channel.data);
 
-    this.drawOrbitData(channel, datetime);
+    this.drawOrbitData(channel);
 
     /*var max = json.data.length;
     (if (!this.is_chart_rendered) {
@@ -588,14 +588,16 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
     chan_data.color = color;
     data.line = { color: color }
     data.marker = { size: 3 }
-    data.x.push(null);
-    data.y.push(null);
     if(this.type == "orbit"){
         data.error_y = {
             type: 'data',
             array: data.sigma,
             visible: true
         }
+    }
+    else{
+        data.x.push(null);
+        data.y.push(null);
     }
     this.axis_labels = [
         {
@@ -879,12 +881,19 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
     data.line = { color: chan_data.color };
     if(this.type=="orbit"){
         data.name = channel + ":" + data.datetime;
-        data.opacity = 0.15;//opacity;
+        data.error_y = {
+            type: 'data',
+            array: data.sigma,
+            visible: true
+        }
+        //data.opacity = 0.15;//opacity;
     }
     data.marker = { size: 3 }; //size of markers
     data.yaxis = "y" + scale_data.axis_n;
-    data.x.push(null);
-    data.y.push(null);
+    if(this.type != "orbit"){
+        data.x.push(null);
+        data.y.push(null);
+    }
     Plotly.addTraces(this.name, data);
     chan_data.displayed = true;
     scale_data = null;

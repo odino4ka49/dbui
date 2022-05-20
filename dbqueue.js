@@ -46,18 +46,20 @@ function findAverage(my_arr){
 //returns just medium
 function parseToOrbitData(channel,data,azimuths){
     //var records = [];
-    console.log("DATA",channel,azimuths)
+    //console.log("DATA",channel,azimuths)
     var x = [];
     var y = [];
     var y_res = [];
     var sigma = [];
     var len = azimuths.length;
     for(var i=0;i<len;i++){
-        x.push(azimuths[i].azimuth)
+        x.push(azimuths[i].azimuth);
+        y.push([]);
     }
+    console.log(len);
     for(var j=0;j<data.length;j++){
         data[j][channel].forEach((element,i) => {
-            y[j].push(element);
+            y[i].push(element);
         });
     }
     for(var i=0;i<len;i++){
