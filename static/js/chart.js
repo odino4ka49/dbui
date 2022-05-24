@@ -313,6 +313,7 @@ function Chart(name) {
     this.scales_units = new Map();
     this.channels = [];
     this.axis_labels = [];
+    console.log("CHARTCHECK",synched,activeplot);
     if(synched&&activeplot&&(activeplot!=this.name)){
         this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
     }
@@ -653,7 +654,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
         layout.xaxis = {
             domain: [0, 1]
         };
-        layout.showlegend = false;
+        //layout.showlegend = false;
     }
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         //console.log(gd)
@@ -664,11 +665,12 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
         axis_n: 1,
         channel_counter: 1
     });
-    if(this.type != "orbit"){
-        document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
+    document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
             terminateChannel(data.curveNumber)
             return false;
-        }).on('plotly_relayout', (eventdata) => {
+        })
+    if(this.type != "orbit"){
+        document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
             if (synched) {
                 relayoutAllPlots(eventdata)
@@ -886,7 +888,7 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
     data.name = channel;
     data.line = { color: chan_data.color };
     if(this.type=="orbit"){
-        data.name = channel + ":" + data.datetime;
+        data.name = channel;
         data.error_y = {
             type: 'data',
             array: data.sigma,
@@ -1290,5 +1292,5 @@ $(document).ready(function () {
         handles: 'e, w'
     });
     $("#add_chart").click(addChart);
-    synched = ("#synchronization").checked;
+    synched = $("#synchronization").is(":checked");
 });

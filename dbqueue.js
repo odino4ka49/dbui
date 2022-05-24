@@ -46,7 +46,6 @@ function findAverage(my_arr){
 //returns just medium
 function parseToOrbitData(channel,data,azimuths){
     //var records = [];
-    //console.log("DATA",channel,azimuths)
     var x = [];
     var y = [];
     var y_res = [];
@@ -56,7 +55,6 @@ function parseToOrbitData(channel,data,azimuths){
         x.push(azimuths[i].azimuth);
         y.push([]);
     }
-    console.log(len);
     for(var j=0;j<data.length;j++){
         data[j][channel].forEach((element,i) => {
             y[i].push(element);
@@ -88,14 +86,12 @@ function parseToOrbitData(channel,data,azimuths){
     for(var i=0; i<len;i++){
         y.push(0);
     }*/
-    //console.log(records);
     //return records;
 }
 
 //returns all data as arrays
 /*function parseToOrbitData(channel,data,azimuths){
     var records = [];
-    console.log("DATA",channel,azimuths)
     for(var j=0;j<data.length;j++){
         var x = [];
         var y = [];
@@ -105,7 +101,6 @@ function parseToOrbitData(channel,data,azimuths){
         });
         records.push({x: x,y: y,datetime:data[j]['date_time']});
     }
-    console.log(records);
     return records;
 }*/
 
@@ -120,7 +115,6 @@ function parseToOrbitData(channel,data,azimuths){
             z.push(j);
         });
     }
-    console.log({x:x,y:y,z:z})
     return {x:x,y:y,z:z};
 }*/
 
@@ -179,7 +173,6 @@ function loadFirstRecortTime(system,order){
     if(system=="v3v4"){
         db.sendRequest(
             'SELECT extract(epoch from "14_orb_v3v4chan".date_time)*1000::integer as t,"03_chan".name FROM "14_orb_v3v4chan","03_chan" where "14_orb_v3v4chan".chan_id="03_chan".id order by "14_orb_v3v4chan".date_time asc limit 1;',order,function(result){
-                //console.log(result);
                 wsServer.sendData({
                     "title": "v3v4_firstrecord",
                     "system": system,
@@ -194,7 +187,6 @@ function loadFirstRecortTime(system,order){
     else if(system=="v4"){
         db.sendRequest(
             'SELECT extract(epoch from "15_orb_v4".date_time)*1000::integer as t FROM "15_orb_v4" order by "15_orb_v4".date_time asc limit 1;',order,function(result){
-                //console.log(result);
                 wsServer.sendData({
                     "title": "v3v4_firstrecord",
                     "system": system,
@@ -265,7 +257,6 @@ function loadV3V4ChanLastDatetimeData(system,order){
 
 //загрузка и парсинг данных о дереве БД
 function loadTreeData(dbid,order){
-    //console.log("loadTreeData");
     var tree = new tm.SystemTree(dbid);
     var db = databases.get(dbid);
     if(db.type == 'v4'){
@@ -347,7 +338,7 @@ function filterData(data,pixels,chname){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
-    console.log(hierarchy);
+    //console.log(hierarchy);
     var data_tbl_type = null;
     if(hierarchy.subsystem && hierarchy.subsystem.data_tbl_type){
         data_tbl_type = hierarchy.subsystem.data_tbl_type;
@@ -363,14 +354,15 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
-    if(datatable == "v4cod,v4-new"){
+    /*if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
             datatable = "v4cod";
         }
         else{
             datatable = "v4-new";
         }
-    }
+    }*/
+    var datatable = datatable.toString().replace(/,/g,'","');
     for(var i=0;i<parts;i++){
         if(i==parts-1){
             dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
