@@ -354,15 +354,16 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
-    /*if(datatable == "v4cod,v4-new"){
+    if(datatable.includes(',')){
+        var dbs = datatable.split(',',2);
         if(channel.name.endsWith("set")){
-            datatable = "v4cod";
+            datatable = dbs.find(element=>element.endsWith("cod"));
         }
         else{
-            datatable = "v4-new";
+            datatable = dbs.find(element=> !(element.endsWith("cod")));
         }
-    }*/
-    var datatable = datatable.toString().replace(/,/g,'","');
+    }
+    //var datatable = datatable.toString().replace(/,/g,'","');
     for(var i=0;i<parts;i++){
         if(i==parts-1){
             dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
