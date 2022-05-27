@@ -107,6 +107,9 @@ function getDatatable(channel,dbid){
             "id": parent.id,
             "name": parent.text
         };
+        if("ss_id" in parent){
+            hierarchy[parent.type]["ss_id"] = parent.ss_id;        
+        }
         if("data_tbl" in parent){
             data_tbl = parent["data_tbl"];
         }

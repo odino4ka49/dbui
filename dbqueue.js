@@ -22,6 +22,30 @@ function parseToChartData(channel,data){
     return {x: x,y: y};
 }
 
+function applyMath(func,data,name){
+    if(func == "dispersion"){
+        //TODO
+        var x0 = data.find(element => !(element[name].every(el => isNaN(el))))[name];
+        //var x0 = data[0][name];
+        var N = x0.length;
+        console.log(N);
+        var result = [];
+        for(var i=0;i<data.length;i++){
+            var squared = [];
+            for(var j=0;j<N;j++){
+                squared.push((data[i][name][j]-x0[j])**2);
+            }
+            var disp = {t:data[i].t};
+            disp[name] = Math.sqrt((squared.reduce((a, b) => a + b, 0))/N);
+            //console.log(x0[j]);
+            //console.log(squared,disp);
+            result.push(Object.assign({}, disp));
+        }
+        //console.log(result);
+        return result;
+    }
+}
+
 function findAverage(my_arr){
     var summa = 0;
     var summa_2 = 0;
@@ -268,6 +292,7 @@ function loadTreeData(dbid,order){
                     tree.parseChannels(result);
                     db.sendRequest('SELECT * FROM "04_pkp_position" order by id',order,function(result){
                         tree.parseAzimuths(result);
+                        db.tree = tree;
                         wsServer.sendData({
                             "title": "tree_data",
                             "database": dbid,
@@ -338,16 +363,17 @@ function filterData(data,pixels,chname){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var channel = hierarchy.channel;
-    //console.log(hierarchy);
-    var data_tbl_type = null;
-    if(hierarchy.subsystem && hierarchy.subsystem.data_tbl_type){
-        data_tbl_type = hierarchy.subsystem.data_tbl_type;
-    }
-    else if (hierarchy.system && hierarchy.system.data_tbl_type){
-        data_tbl_type = hierarchy.system.data_tbl_type;
-    }
+    var ss;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
+    var tree = db.tree;
+    if(hierarchy.subsystem && hierarchy.subsystem.ss_id){
+        ss = tree.findSS(hierarchy.subsystem.ss_id);
+    }
+    else if (hierarchy.system && hierarchy.system.ss_id){
+        ss = tree.findSS(hierarchy.system.ss_id);
+    }
+    console.log(channel);//db.findSS())
     var subsystem = null;
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
@@ -363,7 +389,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             datatable = dbs.find(element=> !(element.endsWith("cod")));
         }
     }
-    //var datatable = datatable.toString().replace(/,/g,'","');
     for(var i=0;i<parts;i++){
         if(i==parts-1){
             dates.push(date2.toISOString().replace(/T/, ' ').replace(/\..+/, ''));
@@ -372,15 +397,12 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if(channel.datatype == "orbit"){
-        var azimuths;
-        if(hierarchy.subsystem && hierarchy.subsystem.azimuths){
-            azimuths = hierarchy.subsystem.azimuths;
-        }
-        else if (hierarchy.system && hierarchy.system.azimuths){
-            azimuths = hierarchy.system.azimuths;
-        }
-        loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,datetime,ordernum,order);
+    if(ss.function && ss.function.startsWith("dispersion")){
+        loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,datetime,ordernum,order,datatype,"dispersion",0);
+        return;
+    }
+    if(channel.orbit){
+        loadFullOrbitData(db,datatable,ss.data_tbl_type,channel,ss.azimuths,datetime,ordernum,order);
         return;
     }
     if((db.type == "pickups") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
@@ -392,7 +414,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             return;
         }
     }
-    loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,0);
+    loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,null,0);
 }
 
 //we get average channel data for a particular period of time considering mode and chart size
@@ -423,7 +445,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    if((db.type == "pickups") || (channel.datatype == "orbit") || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
+    if((db.type == "pickups") || (channel.orbit) || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
         console.log("SUBSYSTEM")
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
@@ -438,7 +460,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
 
 
 //we get all orbit data for a particular period of time
-function loadOrbitData(db,datatable,channel,date,ordernum,order){
+/*function loadOrbitData(db,datatable,channel,date,ordernum,order){
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     try{
         db.sendRequest(req,order,function(result){
@@ -451,7 +473,7 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
                     "title": "orbit_data",
                     "name": channel.name,
                     "data": parseToOrbitData(channel.name,result,db.getAzimuths()),
-                    "units": "mm",
+                    "units": channel.unit,
                     //"chart": chart,
                     //"mode": mode,
                     "dbid": db.id,
@@ -464,7 +486,7 @@ function loadOrbitData(db,datatable,channel,date,ordernum,order){
     catch(e){
         console.log(e);
     }
-}
+}*/
 
 
 //we get all orbit data for a particular period of time
@@ -482,12 +504,11 @@ function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ord
                 wsServer.sendError(result,order)
             }
             else{
-                //console.log("RESULT", parseToOrbitData(channel.name,result,azimuths));
                 var channel_data = {
                     "title": "orbit_data",
                     "name": channel.name,
                     "data": parseToOrbitData(channel.name,result,azimuths),
-                    "units": "mm",
+                    "units": channel.unit,
                     //"chart": chart,
                     //"mode": mode,
                     "dbid": db.id,
@@ -509,7 +530,7 @@ function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ord
 }
 
 //загрузка данных с канала определенного перидоа
-function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,i){
+function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,func,i){
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
@@ -542,6 +563,9 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 }*/
                 //console.log("REQ",req)
                 //console.log("RESULT",result)
+                if(func){
+                    var result = applyMath(func,result,channel.name);
+                }
                 var channel_data = {
                     "title": "full_channel_data",
                     "fullname": chan_name,
@@ -571,7 +595,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
 }
 
 //загрузка данных с канала определенного перидоа на определенное число пикселей
-function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
+/*function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
     //console.log("loadChannelData part "+i);
     console.log("dates",dates);
     var parts = dates.length-1;
@@ -595,7 +619,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
                 /*if(result.length==0){
                     wsServer.sendError({"text":"There is no data on this period"},order)
                 }*/
-                filtered_data = filterData(result,pixels,chan_name);
+                /*filtered_data = filterData(result,pixels,chan_name);
                 var channel_data = {
                     "title": "channel_data",
                     "fullname": chan_name,
@@ -622,7 +646,7 @@ function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,order
     catch(e){
         console.log(e);
     }
-}
+}*/
 
 function getSensors(magnet_name){
     var sensors = systems.find(o => o.name === "Temperature").findAll(magnet_name)

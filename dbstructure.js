@@ -34,7 +34,7 @@ class SystemTree {
                     this.systems.push(sys);
                 }
                 if(ss.subsys_id){
-                    subsys = new Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status,ss.data_tbl_type,ss.abscissa_tbl);
+                    subsys = new Subsystem(ss.subsys_id,ss.id,ss.subsystem,ss.data_tbl,ss.status,ss.data_tbl_type,ss.abscissa_tbl,ss.function);
                     sys.appendSubsystem(subsys);
                     this.subsystems.push(subsys);
                 }
@@ -44,6 +44,7 @@ class SystemTree {
                     sys.ss_id = ss.id;
                     sys.data_tbl_type = ss.data_tbl_type;
                     sys.abscissa_tbl = ss.abscissa_tbl;
+                    sys.function = ss.function;
                 }
             //}
         }
@@ -197,7 +198,7 @@ class System {
     }
 }
 class Subsystem {
-    constructor(id,ssid,name,data_tbl,status,data_tbl_type,abscissa_tbl){
+    constructor(id,ssid,name,data_tbl,status,data_tbl_type,abscissa_tbl,func){
         this.id = id;
         this.ss_id = ssid;
         this.name = name;
@@ -206,6 +207,7 @@ class Subsystem {
         this.data_tbl_type = data_tbl_type;
         this.abscissa_tbl = abscissa_tbl;
         this.type = "subsystem";
+        this.function = func;
         this.checkIfDisabled();
     }
     appendGroup(item){
@@ -312,6 +314,7 @@ class Channel {
         this.fullname = fullname;
         this.address = address;
         this.datatype = type;
+        this.orbit = false;
         this.unit = unit;
         this.divider = divider;
         this.status = status;
@@ -319,7 +322,7 @@ class Channel {
         this.checkIfDisabled();
         //чтобы не проверять отдельно, являются ли данные орбитными, сразу укажем тип "орбиты"
         if(this.datatype && this.datatype.slice(-1)=="]"){
-            this.datatype = "orbit";
+            this.orbit = true;
         }
     }
     check(regex){

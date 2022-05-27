@@ -71,7 +71,6 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     //var new_chart_n = chart.name;
 
     //if we want to open new chart for orbits
-    console.log('test',channel.hierarchy.channel,chart.type);
     if ((channel.hierarchy.channel.datatype=="orbit" && chart.type == "timeseries") || (channel.hierarchy.channel.datatype!="orbit" && chart.type == "orbit")) {
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         setActivePlotByName("chart_" + new_chart_n);
@@ -313,7 +312,6 @@ function Chart(name) {
     this.scales_units = new Map();
     this.channels = [];
     this.axis_labels = [];
-    console.log("CHARTCHECK",synched,activeplot);
     if(synched&&activeplot&&(activeplot!=this.name)){
         this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
     }
@@ -524,7 +522,7 @@ Chart.prototype.extendLine = function (channel, data, units) {
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
-    var datetime = [Date.parse(datetime[0]), Date.parse(datetime[1])];
+    var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
     //console.log("redrawChannels",datetime);
     //console.log("redrawChannels",this.channels);
     for (var i = 0; i < this.channels.length; i++) {
@@ -533,8 +531,13 @@ Chart.prototype.redrawChannels = function (datetime) {
     for (var i = 0; i < this.channels.length; i++) {
         var channel = this.channels[i];
         channel.displayed = false;
-        this.drawChannelData(channel, datetime);
-        channel.checkIfMoreDataNeeded(datetime);
+        if(this.type=="orbit"){
+            loadChannelDataObject(channel, datetime, this.name);
+        }
+        else{
+            this.drawChannelData(channel, dateDate);
+            channel.checkIfMoreDataNeeded(dateDate);
+        }
     }
 }
 
@@ -748,17 +751,18 @@ Chart.prototype.gotoAsyncState = function () {
 //устанавливает границы оси х
 Chart.prototype.setRange = function (time) {
     this.range = [time[0],time[1]];
-    if (this.is_chart_rendered && this.type != "orbit") {
-        var relayout_data = {
-            xaxis: {
-                range: this.range,
-                domain: [(this.scales_units.size - 1) / 25, 1],
-                type: "date"
+    if (this.is_chart_rendered ) {
+        if( this.type != "orbit"){
+            var relayout_data = {
+                xaxis: {
+                    range: this.range,
+                    domain: [(this.scales_units.size - 1) / 25, 1],
+                    type: "date"
+                }
             }
+            Plotly.update(this.name, [], relayout_data);
         }
-        Plotly.update(this.name, [], relayout_data);
         this.redrawChannels(time);
-        //TODO: call for more data if needed
     }
 }
 
@@ -1014,13 +1018,18 @@ function relayoutAllPlots(ed) {
         for (var chart in charts) {
             if(ed.autosize) return;
             if(chart!=activeplot){
-                var div = document.getElementById(chart);
-                if(div){
-                    var x = div.layout.xaxis;
-                    if (ed["xaxis.autorange"] && x.autorange) return;
-                    //console.log("ED",div,activeplot,ed,x)
-                    if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
-                        Plotly.relayout(div, ed);
+                if(charts[chart].type=="orbit"){
+                    charts[chart].setRange(charts[activeplot].getRange());
+                }
+                else {
+                    var div = document.getElementById(chart);
+                    if(div){
+                        var x = div.layout.xaxis;
+                        if (ed["xaxis.autorange"] && x.autorange) return;
+                        //console.log("ED",div,activeplot,ed,x)
+                        if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
+                            Plotly.relayout(div, ed);
+                        }   
                     }
                 }
             }
@@ -1028,7 +1037,7 @@ function relayoutAllPlots(ed) {
     }
 }
 
-//добавляет данные о канале
+//добавляет данные о канале 
 function addChannelDataInOrder(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
     order.parts_num = json.parts;
