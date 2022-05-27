@@ -71,7 +71,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     //var new_chart_n = chart.name;
 
     //if we want to open new chart for orbits
-    if ((channel.hierarchy.channel.datatype=="orbit" && chart.type == "timeseries") || (channel.hierarchy.channel.datatype!="orbit" && chart.type == "orbit")) {
+    if ((channel.hierarchy.channel.orbit && chart.type == "timeseries") || (!channel.hierarchy.channel.orbit && chart.type == "orbit")) {
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         setActivePlotByName("chart_" + new_chart_n);
     }
