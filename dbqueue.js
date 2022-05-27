@@ -584,7 +584,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 }
                 else{
                     wsServer.sendData(channel_data,order,false);
-                    loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,i+1)
+                    loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,func,i+1);
                 }
             }
         },ordernum);
