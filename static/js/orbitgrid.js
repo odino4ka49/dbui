@@ -6,14 +6,14 @@ var v3v4basicdata = {
         timepicker: new TimePicker("#v3v4dtr"),
         azimuths: [],
         firstrec: null
-    },
+    }/*,
     "v4": { 
         loaded: false,
         system: "orbits v4",
         timepicker: new TimePicker("#v4dtr"),
         azimuths: [],
         firstrec: null
-    }
+    }*/
 };
 
 function formatDate(d){
@@ -235,7 +235,7 @@ function setTabs(system_id) {
         //active: system_id,
         tabs: [
             { id: 'v3v4', text: 'V3V4Chan' },
-            { id: 'v4', text: 'V4' }
+            { id: 'v4', text: 'V4', disabled: true }
         ],
         onClick: function (event) {
             openNewTab(event)
@@ -245,6 +245,7 @@ function setTabs(system_id) {
 }
 
 function loadStartSystemTable(system_id){
+    if(system_id=='v4') return;
     sendMessageToServer(JSON.stringify({
         type: "v3v4chan_orbits_start_data",
         system: system_id

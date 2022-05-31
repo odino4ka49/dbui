@@ -507,11 +507,12 @@ function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ord
             else{
                 var channel_data = {
                     "title": "orbit_data",
-                    "name": channel.name,
+                    //"name": channel.name,
                     "data": parseToOrbitData(channel.name,result,azimuths),
-                    "units": channel.unit,
+                    //"units": channel.unit,
                     //"chart": chart,
                     //"mode": mode,
+                    "nodeId": channel.nodeId,
                     "dbid": db.id,
                     "ordernum": ordernum
                 }
@@ -573,9 +574,9 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 var channel_data = {
                     "title": "full_channel_data",
                     "fullname": chan_name,
-                    "name": channel.name,
+                    "nodeId": channel.nodeId,
                     "data": result,
-                    "units": channel.unit,
+                    //"units": channel.unit,
                     "index": i,
                     "datetime": [dates[i],dates[i+1]],
                     //"chart": chart,

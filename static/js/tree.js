@@ -5,9 +5,9 @@ var search_results = {};
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
-        if(node.fullname){
+        /*if(node.fullname){
             node.text = node.fullname;
-        }
+        }*/
         if('subsystems' in node && node.subsystems.length!=0){
             node.nodes = node.subsystems;
             delete node.subsystems;
@@ -84,12 +84,12 @@ function selectChannelsByDB(channels,dbid){
     }
     for(var i = 0; i < channels.length; i++){
         //console.log(channels[i].nodeid)
-        db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
+        db_tree.treeview('selectNode', [ channels[i].nodeId, { silent: true } ]);
     }
 }
 
 function selectChannelsInAllTrees(channels){
-    //console.log("channels",channels[0].name)
+    //console.log("channels",channels)
     for(var i = 0; i < databases.length; i++){
         var dbid = databases[i].id;
         var dbchannels = channels.filter(chan => (chan.dbid==dbid));

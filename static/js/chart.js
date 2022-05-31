@@ -67,6 +67,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
         return;
     }
     var chart = charts[activeplot];
+    //console.log("chartchan",channel_node);
     var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
     //var new_chart_n = chart.name;
 
@@ -110,7 +111,7 @@ function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, 
     this.dbid = dbid;
     this.fullname = fullname;
     this.orbit = orbit;
-    this.nodeid = nodeid;
+    this.nodeId = nodeid;
     this.displayed = false;
     this.color = null;
     this.data = [];
@@ -324,9 +325,8 @@ function Chart(name) {
 
 //добавляет новый канал на канвас
 Chart.prototype.addChannel = function (channel) {
-    console.log("addchannel",channel,this);
     var result = this.channels.find(obj => {
-        return ((obj.name == channel.name) && (obj.dbid == channel.dbid))
+        return ((obj.nodeId == channel.nodeId) && (obj.dbid == channel.dbid))
     })
     if (result) return;
     this.channels.push(channel);
@@ -348,13 +348,13 @@ Chart.prototype.getChannels = function () {
 //загружает информацию о канале из БД
 
 //добавляет график, старая функция
-Chart.prototype.addGraphData = function (json) {
+/*Chart.prototype.addGraphData = function (json) {
     if (this.type == "orbit") {
         return false;
     }
     json.data.x = parseDates(json.data.x);
     var channel = this.channels.find((element) => (element.name == json.name));
-    // console.log("CHANNEL",channel);
+     //console.log("CHANNEL",json);
     var chan_name = json.name
     if (channel) {
         if (channel.displayed) {
@@ -371,14 +371,14 @@ Chart.prototype.addGraphData = function (json) {
         }
     }
     return true;
-}
+}*/
 
 //добавляет данные из БД, запоминает и отрисовывает
 Chart.prototype.addChannelData = function (json, mode) {
     if (this.type == "orbit") {
         return false;
     }
-    var channel = this.channels.find((element) => (element.name == json.name));
+    var channel = this.channels.find((element) => ((element.nodeId == json.nodeId) && (element.dbid == json.dbid)));
     var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.addData(json.data, datetime);
     //channel.units = json.units;
@@ -420,10 +420,10 @@ Chart.prototype.drawOrbitData = function(channel){
         else {
             if (!this.is_chart_rendered) {
                 this.type = "orbit";
-                this.renderChart(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+                this.renderChart(channel, data_to_display);
             }
             else {
-                this.addPlot(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+                this.addPlot(channel, data_to_display);
             };
         }
     }
@@ -437,15 +437,15 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
         var data_to_display = this.parseToChartData(channel.fullname, channel.getFilteredData(datetime, pixels));
         //console.log("data_to_display",data_to_display)
         if (channel.displayed) {
-            this.extendLine(chan_name, data_to_display, channel.units, channel.fullname)
+            this.extendLine(channel, data_to_display);
         }
         else {
             if (!this.is_chart_rendered) {
                 this.type = "timeseries";
-                this.renderChart(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+                this.renderChart(channel, data_to_display);
             }
             else {
-                this.addPlot(chan_name, data_to_display, channel.units, channel.mode, channel.fullname);
+                this.addPlot(channel, data_to_display);
             };
         }
     }
@@ -460,7 +460,7 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
     }
     this.type = "orbit";
 
-    var channel = this.channels.find((element) => (element.name == json.name));
+    var channel = this.channels.find((element) => ((element.nodeId == json.nodeId) && (element.dbid == json.dbid)));
     //var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.setType('orbit');
     channel.setData(json.data);
@@ -508,10 +508,10 @@ Chart.prototype.parseToArrayData = function (data) {
 }
 
 //дорисовывает график
-Chart.prototype.extendLine = function (channel, data, units) {
+Chart.prototype.extendLine = function (channel, data) {
     //console.log(this.channels, channel)
-    data.name = channel;
-    var id = this.channels.findIndex((element) => (element.name == channel));
+    data.name = channel.fullname;
+    var id = this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
     data.x.push(null);
     data.y.push(null);
     //console.log("extendLine", data, id)
@@ -540,7 +540,7 @@ Chart.prototype.redrawChannels = function (datetime) {
 }
 
 
-Chart.prototype.renderOrbitChart = function(channel,data,units){
+/*Chart.prototype.renderOrbitChart = function(channel,data,units){
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element) => (element.name == channel));
     data.name = channel;
@@ -578,19 +578,19 @@ Chart.prototype.renderOrbitChart = function(channel,data,units){
         }
     });
     chan_data.displayed = true;
-}
+}*/
 
 
 //отрисовывает полотно с первым графиком
-Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
+Chart.prototype.renderChart = function (channel, data) {
     this.is_chart_rendered = true;
-    var chan_data = this.channels.find((element) => (element.name == channel));
+    var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
     //chan_data.id = this.max_id;
     //this.max_id++;
-    data.mode = mode;//'markers';//
-    data.name = channel;
+    data.mode = channel.mode;//'markers';//
+    data.name = channel.name;
     //if(this.type == "orbit") data.name = channel+":"+data.datetime;
-    if (fullname) data.name = fullname;
+    if (channel.fullname) data.name = channel.fullname;
     //auto generate line color with the right tone
     var color = hsvToHex(tones[0], 80, 80)
     chan_data.color = color;
@@ -615,7 +615,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
             xanchor: 'top',
             y: 0.91,
             yanchor: 'bottom',
-            text: units,
+            text: channel.units,
             textangle: -45,
             font: { color: color },
             showarrow: false
@@ -661,7 +661,7 @@ Chart.prototype.renderChart = function (channel, data, units, mode, fullname) {
         //console.log(gd)
         resizeObserver.observe(gd);
     });
-    this.scales_units.set(units, {
+    this.scales_units.set(channel.units, {
         color: color,
         axis_n: 1,
         channel_counter: 1
@@ -816,15 +816,16 @@ Chart.prototype.removeAxis = function (units) {
 }
 
 //отрисовывает новый график на полотне
-Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
+Chart.prototype.addPlot = function (channel, data) {
     //console.log("addplot",channel)
-    var scale_data = this.scales_units.get(units);
-    var chan_data = this.channels.find((element) => (element.name == channel));
+    var scale_data = this.scales_units.get(channel.units);
+    var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
     /*if(chan_data.id==null){
         chan_data.id = this.max_id;
         this.max_id++;
     }*/
-    if (fullname) channel = fullname;
+    var chan_name = channel.name;
+    if (channel.fullname) chan_name = channel.fullname;
     if (!scale_data) {
         //add new scale
         var scale_num = this.scales_units.size;
@@ -861,7 +862,7 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
             axis_n: scale_num + 1,
             channel_counter: 1
         };
-        this.scales_units.set(units, scale_data);
+        this.scales_units.set(channel.units, scale_data);
         this.axis_labels.push(
             {
                 xref: 'paper',
@@ -870,7 +871,7 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
                 xanchor: 'top',
                 y: 0.91,
                 yanchor: 'bottom',
-                text: units,
+                text: channel.units,
                 textangle: -45,
                 font: { color: color },
                 showarrow: false
@@ -886,11 +887,11 @@ Chart.prototype.addPlot = function (channel, data, units, mode, fullname) {
             chan_data.color = hsvToHex(tones[scale_data.axis_n - 1], getRandomInt(30, 100), getRandomInt(40, 100));
         }
     }
-    data.mode = mode//'markers'; //type of plot
-    data.name = channel;
+    data.mode = channel.mode//'markers'; //type of plot
+    data.name = chan_name;
     data.line = { color: chan_data.color };
     if(this.type=="orbit"){
-        data.name = channel;
+        //data.name = chan_name;
         data.error_y = {
             type: 'data',
             array: data.sigma,

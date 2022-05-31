@@ -35,7 +35,7 @@
 <div id="orbits_table" class="resizable_hor">
     <div id="tabs"></div>
     <div id="v3v4"></div>
-    <div id="v4"></div>
+    <!--div id="v4"></div-->
 </div>
         </td>
         <td id="graphset_td">
@@ -51,7 +51,7 @@
     </div>
 </div>
 <div id="mirror"></div>
-<div id="v4_graphset" class="graphset">
+<!--div id="v4_graphset" class="graphset">
     <div id="graph1" class="resizable orbitplot">
         <div id="v4i_chart" class="pchart"></div>
     </div>
@@ -61,7 +61,7 @@
     <div id="graph3" class="resizable orbitplot">
         <div id="v4z_chart" class="pchart"></div>
     </div>
-</div>
+</div-->
 <div id="mirror"></div>
 
         </td>
@@ -119,7 +119,7 @@
                     if(json.last){
                         initV3V4Time("v4",json.data[0].t);
                     }
-                    refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
+                    //refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
                     break;
                 case "v3v4_firstrecord":
                     setFirstRecTime(json.system,json.data);
