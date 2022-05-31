@@ -87,7 +87,8 @@ class SystemTree {
             }
             else if(ss){
                 ss.appendChannel(channel);
-                if(ss.type!="subsystem" && dbtype=="pickups") channel.orbit = true
+                if(ss.function=="orbit") channel.orbit = true;
+                if(ss.type!="subsystem" && dbtype=="pickups") channel.orbit = true;
             }
             //}
         }
@@ -314,16 +315,12 @@ class Channel {
         this.fullname = fullname;
         this.address = address;
         this.datatype = type;
-        this.orbit = false;
         this.unit = unit;
         this.divider = divider;
         this.status = status;
         this.type = "channel";
         this.checkIfDisabled();
-        //чтобы не проверять отдельно, являются ли данные орбитными, сразу укажем тип "орбиты"
-        if(this.datatype && this.datatype.slice(-1)=="]"){
-            this.orbit = true;
-        }
+        if(!fullname) this.fullname = name;
     }
     check(regex){
         if(this.name.startsWith(regex)){

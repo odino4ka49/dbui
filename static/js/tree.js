@@ -5,6 +5,9 @@ var search_results = {};
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
+        if(node.fullname){
+            node.text = node.fullname;
+        }
         if('subsystems' in node && node.subsystems.length!=0){
             node.nodes = node.subsystems;
             delete node.subsystems;

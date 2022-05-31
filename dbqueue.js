@@ -24,11 +24,15 @@ function parseToChartData(channel,data){
 
 function applyMath(func,data,name){
     if(func == "dispersion"){
-        //TODO
-        var x0 = data.find(element => !(element[name].every(el => isNaN(el))))[name];
-        //var x0 = data[0][name];
+        var x0_data = data.find(element => !(element[name].every(el => isNaN(el))));
+        var x0;
+        if(x0_data){
+            var x0 = x0_data[name];
+        }
+        else{
+            return [];
+        }
         var N = x0.length;
-        console.log(N);
         var result = [];
         for(var i=0;i<data.length;i++){
             var squared = [];
@@ -37,11 +41,8 @@ function applyMath(func,data,name){
             }
             var disp = {t:data[i].t};
             disp[name] = Math.sqrt((squared.reduce((a, b) => a + b, 0))/N);
-            //console.log(x0[j]);
-            //console.log(squared,disp);
             result.push(Object.assign({}, disp));
         }
-        //console.log(result);
         return result;
     }
 }
@@ -373,7 +374,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     else if (hierarchy.system && hierarchy.system.ss_id){
         ss = tree.findSS(hierarchy.system.ss_id);
     }
-    console.log(channel);//db.findSS())
+    //console.log(channel);//db.findSS())
     var subsystem = null;
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
@@ -418,7 +419,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
 }
 
 //we get average channel data for a particular period of time considering mode and chart size
-function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,ordernum,order){
+/*function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,ordernum,order){
     var channel = hierarchy.channel;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
@@ -456,7 +457,7 @@ function getChannelData(chart,pixels,dbid,datatable,hierarchy,datetime,mode,orde
         }
     }
     loadChannelData(chart,pixels/parts,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,0);
-}
+}*/
 
 
 //we get all orbit data for a particular period of time
@@ -534,8 +535,10 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
-    if(subsystem){
-        chan_name = subsystem.name+": "+chan_name;
+    if(channel.fullname) chan_name = channel.fullname;
+    if(subsystem){ 
+        /*if(channel.fullname) chan_name = subsystem.name+": "+channel.fullname;
+        else chan_name = subsystem.name+": "+channel.name;*/ //debug
         if(data_tbl_type == "chan_id"){
             //req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
         }
@@ -544,11 +547,12 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
         }
     }
     else{
+        //if(channel.fullname) chan_name = channel.fullname;
         if(data_tbl_type == "chan_id"){
-            req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t, value as "'+channel.name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' order by date_time asc;'
+            req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' order by date_time asc;'
         }
         else{
-            req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
+            req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' as "'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
         }
     }
     try{
@@ -564,7 +568,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 //console.log("REQ",req)
                 //console.log("RESULT",result)
                 if(func){
-                    var result = applyMath(func,result,channel.name);
+                    var result = applyMath(func,result,chan_name);
                 }
                 var channel_data = {
                     "title": "full_channel_data",
@@ -682,7 +686,7 @@ module.exports = {
     loadV3V4ChanOrbitsStartData: loadV3V4ChanOrbitsStartData,
     loadV3V4ChanDatetimeData: loadV3V4ChanDatetimeData,
     getSensors: getSensors,
-    getChannelData: getChannelData,
+    //getChannelData: getChannelData,
     getFullChannelData: getFullChannelData,
     getDatabasesInfo: getDatabasesInfo,
     loadDtAzimuths: loadDtAzimuths

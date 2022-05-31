@@ -67,11 +67,11 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
         return;
     }
     var chart = charts[activeplot];
-    var channel = new ChartChannel(channel_node.name, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
+    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
     //var new_chart_n = chart.name;
 
     //if we want to open new chart for orbits
-    if ((channel.hierarchy.channel.orbit && chart.type == "timeseries") || (!channel.hierarchy.channel.orbit && chart.type == "orbit")) {
+    if ((channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
         setActivePlotByName("chart_" + new_chart_n);
     }
@@ -103,18 +103,18 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name, hierarchy, datatable, dbid, nodeid, chartname) {
+function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname) {
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
-    this.fullname;
-    //this.id = null; //?
+    this.fullname = fullname;
+    this.orbit = orbit;
     this.nodeid = nodeid;
     this.displayed = false;
     this.color = null;
     this.data = [];
-    this.units = null;
+    this.units = units;
     this.chartname = chartname;
     this.type = null;
 }
@@ -264,7 +264,8 @@ ChartChannel.prototype.averageData = function (time) {
     var max = data[0];
     //console.log(data)
     //console.log(data[0],this.name)
-    var y = this.fullname;
+    var y = this.name;
+    if(this.fullname) y = this.fullname;
     //console.log(this);
     for (var i = 0; i < data.length; i++) {
         if (min[y] > data[i][y]) min = data[i];
@@ -380,8 +381,8 @@ Chart.prototype.addChannelData = function (json, mode) {
     var channel = this.channels.find((element) => (element.name == json.name));
     var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.addData(json.data, datetime);
-    channel.units = json.units;
-    channel.fullname = json.fullname;
+    //channel.units = json.units;
+    //channel.fullname = json.fullname;
     //channel.mode = mode;
     //console.log("addChannelData",json.datetime);
     //console.log("channel.data",channel.data);
@@ -460,12 +461,9 @@ Chart.prototype.addOrbitData = function (json, chart, mode) {
     this.type = "orbit";
 
     var channel = this.channels.find((element) => (element.name == json.name));
-    console.log(this.channels,json.name);
     //var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.setType('orbit');
     channel.setData(json.data);
-    channel.units = json.units;
-    channel.fullname = json.name;
     //channel.mode = mode;
     //console.log("addChannelData",json.datetime);
     //console.log("channel.data",channel.data);
