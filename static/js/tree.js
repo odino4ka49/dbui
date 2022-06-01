@@ -45,11 +45,13 @@ function refreshTree(dbid,data) {
             onNodeSelected: function(event, node) {
                 //console.log(dbid,node);
                 if(dbid=="db1"){
-                    if(node.name=="orbits v3v4chan"){
+                    /*if(node.name=="orbits v3v4chan"){
                         window.open(window.location.href+"orbits?system=v3v4")
                     }
-                    else if(node.name=="orbits v4"){
-                        window.open(window.location.href+"orbits?system=v4")
+                    else */
+                    if(node.name=="v3v4chan"&&node.abscissa_tbl=="04_pkp_position"){
+                        //console.log(node);
+                        window.open(window.location.href+"orbits?system=v3v4");
                     }
                 }
                 if(node.type=="channel"){
