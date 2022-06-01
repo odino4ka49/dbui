@@ -181,7 +181,7 @@ function loadV3V4ChanOrbitsStartData(system,order){
 function loadV3V4ChanPkpPosData(system,order){
     var db = databases.get("db1");
     var subsystemname = (system=="v3v4") ? "v3v4chan" : "v4" 
-    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".system = \'orbits\' and "01_system".subsystem = \''+subsystemname+'\' order by azimuth',order,function(result){
+    db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".id = "04_pkp_position".subsys_id where "01_system".abscissa_tbl = \'04_pkp_position\' and "01_system".subsystem = \''+subsystemname+'\' order by azimuth',order,function(result){
         wsServer.sendData({
             "title": "v3v4chan_pkppos_data",
             "system": system,
