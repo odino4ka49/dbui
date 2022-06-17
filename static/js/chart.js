@@ -11,6 +11,7 @@ var orders = [];
 var orders_max_n = 0;
 var synched = true;
 var plots_mode;
+var synched_range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];
 
 //проверка на возраст браузера
 try {
@@ -314,9 +315,20 @@ function Chart(name) {
     this.scales_units = new Map();
     this.channels = [];
     this.axis_labels = [];
-    if(synched&&activeplot&&(activeplot!=this.name)){
-        this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
+    if(synched){
+        if(!synched_range){
+            if(activeplot&&(activeplot!=this.name)){
+                synched_range = [charts[activeplot].range[0],charts[activeplot].range[1]];
+            }
+            else{
+                synched_range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];
+            }
+        }
+        this.range = synched_range;
     }
+    /*if(synched&&activeplot&&(activeplot!=this.name)){
+        this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
+    }*/
     else{
         this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
     }
@@ -940,8 +952,9 @@ function terminateChannel(id) {
 
 
 //sets variable range of the active plot
-function setRange(time) {
+function setRange(time) {    
     if (synched) {
+        synched_range = [time[0],time[1]];
         for (var chart in charts) {
             charts[chart].setRange(time);
         }

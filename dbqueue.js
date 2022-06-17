@@ -35,12 +35,17 @@ function applyMath(func,data,name){
         var N = x0.length;
         var result = [];
         for(var i=0;i<data.length;i++){
+            var num = 0;
             var squared = [];
             for(var j=0;j<N;j++){
-                squared.push((data[i][name][j]-x0[j])**2);
+                var item = data[i][name][j];
+                if(!isNaN(item)){
+                    squared.push((item-x0[j])**2);
+                    num++;
+                } 
             }
             var disp = {t:data[i].t};
-            disp[name] = Math.sqrt((squared.reduce((a, b) => a + b, 0))/N);
+            disp[name] = Math.sqrt((squared.reduce((a, b) => a + b, 0))/num);
             result.push(Object.assign({}, disp));
         }
         return result;
