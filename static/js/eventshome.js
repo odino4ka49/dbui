@@ -1,5 +1,4 @@
 $(document).on("activePlotSet",function(event){
-    //console.log("activePlotSet",getActivePlotChanels())
     var time = getActivePlotRange();
     timepicker.setDateTime(time[0],time[1]);
     selectChannelsInAllTrees(getActivePlotChanels());
@@ -21,4 +20,7 @@ $(document).on("treeChannelChosen",function(event,node,dbid){
     addChannelToActivePlot(node,hierarchy,datatable,dbid);
 });
 
-
+$(document).on("asyncronized",function(event){
+    var time = getActivePlotRange();
+    timepicker.setDateTime(time[0],time[1]);
+});

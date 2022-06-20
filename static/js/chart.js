@@ -11,7 +11,6 @@ var orders = [];
 var orders_max_n = 0;
 var synched = true;
 var plots_mode;
-var synched_range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];
 
 //проверка на возраст браузера
 try {
@@ -315,24 +314,9 @@ function Chart(name) {
     this.scales_units = new Map();
     this.channels = [];
     this.axis_labels = [];
-    if(synched){
-        if(!synched_range){
-            if(activeplot&&(activeplot!=this.name)){
-                synched_range = [charts[activeplot].range[0],charts[activeplot].range[1]];
-            }
-            else{
-                synched_range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];
-            }
-        }
-        this.range = synched_range;
-    }
-    /*if(synched&&activeplot&&(activeplot!=this.name)){
-        this.range = [charts[activeplot].range[0],charts[activeplot].range[1]];
-    }*/
-    else{
-        this.range = [moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss')];//timepicker.getDateTime();//[];//
-    }
-    //this.max_id = 0;
+    var range = getDateTime();
+    this.range = [range[0],range[1]];
+    console.log(this.range);
 }
 
 //добавляет новый канал на канвас
@@ -954,7 +938,6 @@ function terminateChannel(id) {
 //sets variable range of the active plot
 function setRange(time) {    
     if (synched) {
-        synched_range = [time[0],time[1]];
         for (var chart in charts) {
             charts[chart].setRange(time);
         }
@@ -1001,7 +984,7 @@ function getAllPlotsChannels() {
 //синхронизация всех холстов
 function synchronizePlots() {
     if (activeplot) {
-        var range = charts[activeplot].getRange();
+        var range = getDateTime();
         for (var chart in charts) {
             charts[chart].saveAsyncState();
         }
@@ -1016,6 +999,7 @@ function asynchronizePlots() {
     for (var chart in charts) {
         charts[chart].gotoAsyncState();
     }
+    $(document).trigger("asyncronized");
 }
 
 //распространить зум на все холсты

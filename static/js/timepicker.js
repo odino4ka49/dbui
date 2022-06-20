@@ -58,6 +58,7 @@ TimePicker.prototype.getDateTimeNotFormated = function() {
 }
 
 TimePicker.prototype.setDateTime = function(start,end) {
+    this.datetimerange = [start,end];
     $(this.div).data('daterangepicker').setStartDate(start);
     $(this.div).data('daterangepicker').setEndDate(end);
 }
@@ -68,11 +69,18 @@ function getMode(){
     return($('input[name="linetype"]:checked').val());
 }
 
+function getDateTime(){
+    return timepicker.getDateTime();
+}
+
 function initPicker(div,time=null){
     timepicker = new TimePicker(div);
     timepicker.init();
     if(time!=null){
         timepicker.setDateTime(time[0],time[1]);
+    }
+    else{
+        timepicker.setDateTime(moment().subtract(1, 'days').format('YYYY-MM-DD')+' 09:00:00', moment().format('YYYY-MM-DD HH:mm:ss'));
     }
 }
 
