@@ -56,8 +56,8 @@ div.pchart{
     height: 100%;
 }
 div.active{
-    border: 4px solid dimgray;
-    border-radius: 10px;
+    border: 3px solid dimgray;
+    border-radius: 8px;
 }
 div.close_chart{
     background-image: url("/static/images/cancel.png");
@@ -187,12 +187,13 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     bottom: 10px;
 }
 
-#input_search{
+#input_search {
     float: left;
-    width: 270px;
+    width: 240px;
     line-height: 30px;
-    padding: 0;
-    margin: 0;
+    padding: 0 0 0 10;
+    margin: 0 0 0 28;
+    border-radius: 5px 0px 0px 5px;
 }
 #btn_search{
     float: left;
@@ -204,6 +205,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
+    border-radius: 0 5px 5px 0px;
 }
 .clearBoth{
     clear:both;
