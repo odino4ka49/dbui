@@ -11,6 +11,9 @@ var orders = [];
 var orders_max_n = 0;
 var synched = true;
 var plots_mode;
+var max_scale_num = null;
+//начальные графики
+var charts = {};
 
 //проверка на возраст браузера
 try {
@@ -774,6 +777,11 @@ Chart.prototype.removeAxis = function (units) {
     }
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
+    var domain_start = scale_num;
+    if(synched) {
+        countMaxScaleNum();
+        domain_start = max_scale_num;
+    }
     //while(scale_num>=tones.length) nextTone();
     //console.log(this.scales_units)
     //if(chan_data.color==null) chan_data.color = color;
@@ -783,7 +791,7 @@ Chart.prototype.removeAxis = function (units) {
     var relayout_data = {
         xaxis: {
             range: this.range,
-            domain: [(scale_num - 1) / 25, 1],
+            domain: [(domain_start - 1) / 25, 1],
             autorange: false,
             type: "date"
         },
@@ -906,8 +914,6 @@ Chart.prototype.addPlot = function (channel, data) {
     scale_data = null;
 }
 
-//начальные графики
-var charts = {}
 
 function initCharts() {
     charts['chart_1'] = new Chart('chart_1');
@@ -1280,6 +1286,16 @@ function synchronizePlotsEvent(checkboxElem) {
         asynchronizePlots();
     }
 }
+
+function countMaxScaleNum(){
+    max_scale_num = 0;
+    for (var chname in charts) {
+        var chart = charts[chname];
+        if(chart&&(chart.scales_units.size>max_scale_num)) max_scale_num = chart.scales_units.size;
+    }
+    return max_scale_num;
+}
+
 
 $(document).ready(function () {
     dragula([document.getElementById('graphset')], {

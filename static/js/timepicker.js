@@ -23,7 +23,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
     });
     this.datetimerange.push($(this.div).data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm:ss'));
     this.datetimerange.push($(this.div).data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm:ss'));
-    $(this.div).on('apply.daterangepicker', function(ev, picker) {
+    $(this.div).on('hide.daterangepicker', function(ev, picker) {
         var datetime = timepicker;
         var datetimerange = [];
         if(ev.target.id=="v4dtr"){
@@ -34,6 +34,9 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
         }
         if("datetimerange" in datetime) {
             datetimerange = datetime.datetimerange;
+            if((datetimerange[0]==picker.startDate.format('YYYY-MM-DD HH:mm:ss'))&&(datetimerange[1]==picker.endDate.format('YYYY-MM-DD HH:mm:ss'))){
+                return;
+            }
             datetimerange[0] = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
             datetimerange[1] = picker.endDate.format('YYYY-MM-DD HH:mm:ss');
         }

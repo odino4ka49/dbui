@@ -60,7 +60,7 @@ div.active{
     border-radius: 10px;
 }
 div.close_chart{
-    background-image: url("https://static.vecteezy.com/system/resources/previews/000/366/876/original/cancel-vector-icon.jpg");
+    background-image: url("/static/images/cancel.png");
     width: 20px;
     height: 20px;
     background-size: cover;
@@ -72,7 +72,7 @@ div.close_chart{
     cursor: pointer;
 }
 div.handle{
-    background-image: url("https://www.pinclipart.com/picdir/big/167-1670656_white-arrow-cliparts-29-buy-clip-art-move.png");
+    background-image: url("/static/images/move.png");
     width: 20px;
     height: 20px;
     background-size: cover;
@@ -87,7 +87,7 @@ div.handle{
     cursor: move;
 }
 #add_chart{
-    background-image: url("https://petersanders.com/wp-content/uploads/2021/04/free-png-plus-sign-transparent-plus-signpng-images-pluspng-plus-sign-transparent-background-512_512.png");
+    background-image: url("/static/images/plus.png");
     width: 25px;
     height: 25px;
     background-size: cover;
@@ -147,7 +147,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 
 #databases div.plus{
-    background-image: url("https://petersanders.com/wp-content/uploads/2021/04/free-png-plus-sign-transparent-plus-signpng-images-pluspng-plus-sign-transparent-background-512_512.png");
+    background-image: url("/static/images/plus.png");
     width: 25px;
     height: 25px;
     background-size: cover;
@@ -157,7 +157,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 
 #databases tr.opened div.plus{
-    background-image: url("https://iconarchive.com/download/i91592/icons8/windows-8/Science-Minus2-Math.ico");
+    background-image: url("/static/images/minus.ico");
     width: 18px;
     margin: 3px;
     height: 25px;
@@ -175,7 +175,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     cursor: default;
 }
 #databases div.refresh {
-    background-image: url('https://static.thenounproject.com/png/2391171-200.png');
+    background-image: url('/static/images/refresh.png');
     width: 20px;
     height: 20px;
     position: absolute;
@@ -196,7 +196,8 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 #btn_search{
     float: left;
-    background-image: url('https://static.tildacdn.com/tild3832-6637-4337-a163-373538633566/img_548928.png');
+    background-image: url('/static/images/search.png');
+    padding: 5px;
     width: 34px;
     height: 34px;
     cursor: pointer;
