@@ -57,7 +57,6 @@ div.pchart{
 }
 div.active{
     border: 3px solid dimgray;
-    border-radius: 8px;
 }
 div.close_chart{
     background-image: url("/static/images/cancel.png");
@@ -114,6 +113,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     margin-top: 10px;
     height: 260px;
     border: 1px solid lightgray;
+    border-radius: 8px;
 }
 
 #test_zingchart {
