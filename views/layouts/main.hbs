@@ -2,12 +2,29 @@
     <head>
         <link rel="shortcut icon" href="#">
         <title>DBUI</title>
+        <link href="/static/css/dbtree.css" rel="stylesheet">
+        <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="/static/js/floatingFixed.js"></script>
         <!--script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script-->
     </head>
     <body>
+        <div>
+            <div id="main_title">Заголовок</div>
+            <div id="dbui_menu">
+                <a href="." id="menu_main_button" class="menu-item">Главная</a>
+                <div id="menu_data_button" class="dropdown">
+                    <button class="dropbtn">Измерения</button>
+                    <div class="dropdown-content">
+                        <a href="/general">Основные данные</a>
+                        <a href="/orbits">Орбиты канала</a>
+                    </div>
+                </div>
+                <a href="/detectors" id="menu_detectors_button" class="menu-item">Детекторы</a>
+            </div>
+        </div>
         {{{body}}}
     </body>
 </html>

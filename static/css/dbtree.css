@@ -222,10 +222,9 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 
 #topnav{
     z-index: 10;
-    position: fixed;
-    top: 0px;
     background-color: lightgray;
     width: 100%;
+    top: 3px;
 }
 #topnav td{
     padding: 10px;
@@ -235,9 +234,81 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     padding-bottom: 5px;
 }
 
+.menu-item{
+    background-color: gray;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.dropbtn {
+    background-color: gray;
+    color: white;
+    padding: 9px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {
+    background-color: lightslategray;
+  }
+#main_title {
+    font-size: 27px;
+    text-align: center;
+    margin-top: 10px;
+}
+#dbui_menu{
+    margin: 0 0 10px 10px;
+}
+.menu-item:hover{
+    color: white;
+    text-decoration: none;
+    background-color: lightslategray;
+}
+a:hover{
+    text-decoration: none!important;
+}
+
 ul {
     padding: 0;
-    list-style: none
+    list-style: none;
 }
 .item {
     margin-bottom: 40px

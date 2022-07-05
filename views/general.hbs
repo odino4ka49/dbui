@@ -1,0 +1,143 @@
+<script src="/bower_components/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="/static/js/tree.js"></script>
+<script src="/static/js/timepicker.js"></script>
+<script src="/static/js/chart.js"></script>
+<script src="/static/js/eventshome.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="/static/js/color.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link href="/static/css/dragula.css" rel="stylesheet">
+<script src='/static/js/jquery.tooltip.js'></script>
+
+<div id="topnav" class="floating">
+    <table>
+        <tr>
+            <td>
+                <input id="datetimerange" type="text" name="datetimes" />
+            </td>
+            <td>
+                <div id="linetype">
+                    <div>
+                        <input type="radio" id="markers" name="linetype" value="markers">
+                        <label for="markers">Markers</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="line" name="linetype" value="line" checked>
+                        <label for="line">Line</label>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <p id="syncronize_text">Synchronize:</p>
+            </td>
+            <td>
+                <label class="switch">
+                    <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
+                    <span class="slider round"></span>
+                </label>
+            </td>
+        </tr>
+
+
+    </table>
+</div>
+
+<table id="tree_and_plots">
+    <tr>
+        <td>
+            <div><input id="input_search" placeholder="Search..." value="">
+                <button id="btn_search" onclick="searchAll()"></button>
+            </div>
+            <br class="clearBoth" />
+            <div id="search_output"></div>
+            <div id="dbtree">
+                <table id="databases" class="resizable_hor"></table>
+            </div>
+            <div id="tooltip"></div>
+        </td>
+        <td id="graphset_td">
+            <div id="graphset" class="graphset">
+                <div id="graph1" class="resizable active">
+                    <div id="chart_1" class="pchart"></div>
+                    <div class="close_chart"></div>
+                    <div class="handle"></div>
+                </div>
+                <div id="add_chart"></div>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="mirror"></div>
+
+<br />
+
+<script>
+    'use strict';
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
+    var connection = new WebSocket('ws://' + window.location.hostname + ':1337');//ws://192.168.144.71:1337');//
+    // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
+
+    connection.onopen = function () {
+        console.log("connection is opened")
+        // connection is opened and ready to use
+    };
+
+    connection.onclose = function () {
+        console.log("connection is closed")
+        // an error occurred when sending/receiving data
+    };
+
+    connection.onerror = function (error) {
+        console.log("connection error")
+        // an error occurred when sending/receiving data
+    };
+
+    connection.onmessage = function (message) {
+        defaultCursor();
+        try {
+            var json = JSON.parse(message.data);
+            //console.log("got message "+json.title)
+            switch (json.title) {
+                case "channel_data":
+                    addChannelDataInOrder(json);
+                    break;
+                case "full_channel_data":
+                    addChannelDataInOrder(json);
+                    break;
+                case "orbit_data":
+                    addOrbitData(json);
+                    break;
+                case "databases":
+                    displayDatabases(json.data);
+                    break;
+                case "tree_data":
+                    console.log(json.data);
+                    refreshTree(json.database, json.data);
+                    break;
+                case "error":
+                    if (json.clientordernum != undefined) {
+                        removeOrder(json.clientordernum);
+                    }
+                    alertError(json.data);
+                    break;
+            }
+            json = null;
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    };
+
+    function sendMessageToServer(message) {
+        connection.send(message);
+    }
+
+    initPicker("#datetimerange");
+    initCharts();
+    $(".floating").floatingFixed({ padding: 0 });
+
+</script>
