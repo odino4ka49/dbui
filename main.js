@@ -33,6 +33,9 @@ app.get('/orbits', (request, response) => {
 app.get('/detectors', (request, response) => {
     response.render('detectors', {})
 })
+app.get('/t-diagnostics', (request, response) => {
+    response.render('t-diagnostics', {})
+})
 app.get('/get_magnet_sensors/:magnet', (request, response) => {
     response.json(model.getSensors(request.params.magnet))
 })
