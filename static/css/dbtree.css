@@ -21,7 +21,7 @@ body{
     width: 103%;
     height:800px;
     overflow-y: scroll;
-    padding: 20px;
+    padding: 0 20px;
 }
 #v3v4,#v4{
     width: 100%;
@@ -229,6 +229,15 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     width: 100%;
     top: 3px;
 }
+#topnav table{
+    width: 100%;
+}
+.white_space{
+    width: 99%;
+}
+#search_line{
+    display: flex;
+}
 #topmenu{
     position: fixed;
     background-color: white;
@@ -237,6 +246,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 }
 #topnav td{
     padding: 10px;
+    white-space: nowrap;
 }
 #syncronize_text{
     margin: 0px;
@@ -289,11 +299,12 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
 #main_title {
     font-size: 27px;
     text-align: center;
-    margin: 21px;
+    margin: 24px;
 }
 #main_text{
-    margin: 15px 30px 30px 30px;
+    margin: 0px 35px;
     text-align: justify;
+    font-size: 16px;
 }
 #dbui_menu{
     margin: 0 0 10px 10px;
@@ -377,6 +388,8 @@ input {
     display: inline-block;
     width: 46px;
     height: 25px;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   /* Hide default HTML checkbox */
