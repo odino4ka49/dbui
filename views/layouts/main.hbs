@@ -8,11 +8,18 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script src="/static/js/floatingFixed.js"></script>
+        <script>
+            $(document).ready(function(){
+                $("#topmenu").floatingFixed({ padding: 0 });
+            })
+        </script>
         <!--script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script-->
     </head>
     <body>
-        <div id="topmenu">
-            <div id="main_title">МОНИТОРИНГ И АРХИВИРОВАНИЕ ИЗМЕРЕНИЙ, ЗАДАВАЕМЫХ РЕЖИМОВ НА УСКОРИТЕЛЬНОМ КОМПЛЕКСЕ ВЭПП-4</div>
+        <div id="topmenu"">
+            <div id="main_title">МОНИТОРИНГ И АРХИВИРОВАНИЕ ИЗМЕРЕНИЙ, ЗАДАВАЕМЫХ РЕЖИМОВ НА 
+                <a href="https://vepp4.inp.nsk.su/">УСКОРИТЕЛЬНОМ КОМПЛЕКСЕ ВЭПП-4</a>
+            </div>
             <div id="dbui_menu">
                 <a href="." id="menu_main_button" class="menu-item">Главная</a>
                 <div class="dropdown">
@@ -26,7 +33,7 @@
                 <a href="/t-diagnostics" id="menu_diagnostics_button" class="menu-item">Т диагностика</a>
             </div>
         </div>
-        <div style="height: 165px;"></div>
+        <!--div style="height: 165px;"></div-->
         {{{body}}}
     </body>
 </html>

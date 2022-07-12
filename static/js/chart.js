@@ -11,7 +11,7 @@ var orders = [];
 var orders_max_n = 0;
 var synched = true;
 var plots_mode;
-var max_scale_num = null;
+var max_scale_num = 0;
 //начальные графики
 var charts = {};
 
@@ -34,6 +34,7 @@ function defaultCursor() {
 }
 
 function setActivePlot(div) {
+    //console.log("setActivePlot",div);
     activeplot = div.attr('id');
     $(".graphset").children().removeClass('active');
     div.parent().addClass('active');
@@ -41,6 +42,7 @@ function setActivePlot(div) {
 }
 
 function setActivePlotByName(name) {
+    //console.log("setActivePlot",name);
     activeplot = name;
     $(".graphset").children().removeClass('active');
     $("#" + name).parent().addClass('active');
@@ -75,12 +77,15 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     //var new_chart_n = chart.name;
 
     //if we want to open new chart for orbits
-    if ((channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
-        new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
+    if ((channel.units == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
+        var istext = (channel.units == "text") ? true : false;
+        new_chart_n = addChartBeforeTarget($("#" + chart.name).parent(),istext);
+        charts["chart_" + new_chart_n].addChannel(channel);
         setActivePlotByName("chart_" + new_chart_n);
     }
-    charts[activeplot].addChannel(channel);
-
+    else{
+        charts[activeplot].addChannel(channel);
+    }
     //if we want to open new window for orbits
     /*if(plots_mode && ((channel_node.datatype == "orbit" && plots_mode != "orbits") || (channel_node.datatype != "orbit" && plots_mode == "orbits"))) 
     {
@@ -319,7 +324,6 @@ function Chart(name) {
     this.axis_labels = [];
     var range = getDateTime();
     this.range = [range[0],range[1]];
-    console.log(this.range);
 }
 
 //добавляет новый канал на канвас
@@ -329,6 +333,7 @@ Chart.prototype.addChannel = function (channel) {
     })
     if (result) return;
     this.channels.push(channel);
+    this.addScaleUnits(channel.units);
     loadChannelDataObject(channel, this.range, this.name);
 }
 
@@ -371,6 +376,28 @@ Chart.prototype.getChannels = function () {
     }
     return true;
 }*/
+
+//add new scale and axis_labels
+Chart.prototype.addScaleUnits = function (units){
+    var scale_data = this.scales_units.get(units);
+    if (!scale_data) {
+        var scale_num = this.scales_units.size;
+        while (scale_num >= tones.length) nextTone();
+        var color = hsvToHex(tones[scale_num], 80, 80);
+        
+        scale_data = {
+            color: color,
+            axis_n: scale_num + 1,
+            channel_counter: 1
+        };
+        this.scales_units.set(units, scale_data);
+        countMaxScaleNum(this.name);
+        return color;
+    }
+    else{
+        scale_data.channel_counter++;
+    }
+}
 
 //добавляет данные из БД, запоминает и отрисовывает
 Chart.prototype.addChannelData = function (json, mode) {
@@ -593,8 +620,11 @@ Chart.prototype.renderChart = function (channel, data) {
     //auto generate line color with the right tone
     var color = hsvToHex(tones[0], 80, 80)
     chan_data.color = color;
-    data.line = { color: color }
-    data.marker = { size: 3 }
+    data.line = { color: color };
+    data.marker = { size: 3 };
+    var domain_start = 0;
+    if(synched) domain_start = max_scale_num - 1;
+
     if(this.type == "orbit"){
         data.error_y = {
             type: 'data',
@@ -636,7 +666,7 @@ Chart.prototype.renderChart = function (channel, data) {
         margin: { l: 20, r: 10, b: 40, t: 40 },
         xaxis: {
             range: this.range,
-            domain: [0, 1],
+            domain: [domain_start/25, 1],
             type: "date"
         },
         yaxis: {
@@ -660,11 +690,11 @@ Chart.prototype.renderChart = function (channel, data) {
         //console.log(gd)
         resizeObserver.observe(gd);
     });
-    this.scales_units.set(channel.units, {
+    /*this.scales_units.set(channel.units, {
         color: color,
         axis_n: 1,
         channel_counter: 1
-    });
+    });*/
     document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
             terminateChannel(data.curveNumber)
             return false;
@@ -672,8 +702,9 @@ Chart.prototype.renderChart = function (channel, data) {
     if(this.type != "orbit"){
         document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
-            if (synched) {
-                relayoutAllPlots(eventdata)
+            if (synched && !("chart_zoomed_first" in eventdata)) {
+                eventdata["chart_zoomed_first"] = this.name;
+                relayoutAllPlots(eventdata);
             }
         });
     }
@@ -686,7 +717,7 @@ Chart.prototype.renderChart = function (channel, data) {
 Chart.prototype.loadNewDataAfterZoom = function (eventdata) {
     //console.log('zoom',this,eventdata);
     if ('xaxis.range[0]' in eventdata) {
-        setActivePlotByName(this.name);
+        //setActivePlotByName(this.name);
         //this.max_id = 0;
         this.redrawChannels([eventdata['xaxis.range[0]'], eventdata['xaxis.range[1]']]);
         //reloadChannels(this.channels,[eventdata['xaxis.range[0]'],eventdata['xaxis.range[1]']]);
@@ -750,10 +781,12 @@ Chart.prototype.setRange = function (time) {
     this.range = [time[0],time[1]];
     if (this.is_chart_rendered ) {
         if( this.type != "orbit"){
+            var domain_start = this.scales_units.size - 1;
+            if(synched) domain_start = max_scale_num - 1;
             var relayout_data = {
                 xaxis: {
                     range: this.range,
-                    domain: [(this.scales_units.size - 1) / 25, 1],
+                    domain: [domain_start / 25, 1],
                     type: "date"
                 }
             }
@@ -761,6 +794,19 @@ Chart.prototype.setRange = function (time) {
         }
         this.redrawChannels(time);
     }
+}
+
+//изменить домен оси х
+Chart.prototype.setDomain = function (domain_start){
+    if(!this.is_chart_rendered) return;
+    var relayout_data = {
+        xaxis: {
+            range: this.range,
+            domain: [domain_start / 25, 1],
+            type: "date"
+        }
+    }
+    Plotly.update(this.name, [], relayout_data);
 }
 
 //возвращает границы оси х
@@ -777,10 +823,10 @@ Chart.prototype.removeAxis = function (units) {
     }
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
-    var domain_start = scale_num;
-    if(synched) {
-        countMaxScaleNum();
-        domain_start = max_scale_num;
+    var domain_start = scale_num - 1;
+    countMaxScaleNum(this.name);
+    if(synched){
+        domain_start = max_scale_num - 1;
     }
     //while(scale_num>=tones.length) nextTone();
     //console.log(this.scales_units)
@@ -791,7 +837,7 @@ Chart.prototype.removeAxis = function (units) {
     var relayout_data = {
         xaxis: {
             range: this.range,
-            domain: [(domain_start - 1) / 25, 1],
+            domain: [ domain_start / 25, 1],
             autorange: false,
             type: "date"
         },
@@ -816,32 +862,27 @@ Chart.prototype.removeAxis = function (units) {
 
     }
     Plotly.update(this.name, [], relayout_data);
-    scale_num = null;
 }
 
 //отрисовывает новый график на полотне
 Chart.prototype.addPlot = function (channel, data) {
-    //console.log("addplot",channel)
     var scale_data = this.scales_units.get(channel.units);
     var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
-    /*if(chan_data.id==null){
-        chan_data.id = this.max_id;
-        this.max_id++;
-    }*/
+    
     var chan_name = channel.name;
     if (channel.fullname) chan_name = channel.fullname;
-    if (!scale_data) {
+    if (this.scales_units.size > this.axis_labels.length) {
         //add new scale
-        var scale_num = this.scales_units.size;
+        var scale_num = this.scales_units.size - 1;
+        var domain_start = scale_num;
+        if(synched) domain_start = max_scale_num - 1;
         var yaxisname = "yaxis" + (scale_num + 1);
-        while (scale_num >= tones.length) nextTone();
-        //console.log(this.scales_units)
-        var color = hsvToHex(tones[scale_num], 80, 80);
+        var color = scale_data.color;
         if (chan_data.color == null) chan_data.color = color;
         var relayout_data = {
             xaxis: {
                 range: this.range,
-                domain: [scale_num / 25, 1],
+                domain: [domain_start / 25, 1],
                 autorange: false,
                 type: "date"
             },
@@ -861,12 +902,6 @@ Chart.prototype.addPlot = function (channel, data) {
             side: "left",
             position: scale_num / 25
         };
-        scale_data = {
-            color: color,
-            axis_n: scale_num + 1,
-            channel_counter: 1
-        };
-        this.scales_units.set(channel.units, scale_data);
         this.axis_labels.push(
             {
                 xref: 'paper',
@@ -882,10 +917,8 @@ Chart.prototype.addPlot = function (channel, data) {
             }
         )
         Plotly.update(this.name, [], relayout_data);
-        scale_num = null;
     }
     else {
-        scale_data.channel_counter++;
         if (chan_data.color == null) {
             //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
             chan_data.color = hsvToHex(tones[scale_data.axis_n - 1], getRandomInt(30, 100), getRandomInt(40, 100));
@@ -911,7 +944,6 @@ Chart.prototype.addPlot = function (channel, data) {
     }
     Plotly.addTraces(this.name, data);
     chan_data.displayed = true;
-    scale_data = null;
 }
 
 
@@ -1019,9 +1051,9 @@ function relayoutAllPlots(ed) {
     if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)){
         for (var chart in charts) {
             if(ed.autosize) return;
-            if(chart!=activeplot){
+            if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
                 if(charts[chart].type=="orbit"){
-                    charts[chart].setRange(charts[activeplot].getRange());
+                    charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
                 }
                 else {
                     var div = document.getElementById(chart);
@@ -1156,10 +1188,12 @@ function addChart(e) {
     addChartBeforeTarget(e.target);
 }
 
-function addChartBeforeTarget(target) {
+function addChartBeforeTarget(target,is_text=false) {
     chart_max_n++;
-    $('<div id="graph' + chart_max_n
-        + '" class="resizable"><div id="chart_' + chart_max_n
+    var style = '';
+    if(is_text) style = ' style="height:150px" ';
+    $('<div id="graph' + chart_max_n + '"' + style 
+        + ' class="resizable"><div id="chart_' + chart_max_n
         + '" class="pchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
     charts["chart_" + chart_max_n] = new Chart("chart_" + chart_max_n);
     return chart_max_n;
@@ -1287,11 +1321,20 @@ function synchronizePlotsEvent(checkboxElem) {
     }
 }
 
-function countMaxScaleNum(){
+function countMaxScaleNum(channel_name){
+    var old = max_scale_num;
     max_scale_num = 0;
     for (var chname in charts) {
         var chart = charts[chname];
         if(chart&&(chart.scales_units.size>max_scale_num)) max_scale_num = chart.scales_units.size;
+    }
+    if(synched && (max_scale_num != old)){
+        for (var chname in charts) {
+            if(channel_name != chname){
+                var chart = charts[chname];
+                chart.setDomain(max_scale_num - 1);
+            }
+        }
     }
     return max_scale_num;
 }
