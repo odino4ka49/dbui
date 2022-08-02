@@ -49,8 +49,8 @@ function refreshTree(dbid,data) {
                         window.open(window.location.href+"orbits?system=v3v4")
                     }
                     else */
-                        console.log($(event.target).parent());
-                    if(node.name=="v3v4chan"&&node.abscissa_tbl=="04_pkp_position"){
+                    var parent = $("#"+dbid+"_tree").treeview('getParent',node);
+                    if((node.name=="v3v4chan"&&node.abscissa_tbl=="04_pkp_position")||(parent.name=="v3v4chan"&&parent.abscissa_tbl=="04_pkp_position")){
                         window.open(window.location.origin+"/orbits?system=v3v4");
                     }
                 }
