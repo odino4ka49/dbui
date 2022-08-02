@@ -77,7 +77,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     //var new_chart_n = chart.name;
 
     //if we want to open new chart for orbits
-    if ((channel.units == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
+    if ((channel.units == "text") || (chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
         var istext = (channel.units == "text") ? true : false;
         new_chart_n = addChartBeforeTarget($("#" + chart.name).parent(),istext);
         charts["chart_" + new_chart_n].addChannel(channel);
@@ -467,7 +467,8 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
         }
         else {
             if (!this.is_chart_rendered) {
-                this.type = "timeseries";
+                if(channel.units == "text") this.type = "text";
+                else this.type = "timeseries";
                 this.renderChart(channel, data_to_display);
             }
             else {

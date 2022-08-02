@@ -235,7 +235,7 @@ function setTabs(system_id) {
         //active: system_id,
         tabs: [
             { id: 'v3v4', text: 'V3V4Chan' },
-            { id: 'v4', text: 'V4', disabled: true }
+            //{ id: 'v4', text: 'V4', disabled: true }
         ],
         onClick: function (event) {
             openNewTab(event)

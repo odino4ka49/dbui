@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dragula.css" rel="stylesheet">
 
-<input id="v3v4dtr" type="text" name="datetimes" />
+<!--input id="v3v4dtr" type="text" name="datetimes" />
 <input id="v4dtr" type="text" name="datetimes" />
 <div id="linetype">
     <div>
@@ -25,30 +25,53 @@
         <input type="radio" id="line" name="linetype" value="line" checked>
         <label for="line">Line</label>
     </div>
+</div-->
+<div id="topnav" class="floating">
+    <table id="topnavtable">
+        <tr>
+            <td id="datetimerangetd">
+                <input id="v3v4dtr" type="text" name="datetimes" />
+            </td>
+            <td>
+                <div id="linetype">
+                    <div>
+                        <input type="radio" id="markers" name="linetype" value="markers">
+                        <label for="markers">Markers</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="line" name="linetype" value="line" checked>
+                        <label for="line">Line</label>
+                    </div>
+                </div>
+            </td>
+            <td class="white_space"></td>
+        </tr>
+    </table>
 </div>
 
 <table>
     <tr>
         <td>
-<div id="orbits_table" class="resizable_hor">
-    <div id="tabs"></div>
-    <div id="v3v4"></div>
-    <!--div id="v4"></div-->
-</div>
+            <div id="orbits_table" class="resizable_hor">
+                <div id="tabs"></div>
+                <div id="v3v4"></div>
+                <!--div id="v4"></div-->
+            </div>
         </td>
         <td id="graphset_td">
-<div id="v3v4_graphset" class="graphset">
-    <div id="graph1" class="resizable orbitplot">
-        <div id="v3v4i_chart" class="pchart"></div>
-    </div>
-    <div id="graph2" class="resizable orbitplot">
-        <div id="v3v4x_chart" class="pchart"></div>
-    </div>
-    <div id="graph3" class="resizable orbitplot">
-        <div id="v3v4z_chart" class="pchart"></div>
-    </div>
-</div>
-<div id="mirror"></div>
+            <div id="v3v4_graphset" class="graphset">
+                <div id="graph1" class="resizable orbitplot">
+                    <div id="v3v4i_chart" class="pchart"></div>
+                </div>
+                <div id="graph2" class="resizable orbitplot">
+                    <div id="v3v4x_chart" class="pchart"></div>
+                </div>
+                <div id="graph3" class="resizable orbitplot">
+                    <div id="v3v4z_chart" class="pchart"></div>
+                </div>
+            </div>
+            <div id="mirror"></div>
 <!--div id="v4_graphset" class="graphset">
     <div id="graph1" class="resizable orbitplot">
         <div id="v4i_chart" class="pchart"></div>
