@@ -1,11 +1,10 @@
-//полотно, которое выделено сейчас
+//имя холста, который выделен сейчас
 var activeplot = 'chart_1';
-//последний индекс полотна
+//максимальный номер холста (используется при создании нового холста)
 var chart_max_n = 0;
+//набор освновных цветов для графиков
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
-//var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
-//тоны для генерации цветов графиков
-var tones = [20];
+var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
 var resizeObserver;
 var orders = [];
 var orders_max_n = 0;
@@ -34,7 +33,6 @@ function defaultCursor() {
 }
 
 function setActivePlot(div) {
-    //console.log("setActivePlot",div);
     activeplot = div.attr('id');
     $(".graphset").children().removeClass('active');
     div.parent().addClass('active');
@@ -42,7 +40,6 @@ function setActivePlot(div) {
 }
 
 function setActivePlotByName(name) {
-    //console.log("setActivePlot",name);
     activeplot = name;
     $(".graphset").children().removeClass('active');
     $("#" + name).parent().addClass('active');
@@ -51,9 +48,7 @@ function setActivePlotByName(name) {
 
 function parseDates(dates) {
     var result = [];
-    //console.log("dates",dates)
     dates.forEach(element => {
-        //console.log(element);
         result.push(Date.parse(element.substring(0, element.length - 1)));
     });
     return result;
@@ -64,51 +59,30 @@ function getActivePlotWidth() {
     return Math.ceil($("#" + activeplot).width());
 }
 
-//добавляет новый канал на активный Plot
+//добавляет новый канал на активный Plot или создает новый холст соответствующего
 function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
-    if (!activeplot) {
-        alert("Please choose a canvas to display the data");
-        $(document).trigger("channelsUpdated");
-        return;
-    }
     var chart = charts[activeplot];
-    //console.log("chartchan",channel_node);
     var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
-    //var new_chart_n = chart.name;
 
-    //if we want to open new chart for orbits
-    if ((channel.units == "text") || (chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
+    //if we want to open new chart
+    if ((!activeplot) || (channel.units == "text" && chart.type != "text") || (channel.units != "text" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
         var istext = (channel.units == "text") ? true : false;
-        new_chart_n = addChartBeforeTarget($("#" + chart.name).parent(),istext);
-        charts["chart_" + new_chart_n].addChannel(channel);
+        if(!activeplot){
+            new_chart_n = addChartBeforeTarget($("#add_chart"),istext);
+        }
+        else{
+            new_chart_n = addChartBeforeTarget($("#" + chart.name).parent(),istext);
+        }
+        var newchart = charts["chart_" + new_chart_n];
+        if(istext) newchart.setType("text");
+        else if(channel.orbit) newchart.setType("orbit");
+        else newchart.setType("timeseries");
+        newchart.addChannel(channel);
         setActivePlotByName("chart_" + new_chart_n);
     }
     else{
         charts[activeplot].addChannel(channel);
     }
-    //if we want to open new window for orbits
-    /*if(plots_mode && ((channel_node.datatype == "orbit" && plots_mode != "orbits") || (channel_node.datatype != "orbit" && plots_mode == "orbits"))) 
-    {
-        if (confirm('Are you sure you want to display this orbit data? It will remove all the previous plots')) {
-            // Save it!
-            plots_mode = (channel_node.datatype == "orbit") ? "orbits" : "common";
-            terminateAllPlots();
-            var new_chart_n = addChartBeforeTarget($("#add_chart"));
-            setActivePlotByName("chart_" + new_chart_n);
-            charts[activeplot].addChannel(channel);
-        }
-        else
-        {
-            $(document).trigger("channelsUpdated");
-        }
-        //new_chart_n = addChartBeforeTarget($("#" + chart.name).parent());
-        //setActivePlotByName("chart_" + new_chart_n);
-    }
-    else
-    {                
-        plots_mode = (channel_node.datatype == "orbit") ? "orbits" : "common";
-        charts[activeplot].addChannel(channel);
-    }*/
 }
 
 //класс каналов для добавления в объект Chart
@@ -324,6 +298,7 @@ function Chart(name) {
     this.axis_labels = [];
     var range = getDateTime();
     this.range = [range[0],range[1]];
+    this.type = null;
 }
 
 //добавляет новый канал на канвас
@@ -349,41 +324,17 @@ Chart.prototype.getChannels = function () {
     return this.channels;
 }
 
-//загружает информацию о канале из БД
-
-//добавляет график, старая функция
-/*Chart.prototype.addGraphData = function (json) {
-    if (this.type == "orbit") {
-        return false;
-    }
-    json.data.x = parseDates(json.data.x);
-    var channel = this.channels.find((element) => (element.name == json.name));
-     //console.log("CHANNEL",json);
-    var chan_name = json.name
-    if (channel) {
-        if (channel.displayed) {
-            this.extendLine(chan_name, json.data, json.units, json.fullname)
-        }
-        else {
-            if (!this.is_chart_rendered) {
-                this.type = "timeseries";
-                this.renderChart(chan_name, json.data, json.units, json.mode, json.fullname);
-            }
-            else {
-                this.addPlot(chan_name, json.data, json.units, json.mode, json.fullname);
-            };
-        }
-    }
-    return true;
-}*/
+Chart.prototype.setType = function(type){
+    this.type = type;
+}
 
 //add new scale and axis_labels
 Chart.prototype.addScaleUnits = function (units){
     var scale_data = this.scales_units.get(units);
     if (!scale_data) {
         var scale_num = this.scales_units.size;
-        while (scale_num >= tones.length) nextTone();
-        var color = hsvToHex(tones[scale_num], 80, 80);
+        //while (scale_num >= tones.length) nextTone();
+        var color = colors[scale_num % colors.length];//hsvToHex(tones[scale_num], 80, 80);
         
         scale_data = {
             color: color,
@@ -407,45 +358,19 @@ Chart.prototype.addChannelData = function (json, mode) {
     var channel = this.channels.find((element) => ((element.nodeId == json.nodeId) && (element.dbid == json.dbid)));
     var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.addData(json.data, datetime);
-    //channel.units = json.units;
-    //channel.fullname = json.fullname;
-    //channel.mode = mode;
-    //console.log("addChannelData",json.datetime);
-    //console.log("channel.data",channel.data);
 
     this.drawChannelData(channel, datetime);
-    /*var chan_name = json.name;
-    var pixels = Math.ceil(this.getWidth()/(Date.parse(this.range[1])-Date.parse(this.range[0])) * (datetime[1]-datetime[0]));
-    if(channel){
-        var data_to_display = this.parseToChartData(chan_name,channel.getFilteredData(datetime,pixels));
-        //console.log("data_to_display",data_to_display)
-        if(channel.displayed){
-            this.extendLine(chan_name,data_to_display,json.units,json.fullname)
-        }
-        else{
-            if(!this.is_chart_rendered){
-                this.type = "timeseries";
-                this.renderChart(chan_name,data_to_display,json.units,mode,json.fullname);
-            }
-            else{
-                this.addPlot(chan_name,data_to_display,json.units,mode,json.fullname);
-            };
-        }
-    }*/
     return true;
 }
 
 Chart.prototype.drawOrbitData = function(channel){
-    var chan_name = channel.name;
     if (channel) {
         var data_to_display = channel.data;
-        console.log("data_to_display",data_to_display)
         if (channel.displayed) {
             //this.removeLine()
         }
         else {
             if (!this.is_chart_rendered) {
-                this.type = "orbit";
                 this.renderChart(channel, data_to_display);
             }
             else {
@@ -457,18 +382,18 @@ Chart.prototype.drawOrbitData = function(channel){
 }
 
 Chart.prototype.drawChannelData = function (channel, datetime) {
-    var chan_name = channel.name;
     var pixels = Math.ceil(this.getWidth() / (Date.parse(this.range[1]) - Date.parse(this.range[0])) * (datetime[1] - datetime[0]));
     if (channel) {
         var data_to_display = this.parseToChartData(channel.fullname, channel.getFilteredData(datetime, pixels));
-        //console.log("data_to_display",data_to_display)
         if (channel.displayed) {
             this.extendLine(channel, data_to_display);
         }
         else {
-            if (!this.is_chart_rendered) {
+            if(this.type == null){
                 if(channel.units == "text") this.type = "text";
                 else this.type = "timeseries";
+            }
+            if (!this.is_chart_rendered) {
                 this.renderChart(channel, data_to_display);
             }
             else {
@@ -481,32 +406,19 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
 
 //добавляет график орбиты
 Chart.prototype.addOrbitData = function (json, chart, mode) {
-   //console.log(json);
-    if (this.type == "timeseries") {
+    if (this.type == "timeseries" || this.type == "text") {
         return false;
     }
-    this.type = "orbit";
-
+    if(this.type == null){
+        this.type = "orbit";
+    }
+    
     var channel = this.channels.find((element) => ((element.nodeId == json.nodeId) && (element.dbid == json.dbid)));
-    //var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.setType('orbit');
     channel.setData(json.data);
-    //channel.mode = mode;
-    //console.log("addChannelData",json.datetime);
-    //console.log("channel.data",channel.data);
 
     this.drawOrbitData(channel);
 
-    /*var max = json.data.length;
-    (if (!this.is_chart_rendered) {
-        this.renderChart(json.name, json.data[json.data.length-1], json.units, json.mode, json.fullname);
-    }
-    else {
-        this.addPlot(json.name, json.data[json.data.length-1], json.units, json.mode, json.fullname);
-    };
-    for(var i=1;i<json.data.length-1;i++){
-        this.addPlot(json.name, json.data[i], json.units, json.mode, json.fullname);
-    }*/
     return true;
 }
 
@@ -619,7 +531,7 @@ Chart.prototype.renderChart = function (channel, data) {
     //if(this.type == "orbit") data.name = channel+":"+data.datetime;
     if (channel.fullname) data.name = channel.fullname;
     //auto generate line color with the right tone
-    var color = hsvToHex(tones[0], 80, 80)
+    var color = colors[0];//hsvToHex(tones[0], 80, 80)
     chan_data.color = color;
     data.line = { color: color };
     data.marker = { size: 3 };
@@ -921,8 +833,10 @@ Chart.prototype.addPlot = function (channel, data) {
     }
     else {
         if (chan_data.color == null) {
+            var opacity = (100-(scale_data.channel_counter*10))/100;
+            if(opacity < 0.2) opacity = 0.2;
             //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-            chan_data.color = hsvToHex(tones[scale_data.axis_n - 1], getRandomInt(30, 100), getRandomInt(40, 100));
+            chan_data.color = "rgba("+hexToRgb(colors[(scale_data.axis_n-1) % colors.length])+","+opacity+")";
         }
     }
     data.mode = channel.mode//'markers'; //type of plot
@@ -1058,7 +972,7 @@ function relayoutAllPlots(ed) {
                 }
                 else {
                     var div = document.getElementById(chart);
-                    if(div){
+                    if(div.layout){
                         var x = div.layout.xaxis;
                         if (ed["xaxis.autorange"] && x.autorange) return;
                         //console.log("ED",div,activeplot,ed,x)
@@ -1260,17 +1174,15 @@ function hsvToHex(h, s, v) {
     var c = Color(hsv);
     return c.toString();
 }
-//выбор следующего тона
-function nextTone() {
-    var size = tones.length;
-    if (tones[size - 1] + 30 >= 360) {
-        tones.push(tones[size - 1] + 40 - 360);
-    }
-    else {
-        tones.push(tones[size - 1] + 30);
-    }
-    return tones[size];
-}
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    var rgb = result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+    return ""+ rgb.r + "," + rgb.g + "," + rgb.b;
+  }
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
