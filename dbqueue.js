@@ -22,6 +22,26 @@ function parseToChartData(channel,data){
     return {x: x,y: y};
 }
 
+//оставим только моменты изменения значений канала
+function removeSimilar(data,y){
+    if (!data || data.length == 0) {
+        return [];
+    }
+    var result = [];
+    var lastval = data[0];
+    //console.log(data[data.length-1]);
+    result.push(lastval);
+    for (var i = 0; i < data.length; i++) {
+        if(data[i][y]!=lastval[y]){
+            lastval = data[i];
+            result.push(lastval);
+        }
+    }
+    result.push(data[data.length-1]);
+    console.log(result);
+    return result;
+}
+
 function applyMath(func,data,name){
     if(func == "dispersion"){
         var x0_data = data.find(element => !(element[name].every(el => isNaN(el))));
@@ -552,6 +572,22 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
             req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"['+subsystem.id+']'+datatype+' as"'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
         }
     }
+    else if(channel.unit == 'text'){
+        if(data_tbl_type == "chan_id"){
+            req = 'select extract(epoch from date_time at time zone \'-07\' at \
+            time zone \'utc\')*1000::integer as t, value as "'+chan_name+'", color from \
+            "'+datatable+'", \"05_textchan_values\" where date_time >=\''+dates[i]+'\' and \
+            date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' \
+            and "'+chan_name+'"=value order by date_time asc;'
+        }
+        else{
+            req = 'select extract(epoch from date_time at time zone \'-07\' at \
+            time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' as \
+            "'+chan_name+'", color from "'+datatable+'", \"05_textchan_values\" where \
+            date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' \
+            and "'+chan_name+'"=value order by date_time asc;'
+        }
+    }
     else{
         //if(channel.fullname) chan_name = channel.fullname;
         if(data_tbl_type == "chan_id"){
@@ -574,7 +610,11 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 //console.log("REQ",req)
                 //console.log("RESULT",result)
                 if(func){
-                    var result = applyMath(func,result,chan_name);
+                    result = applyMath(func,result,chan_name);
+                }
+                //console.log(result[0]);
+                if(channel.unit == 'text'){
+                    result = removeSimilar(result,chan_name);
                 }
                 var channel_data = {
                     "title": "full_channel_data",
