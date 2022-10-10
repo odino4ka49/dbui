@@ -29,7 +29,6 @@ function removeSimilar(data,y){
     }
     var result = [];
     var lastval = data[0];
-    //console.log(data[data.length-1]);
     result.push(lastval);
     for (var i = 0; i < data.length; i++) {
         if(data[i][y]!=lastval[y]){
@@ -37,8 +36,10 @@ function removeSimilar(data,y){
             result.push(lastval);
         }
     }
-    result.push(data[data.length-1]);
-    console.log(result);
+    lastval = data[data.length-1];
+    lastval.t = lastval.t-1;
+    result.push(lastval);
+    //console.log(result);
     return result;
 }
 
@@ -582,7 +583,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
         }
         else{
             req = 'select extract(epoch from date_time at time zone \'-07\' at \
-            time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' as \
+            time zone \'utc\')*1000::integer as t,"'+channel.name+'"'/*+datatype*/ +' as \
             "'+chan_name+'", color from "'+datatable+'", \"05_textchan_values\" where \
             date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' \
             and "'+chan_name+'"=value order by date_time asc;'

@@ -253,8 +253,10 @@ ChartChannel.prototype.getSegmentedData = function(time){
     if (!data || data.length == 0) {
         return [];
     }
-    //var color_n = 0;
+    //this.values - список возможных значений текстового канала с цветами. нужен для того, чтобы создать легенду
+    if(!this.values) this.values = {};
     var result = [];
+    var new_values = [];
     var y = this.name;
     var lastval = data[0];
     for (var i = 0; i < data.length; i++) {
@@ -262,11 +264,20 @@ ChartChannel.prototype.getSegmentedData = function(time){
         if(data[i][y]!=lastval[y]){
             result.push({value:lastval[y],t:[lastval.t,data[i].t-1],color:lastval.color});
             lastval = data[i];
+            if(! (lastval[y] in this.values)){
+                this.values[lastval[y]] = lastval.color;
+                new_values.push(lastval[y]);
+            }
             //color_n ++;
         }
     }
+    if(!(lastval[y] in this.values)){
+        this.values[lastval[y]] = lastval.color;
+        new_values.push(lastval[y]);
+    }
+    console.log(this.values);
     result.push({value:lastval[y],t:[lastval.t,data[data.length-1].t-1],color:lastval.color});
-    return result;
+    return [result, new_values];
 }
 
 ChartChannel.prototype.setType = function(type){
@@ -413,11 +424,11 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
 
 Chart.prototype.drawTextData = function(channel,datetime){
     if (channel) {
-        var data_to_display = channel.getSegmentedData(datetime);
+        var [data_to_display, new_values] = channel.getSegmentedData(datetime);
         if (!this.is_chart_rendered) {
             this.renderTextChart();
         }
-        this.addSegments(channel.name,data_to_display);
+        this.addSegments(channel.name,data_to_display,new_values,channel.values);
     }
     //установим данные о том, какие данные уже отображены
     this.filled_range = datetime;
@@ -447,27 +458,32 @@ Chart.prototype.parseToArrayData = function (data) {
 }
 
 //дорисовываем текстовый график
-Chart.prototype.addSegments = function(channame,segments){
-    if(!this.trace){
-        this.trace = {
-            x: [],
-            y: [],
-            text: [],
-            mode: 'text'
-        };
+Chart.prototype.addSegments = function(channame,segments,new_values,chan_vals){
+    var traces = [];
+    if(chan_vals){
+        for(var i=0;i<new_values.length;i++){
+            traces.push({
+                type: 'scatter',
+                x: [segments[0].t[0]-100,segments[1].t[0]],
+                y: [1,1],
+                mode: 'lines',
+                name: new_values[i],
+                line: {
+                    color: chan_vals[new_values[i]],
+                }
+            })
+        }
     }
     if(!this.shapes){
         this.shapes = [];
     }
     for(var i=0;i<segments.length;i++){
-        this.trace.x.push((segments[i].t[1]+segments[i].t[0])/2);
-        this.trace.y.push(0.5);
         this.shapes.push({
             type: 'line',
             x0: segments[i].t[0],
-            y0: 0,      
+            y0: 0.25,      
             x1: segments[i].t[1],
-            y1: 0,
+            y1: 0.25,
             line: {
               color: segments[i].color,
               width: 3
@@ -482,12 +498,22 @@ Chart.prototype.addSegments = function(channame,segments){
             type: "date"
         },
         yaxis:{
-            range: [0, 1]
+            range: [0, 1],
+            domain: [0, 0.9],
+            showgrid: false,
+            zeroline: false,
+            showline: false,
+            autotick: true,
+            ticks: '',
+            showticklabels: false
         },
         title: channame,
-        shapes: this.shapes
+        shapes: this.shapes,
+        showlegend: true
     };
-    Plotly.update(this.name, [this.trace], layout);
+    //console.log(this.name,"addtraces")
+    Plotly.addTraces(this.name,traces)
+    Plotly.update(this.name, traces, layout);
 }
 
 //дорисовывает график
@@ -539,9 +565,11 @@ Chart.prototype.renderTextChart = function(){
             range: this.range,
             domain: [domain_start/25, 1],
             type: "date"
-        }
+        },
+        showlegend: true
     };
-    Plotly.react(this.name, [], layout, config);/*.then(function (gd) {
+    console.log("react")
+    Plotly.react(this.name, [{x:[],y:[],name:'ll',color:'black'}], layout, config);/*.then(function (gd) {
         resizeObserver.observe(gd);
     });*/
     document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
