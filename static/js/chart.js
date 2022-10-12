@@ -147,7 +147,6 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
 }
 
 ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
-    //console.log("check",this);
     //отрезки времени, которые мы будем догружать
     var time_to_load = [];
     //отрезок времени, из которого мы потихоньку будем отрезать проверенные части и части для загрузки
@@ -247,7 +246,7 @@ ChartChannel.prototype.averageData = function (time) {
     return (result)
 }
 
-//получение текстовых данных ввиде отрезков
+//получение текстовых данных в виде набора отрезков для новых графиков
 ChartChannel.prototype.getSegmentedData = function(time){
     var data = this.getData(time);
     if (!data || data.length == 0) {
@@ -255,28 +254,32 @@ ChartChannel.prototype.getSegmentedData = function(time){
     }
     //this.values - список возможных значений текстового канала с цветами. нужен для того, чтобы создать легенду
     if(!this.values) this.values = {};
-    var result = [];
+    var result = {};
     var new_values = [];
     var y = this.name;
     var lastval = data[0];
     for (var i = 0; i < data.length; i++) {
-        //console.log(new Date(data[i].t), new Date(lastval.t));
         if(data[i][y]!=lastval[y]){
-            result.push({value:lastval[y],t:[lastval.t,data[i].t-1],color:lastval.color});
+            if(! (lastval[y] in result)){
+                result[lastval[y]] = [];
+            }
+            result[lastval[y]].push(lastval.t,(data[i].t+lastval.t)/2,data[i].t-1,null);
             lastval = data[i];
             if(! (lastval[y] in this.values)){
-                this.values[lastval[y]] = lastval.color;
+                this.values[lastval[y]] = {color: lastval.color};
                 new_values.push(lastval[y]);
             }
             //color_n ++;
         }
     }
     if(!(lastval[y] in this.values)){
-        this.values[lastval[y]] = lastval.color;
+        this.values[lastval[y]] = {color: lastval.color};
         new_values.push(lastval[y]);
     }
-    console.log(this.values);
-    result.push({value:lastval[y],t:[lastval.t,data[data.length-1].t-1],color:lastval.color});
+    if(! (lastval[y] in result)){
+        result[lastval[y]] = [];
+    }
+    result[lastval[y]].push(lastval.t,(data[data.length-1].t+lastval.t)/2,data[data.length-1].t-1,null);
     return [result, new_values];
 }
 
@@ -353,7 +356,6 @@ Chart.prototype.addChannelData = function (json, mode) {
     if (this.type == "orbit") {
         return false;
     }
-    console.log(this,json.nodeId);
     var channel = this.channels.find((element) => ((element.nodeId == json.nodeId) && (element.dbid == json.dbid)));
     var datetime = [Date.parse(json.datetime[0]), Date.parse(json.datetime[1])];
     channel.addData(json.data, datetime);
@@ -424,14 +426,13 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
 
 Chart.prototype.drawTextData = function(channel,datetime){
     if (channel) {
-        var [data_to_display, new_values] = channel.getSegmentedData(datetime);
+        var [new_data,new_values] = channel.getSegmentedData(datetime);
         if (!this.is_chart_rendered) {
             this.renderTextChart();
         }
-        this.addSegments(channel.name,data_to_display,new_values,channel.values);
+        this.addNewTraces(new_values,channel.values);
+        this.addDataToTraces(new_data,channel.values);
     }
-    //установим данные о том, какие данные уже отображены
-    this.filled_range = datetime;
     return true;
 }
 
@@ -457,8 +458,42 @@ Chart.prototype.parseToArrayData = function (data) {
     return result;
 }
 
-//дорисовываем текстовый график
-Chart.prototype.addSegments = function(channame,segments,new_values,chan_vals){
+//дорисовываем текстовый график графиками
+Chart.prototype.addNewTraces = function(new_values,chan_vals){
+    var new_traces = [];
+    var line_id = Object.keys(chan_vals).length - new_values.length;
+    for(var i=0;i<new_values.length;i++){
+        new_traces.push({
+            type: 'scatter',
+            x: [],
+            y: [],
+            mode: 'lines',
+            name: new_values[i],
+            line: {
+                color: chan_vals[new_values[i]].color,
+            }
+        })
+        chan_vals[new_values[i]].id = line_id;
+        line_id++;
+    }
+    Plotly.addTraces(this.name, new_traces);
+}
+
+Chart.prototype.addDataToTraces = function(new_data,chan_vals){
+    var ids = [];
+    var ys = [];
+    var xs = []
+    for(var key in new_data){
+        var line = new_data[key];
+        xs.push(line);
+        ys.push(new Array(line.length).fill(0.25));
+        ids.push(chan_vals[key].id);
+    }
+    Plotly.extendTraces(this.name, { y: ys, x: xs }, ids);
+}
+
+//дорисовываем текстовый график отрезками
+/*Chart.prototype.addSegments = function(channame,segments,new_values,chan_vals){
     var traces = [];
     if(chan_vals){
         for(var i=0;i<new_values.length;i++){
@@ -511,10 +546,9 @@ Chart.prototype.addSegments = function(channame,segments,new_values,chan_vals){
         shapes: this.shapes,
         showlegend: true
     };
-    //console.log(this.name,"addtraces")
     Plotly.addTraces(this.name,traces)
     Plotly.update(this.name, traces, layout);
-}
+}*/
 
 //дорисовывает график
 Chart.prototype.extendLine = function (channel, data) {
@@ -566,9 +600,26 @@ Chart.prototype.renderTextChart = function(){
             domain: [domain_start/25, 1],
             type: "date"
         },
+        yaxis:{
+            range: [0, 1],
+            domain: [0, 0.9],
+            showgrid: false,
+            zeroline: false,
+            showline: false,
+            autotick: true,
+            ticks: '',
+            showticklabels: false
+        },
+        legend: {
+            yanchor: "top",
+            y: 1.5,
+            xanchor: "left",
+            x: 0,
+            font: { size: 12 },
+            orientation: "h"
+        },
         showlegend: true
     };
-    console.log("react")
     Plotly.react(this.name, [{x:[],y:[],name:'ll',color:'black'}], layout, config);/*.then(function (gd) {
         resizeObserver.observe(gd);
     });*/
@@ -687,7 +738,6 @@ Chart.prototype.renderChart = function (channel, data) {
 
 //подгрузка новых данных в соответствии с зумом
 Chart.prototype.loadNewDataAfterZoom = function (eventdata) {
-    //console.log('zoom',this,eventdata);
     if ('xaxis.range[0]' in eventdata) {
         //setActivePlotByName(this.name);
         //this.max_id = 0;
@@ -713,7 +763,6 @@ Chart.prototype.terminateChannel = function (id) {
         this.removeAxis(channel.units);
     }
     $(document).trigger("channelsUpdated");
-    //console.log(id,Plotly)
     /*for(var i=0;i<this.channels.length;i++){
         if(id<this.channels.id)
         { 
@@ -724,7 +773,6 @@ Chart.prototype.terminateChannel = function (id) {
 
 //удаляет только линию графика
 Chart.prototype.removeLine = function (id) {
-    //console.log("removeLine",id,this)
     Plotly.deleteTraces(this.name, id);
 }
 
@@ -743,7 +791,6 @@ Chart.prototype.gotoAsyncState = function () {
     if(this.last_async_range){
         this.setRange([this.last_async_range[0],this.last_async_range[1]]);
         //this.range = [this.last_async_range[0],this.last_async_range[1]];
-        //console.log(this.range);
     }
 //    this.redrawChannels(this.range);*/
 }
@@ -801,7 +848,6 @@ Chart.prototype.removeAxis = function (units) {
         domain_start = max_scale_num - 1;
     }
     //while(scale_num>=tones.length) nextTone();
-    //console.log(this.scales_units)
     //if(chan_data.color==null) chan_data.color = color;
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
     this.axis_labels.splice(axis_ind, 1);
@@ -1034,7 +1080,6 @@ function relayoutAllPlots(ed) {
                     if(div.layout){
                         var x = div.layout.xaxis;
                         if (ed["xaxis.autorange"] && x.autorange) return;
-                        //console.log("ED",div,activeplot,ed,x)
                         if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
                             Plotly.relayout(div, ed);
                         }   
@@ -1079,10 +1124,8 @@ function addChannelDataInOrder(json) {
     order.parts_num = json.parts;
     order.parts[json.index]=json;
     var i = 0;
-    console.log("got",json.index);
     if(order.last_displayed!=null) i=order.last_displayed+1;
     for(;i<=json.index;i++){
-        console.log("draw",i);
         if(order.parts[i]!=undefined){
             addGraphData(order.parts[i]);
             order.last_displayed = i;
@@ -1092,7 +1135,6 @@ function addChannelDataInOrder(json) {
     if(order.last_displayed==order.parts_num-1)
     {
         var no_data = true;
-        //console.log(order.parts);
         for(i=0;i<=order.last_displayed;i++){
             if(order.parts[i].data.x.length!=0){
                 no_data = false;
@@ -1148,7 +1190,6 @@ function addOrbitData(json) {
 
 //удалить заказ
 function removeOrder(ordernum) {
-    //console.log(ordernum)
     var order = orders.filter(obj => { return obj.number === ordernum })[0];
     orders.splice(orders.indexOf(order), 1);
     defaultCursor();
@@ -1192,14 +1233,12 @@ function terminateChart(name) {
 
 function terminateAllPlots(){
     for (var chart in charts) {
-        console.log(chart);
         terminateChart(chart);
     };
 }
 
 //перезагрузка каждого графика
 function reloadChannels(channels, time) {
-    //console.log(channels);
     channels.forEach(function (channel) {
         //TODO:reloadallthegraphs    
 
