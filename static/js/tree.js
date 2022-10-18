@@ -61,6 +61,7 @@ function refreshTree(dbid,data) {
                 }
                 else{
                     $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
+                    $("#"+dbid+"_tree").treeview('toggleNodeExpanded', [ node.nodeId, { silent: true } ]);
                 }
             },
             onNodeUnselected: function (event, node) {
@@ -170,7 +171,7 @@ function displayDatabases(data){
     var db_table = $("#databases");
     databases.forEach(function(db){
         var refresh_td = $('<td >').append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree);
-        var db_tr = $('<tr>').attr('id',db.id).append("<td><div class='plus'/></td><td>"+db.name+"</td>").append(refresh_td).appendTo(db_table);
+        var db_tr = $('<tr>').attr('id',db.id).append("<td><div class='plus'/></td><td class='db_name'>"+db.name+"</td>").append(refresh_td).appendTo(db_table);
         if(!db.status){
             db_tr.addClass("inactive");
         }

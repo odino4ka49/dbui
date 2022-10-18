@@ -4,7 +4,16 @@ var activeplot = 'chart_1';
 var chart_max_n = 0;
 //набор освновных цветов для графиков
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
-var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+//var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
+var colors_table = [
+    ["478DB8", "#009EFF", "#00FFF0", "#0D4B72", "#175ABE", "#1C736E", "#47B8B1", "#7B9DBC", "#4E7FFB", "#8EE7ED", "#A4CFEA"],
+    ["#7BBC9A", "#00FF7A", "#0D6B3A", "#23F900", "#2E981D", "#64830B", "#64D651", "#83F3B8", "#A1BF49", "#A3EA98", "#B5F10B"],
+    ["#A40C1B", "#FF0019", "#A1420D", "#AB2264", "#FA1B86", "#FB9AA3", "#FB9ACE", "#FF0000", "#FF4D00", "#FFA184"],
+    ["#783C8D", "#4D056F", "#4D056F", "#BC07BF", "#BD00FF", "#C078D9", "#D09AFB"],
+    ["#252525", "#C7C7C7", "#000000", "#858585", "#5C5C5C", "#666666", "#CCCCCC", "#9F9F9F", "#ABABAB"],
+    ["#7BBC9A", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+    ["#7BBC9A", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
+];
 var resizeObserver;
 var orders = [];
 var orders_max_n = 0;
@@ -335,7 +344,7 @@ Chart.prototype.addScaleUnits = function (units){
     var scale_data = this.scales_units.get(units);
     if (!scale_data) {
         var scale_num = this.scales_units.size;
-        var color = colors[scale_num % colors.length];
+        var color = colors_table[scale_num % colors_table.length][0];
         
         scale_data = {
             color: color,
@@ -642,7 +651,7 @@ Chart.prototype.renderChart = function (channel, data) {
     //if(this.type == "orbit") data.name = channel+":"+data.datetime;
     if (channel.fullname) data.name = channel.fullname;
     //auto generate line color with the right tone
-    var color = colors[0];//hsvToHex(tones[0], 80, 80)
+    var color = colors_table[0][0];//hsvToHex(tones[0], 80, 80)
     chan_data.color = color;
     data.line = { color: color };
     data.marker = { size: 3 };
@@ -938,10 +947,11 @@ Chart.prototype.addPlot = function (channel, data) {
     }
     else {
         if (chan_data.color == null) {
-            var opacity = (100-(scale_data.channel_counter*10))/100;
-            if(opacity < 0.2) opacity = 0.2;
+            var color_tones = colors_table[(scale_data.axis_n-1) % colors_table.length];
+            var color_index = scale_data.channel_counter % color_tones.length;//opacity = (100-(scale_data.channel_counter*10))/100;
+            //if(opacity < 0.2) opacity = 0.2;
             //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-            chan_data.color = "rgba("+hexToRgb(colors[(scale_data.axis_n-1) % colors.length])+","+opacity+")";
+            chan_data.color = color_tones[color_index];//"rgba("+hexToRgb(colors[(scale_data.axis_n-1) % colors.length])+","+opacity+")";
         }
     }
     data.mode = channel.mode//'markers'; //type of plot
