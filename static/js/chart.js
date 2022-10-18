@@ -1120,7 +1120,9 @@ function addChannelDataInOrder(json) {
                 no_data = false;
             }
         }
-        if (no_data) alert("Sorry, no data to display");
+        if (no_data) {
+            alert("Sorry, no data to display for "+json.fullname);
+        }
         orders.splice(orders.indexOf(order), 1);
         defaultCursor();
     }
@@ -1174,7 +1176,7 @@ function addChannelData(json, chart, mode) {
 function addOrbitData(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
     if(json.data.length == 0){
-        alert("Sorry, no data to display");
+        alert("Sorry, no data to display "+json.fullname);
     }
     else{
         if (order.chart in charts) {

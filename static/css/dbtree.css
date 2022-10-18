@@ -319,6 +319,9 @@ a:hover{
 a{
     color: black!important;
 }
+#main_page_link{
+    text-decoration: underline;
+}
 
 ul {
     padding: 0;

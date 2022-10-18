@@ -35,6 +35,9 @@ app.get('/orbits', (request, response) => {
 app.get('/detectors', (request, response) => {
     response.render('detectors', {})
 })
+app.get('/contacts', (request, response) => {
+    response.render('contacts', {})
+})
 app.get('/t-diagnostics', (request, response) => {
     response.render('t-diagnostics', {})
 })
