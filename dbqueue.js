@@ -428,6 +428,9 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
         loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,datetime,ordernum,order,datatype,"dispersion",0);
         return;
     }
+    if(channel.pvname){
+        console.log("YOOOOOOOOOOOOOOOOOOOOO",channel.pvname);
+    }
     if(channel.orbit){
         loadFullOrbitData(db,datatable,ss.data_tbl_type,channel,ss.azimuths,datetime,ordernum,order);
         return;

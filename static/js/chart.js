@@ -69,7 +69,7 @@ function getActivePlotWidth() {
 //добавляет новый канал на активный Plot или создает новый холст соответствующего
 function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var chart = charts[activeplot];
-    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot);
+    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode());
 
     //if we want to open new chart
     if ((!activeplot) || (channel.units == "text" && chart.type != "text") || (channel.units != "text" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
@@ -100,7 +100,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname) {
+function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname, mode) {
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
@@ -114,6 +114,7 @@ function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, 
     this.units = units;
     this.chartname = chartname;
     this.type = null;
+    this.mode = mode;
 }
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
@@ -142,6 +143,7 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
         this.data.unshift(data_str);
     }
     else if (this.data[this.data.length - 1].period[1] <= data_str.period[0]) {
+        console.log(new Date(data_str.period[0]),new Date(data_str.period[1]));
         this.data.push(data_str);
     }
     else {
@@ -316,6 +318,7 @@ Chart.prototype.addChannel = function (channel) {
         return ((obj.nodeId == channel.nodeId) && (obj.dbid == channel.dbid))
     })
     if (result) return;
+    console.log(channel);
     this.channels.push(channel);
     this.addScaleUnits(channel.units);
     loadChannelDataObject(channel, this.range, this.name);
@@ -359,7 +362,7 @@ Chart.prototype.addScaleUnits = function (units){
 }
 
 //добавляет данные из БД, запоминает и отрисовывает
-Chart.prototype.addChannelData = function (json, mode) {
+Chart.prototype.addChannelData = function (json) {
     if (this.type == "orbit") {
         return false;
     }
@@ -377,7 +380,7 @@ Chart.prototype.addChannelData = function (json, mode) {
 }
 
 //добавляет график орбиты
-Chart.prototype.addOrbitData = function (json, chart, mode) {
+Chart.prototype.addOrbitData = function (json, chart) {
     if (this.type == "timeseries" || this.type == "text") {
         return false;
     }
@@ -671,7 +674,7 @@ Chart.prototype.renderChart = function (channel, data) {
         {
             xref: 'paper',
             yref: 'paper',
-            x: -0.02,
+            x: -0.005,
             xanchor: 'top',
             y: 0.91,
             yanchor: 'bottom',
@@ -698,7 +701,8 @@ Chart.prototype.renderChart = function (channel, data) {
         xaxis: {
             range: this.range,
             domain: [domain_start/25, 1],
-            type: "date"
+            type: "date",
+            gridwidth: 2,
         },
         yaxis: {
             color: color,
@@ -706,6 +710,7 @@ Chart.prototype.renderChart = function (channel, data) {
             domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0,
+            gridwidth: 2,
             //hoverformat: ",d",
             ticklabelposition: 'inside'
         },
@@ -864,12 +869,13 @@ Chart.prototype.removeAxis = function (units) {
             range: this.range,
             domain: [ domain_start / 25, 1],
             autorange: false,
+            gridwidth: 2,
             type: "date"
         },
         annotations: this.axis_labels
     };
     for (var i = axis_ind; i < scale_num; i++) {
-        this.axis_labels[i].x = i / 25 - 0.02;
+        this.axis_labels[i].x = i / 25 - 0.005;
         var axis_color = this.axis_labels[i].font.color;
         var scales_data = this.scales_units.get(this.axis_labels[i].text)
         var yaxisname = "yaxis" + (scales_data.axis_n);
@@ -881,6 +887,7 @@ Chart.prototype.removeAxis = function (units) {
             zerolinecolor: "#ccc",
             anchor: 'free',
             side: "left",
+            gridwidth: 2,
             ticklabelposition: ticklabelposition,
             position: i / 25
         };
@@ -909,6 +916,7 @@ Chart.prototype.addPlot = function (channel, data) {
                 range: this.range,
                 domain: [domain_start / 25, 1],
                 autorange: false,
+                gridwidth: 2,
                 type: "date"
             },
             annotations: this.axis_labels
@@ -925,13 +933,14 @@ Chart.prototype.addPlot = function (channel, data) {
             zerolinecolor: "#ccc",
             anchor: 'free',
             side: "left",
+            gridwidth: 2,
             position: scale_num / 25
         };
         this.axis_labels.push(
             {
                 xref: 'paper',
                 yref: 'paper',
-                x: scale_num / 25 - 0.02,
+                x: scale_num / 25 - 0.005,
                 xanchor: 'top',
                 y: 0.91,
                 yanchor: 'bottom',
@@ -1108,7 +1117,7 @@ function addChannelDataInOrder(json) {
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
         if (order.parts[i] != undefined) {
-            addChannelData(order.parts[i], order.chart, order.mode);
+            addChannelData(order.parts[i], order.chart);
             order.last_displayed = i;
             //order.parts[i]=1;
         }
@@ -1157,9 +1166,9 @@ function addChannelDataInOrder(json) {
 }*/
 
 //добавляет и отрисовывает данные
-function addChannelData(json, chart, mode) {
+function addChannelData(json, chart) {
     if (chart in charts) {
-        charts[chart].addChannelData(json, mode);
+        charts[chart].addChannelData(json);
         //charts[chart].
         /*if(!charts[chart].addGraphData(json,chart,mode)){
             if(!charts[activeplot].addGraphData(json)){
@@ -1287,7 +1296,7 @@ function hexToRgb(hex) {
       b: parseInt(result[3], 16)
     } : null;
     return ""+ rgb.r + "," + rgb.g + "," + rgb.b;
-  }
+}
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -1306,14 +1315,12 @@ function loadChannelDataObject(channel_object, time, chartname) {
         dbid: channel_object.dbid,
         //chart: plot,
         //pixels: getActivePlotWidth()-10,
-        //mode: getMode(),
         ordernum: orders_max_n
     };
     orders.push({
         number: orders_max_n,
         parts_num: null,
         chart: chartname,
-        mode: getMode(),
         last_displayed: null,
         parts: []
     })
