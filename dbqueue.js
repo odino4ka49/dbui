@@ -400,7 +400,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     else if (hierarchy.system && hierarchy.system.ss_id){
         ss = tree.findSS(hierarchy.system.ss_id);
     }
-    //console.log(channel);//db.findSS())
+    //console.log(hierarchy.subsystem);
     var subsystem = null;
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
@@ -427,9 +427,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     if(ss.function && ss.function.startsWith("dispersion")){
         loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,datetime,ordernum,order,datatype,"dispersion",0);
         return;
-    }
-    if(channel.pvname){
-        console.log("YOOOOOOOOOOOOOOOOOOOOO",channel.pvname);
     }
     if(channel.orbit){
         loadFullOrbitData(db,datatable,ss.data_tbl_type,channel,ss.azimuths,datetime,ordernum,order);
@@ -524,7 +521,7 @@ function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ord
     //var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     //var parts = dates.length-1;
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' ORDER BY date_time DESC;';
-    if(data_tbl_type == "chan_id"){
+    if(data_tbl_type == ""){
         req = 'select date_time, value as '+channel.name+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' and chan_id='+channel.address+' ORDER BY date_time DESC;';
     }
     try{
@@ -566,6 +563,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     var req;
     var chan_name = channel.name;
     if(channel.fullname) chan_name = channel.fullname;
+    //подсистема есть у пикапов
     if(subsystem){ 
         /*if(channel.fullname) chan_name = subsystem.name+": "+channel.fullname;
         else chan_name = subsystem.name+": "+channel.name;*/ //debug
@@ -578,11 +576,16 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     }
     else if(channel.unit == 'text'){
         if(data_tbl_type == "chan_id"){
-            req = 'select extract(epoch from date_time at time zone \'-07\' at \
+            var prereq = '(select extract(epoch from date_time at time zone \'-07\' at \
+            time zone \'utc\')*1000::integer as t, value as "'+chan_name+'", color from \
+            "'+datatable+'", \"05_textchan_values\" where date_time <=\''+dates[i]+'\' and \
+            chan_id='+channel.address+' \
+            and "'+chan_name+'"=value order by date_time desc limit 1) UNION ';
+            req = prereq+'(select extract(epoch from date_time at time zone \'-07\' at \
             time zone \'utc\')*1000::integer as t, value as "'+chan_name+'", color from \
             "'+datatable+'", \"05_textchan_values\" where date_time >=\''+dates[i]+'\' and \
             date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' \
-            and "'+chan_name+'"=value order by date_time asc;'
+            and "'+chan_name+'"=value order by date_time asc);'
         }
         else{
             req = 'select extract(epoch from date_time at time zone \'-07\' at \
@@ -595,7 +598,14 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     else{
         //if(channel.fullname) chan_name = channel.fullname;
         if(data_tbl_type == "chan_id"){
-            req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' order by date_time asc;'
+            var prereq = '(select extract(epoch from date_time at time zone \'-07\' at time zone \
+            \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where \
+            date_time <=\''+dates[i]+'\' and \
+            chan_id='+channel.address+' order by date_time desc limit 1) UNION ';
+            req = prereq + '(select extract(epoch from date_time at time zone \'-07\' at time zone \
+            \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where \
+            date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' and \
+            chan_id='+channel.address+' order by date_time asc);'
         }
         else{
             req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' as "'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'
@@ -613,6 +623,9 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 }*/
                 //console.log("REQ",req)
                 //console.log("RESULT",result)
+                if(data_tbl_type == "chan_id"){
+                    result[0].t = new Date(dates[i]).getTime();
+                }
                 if(func){
                     result = applyMath(func,result,chan_name);
                 }

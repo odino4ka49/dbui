@@ -4,7 +4,7 @@ body{
 }
 
 .daterangepicker .drp-calendar{
-    max-width: none;
+    max-width: none!important;
 }
 .graphset{
     overflow-y: scroll;
@@ -19,7 +19,7 @@ body{
 
 #dbtree{
     width: 103%;
-    height:800px;
+    height: 70vh;
     overflow-y: scroll;
     padding: 0 20px;
 }
@@ -48,7 +48,7 @@ body{
 }
 
 div.graphset{
-    height: 800px;
+    height: 70vh;
     width: 100%;
 }
 div.pchart{

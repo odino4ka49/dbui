@@ -69,7 +69,7 @@ function getActivePlotWidth() {
 //добавляет новый канал на активный Plot или создает новый холст соответствующего
 function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var chart = charts[activeplot];
-    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode());
+    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode(),channel_node.data_tbl_type);
 
     //if we want to open new chart
     if ((!activeplot) || (channel.units == "text" && chart.type != "text") || (channel.units != "text" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
@@ -100,7 +100,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname, mode) {
+function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname, mode, dtt) {
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
@@ -115,6 +115,7 @@ function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, 
     this.chartname = chartname;
     this.type = null;
     this.mode = mode;
+    this.data_tbl_type = dtt;
 }
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
@@ -143,7 +144,6 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
         this.data.unshift(data_str);
     }
     else if (this.data[this.data.length - 1].period[1] <= data_str.period[0]) {
-        console.log(new Date(data_str.period[0]),new Date(data_str.period[1]));
         this.data.push(data_str);
     }
     else {
@@ -318,7 +318,7 @@ Chart.prototype.addChannel = function (channel) {
         return ((obj.nodeId == channel.nodeId) && (obj.dbid == channel.dbid))
     })
     if (result) return;
-    console.log(channel);
+    console.log("F",channel);
     this.channels.push(channel);
     this.addScaleUnits(channel.units);
     loadChannelDataObject(channel, this.range, this.name);
@@ -331,6 +331,10 @@ Chart.prototype.getWidth = function () {
 Chart.prototype.getHeight = function () {
     return Math.ceil($("#" + this.name).parent().height());
 }
+
+/*for(var i=0; i<arr.length; i++){
+    if(arr[i])
+}*/
 
 Chart.prototype.getChannels = function () {
     return this.channels;
@@ -419,6 +423,9 @@ Chart.prototype.drawChannelData = function (channel, datetime) {
     var pixels = Math.ceil(this.getWidth() / (Date.parse(this.range[1]) - Date.parse(this.range[0])) * (datetime[1] - datetime[0]));
     if (channel) {
         var data_to_display = this.parseToChartData(channel.fullname, channel.getFilteredData(datetime, pixels));
+        if(channel.data_tbl_type == "chan_id"){
+            data_to_display = this.parseToDiscrChartData(data_to_display,datetime[1]);
+        }
         if (channel.displayed) {
             this.extendLine(channel, data_to_display);
         }
@@ -456,6 +463,24 @@ Chart.prototype.parseToChartData = function (channel, data) {
             y.push(element[channel])
     });
     return { x: x, y: y };
+}
+
+Chart.prototype.parseToDiscrChartData = function (data,end_time){
+    var xnew = [];
+    var ynew = [];
+    for(var i=0; i < data.x.length; i++){
+        xnew.push(data.x[i]);
+        ynew.push(data.y[i]);
+        if(i<data.x.length-1){
+            xnew.push(data.x[i+1]);
+        }
+        else{
+            var date = new Date();
+            xnew.push(date.setTime(end_time));
+        }
+        ynew.push(data.y[i]);
+    }
+    return { x: xnew, y: ynew };
 }
 
 //готовит данные для вывода в виде графика
@@ -679,7 +704,7 @@ Chart.prototype.renderChart = function (channel, data) {
             y: 0.91,
             yanchor: 'bottom',
             text: channel.units,
-            textangle: -45,
+            //textangle: -45,
             font: { color: color },
             showarrow: false
         }
@@ -945,7 +970,7 @@ Chart.prototype.addPlot = function (channel, data) {
                 y: 0.91,
                 yanchor: 'bottom',
                 text: channel.units,
-                textangle: -45,
+                //textangle: -45,
                 font: { color: color },
                 showarrow: false
             }

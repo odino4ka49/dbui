@@ -77,8 +77,8 @@ class SystemTree {
             var ch = data[i];
             if(ch.unit==null) ch.unit = "none";
             //if(!("status" in ch) || ch.status){
-            var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status);
             var ss = this.findSS(ch.ss_id);
+            var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status,ss.data_tbl_type);
             if(ss&&ch.gr_id){
                 var group = ss.groups.find(o => o.id === ch.gr_id);
                 if(group){
@@ -310,7 +310,7 @@ class Group {
     }
 }
 class Channel {
-    constructor(name,fullname,address,type,unit,divider,status){
+    constructor(name,fullname,address,type,unit,divider,status,dtt){
         this.name = name;
         this.fullname = fullname;
         this.address = address;
@@ -319,6 +319,8 @@ class Channel {
         this.divider = divider;
         this.status = status;
         this.type = "channel";
+        this.data_tbl_type = dtt;
+        //this.pvname = pvname;
         this.checkIfDisabled();
         if(!fullname) this.fullname = name;
     }
