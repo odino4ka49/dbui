@@ -69,11 +69,11 @@ function getActivePlotWidth() {
 //добавляет новый канал на активный Plot или создает новый холст соответствующего
 function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var chart = charts[activeplot];
-    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode(),channel_node.data_tbl_type);
+    var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.datatype, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode(),channel_node.data_tbl_type);
 
     //if we want to open new chart
-    if ((!activeplot) || (channel.units == "text" && chart.type != "text") || (channel.units != "text" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
-        var istext = (channel.units == "text") ? true : false;
+    if ((!activeplot) || (channel.datatype == "char" /* && chart.type != "text"*/) || (channel.datatype != "char" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
+        var istext = (channel.datatype == "char") ? true : false;
         if(!activeplot){
             new_chart_n = addChartBeforeTarget($("#add_chart"),istext);
         }
@@ -91,7 +91,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     }
     else{
         if(chart.type == null){
-            if(channel.units == "text") chart.setType("text");
+            if(channel.datatype == "text") chart.setType("text");
             else if(channel.orbit) chart.setType("orbit");
             else chart.setType("timeseries");
         }
@@ -100,12 +100,13 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
 }
 
 //класс каналов для добавления в объект Chart
-function ChartChannel(name, fullname, units, orbit, hierarchy, datatable, dbid, nodeid, chartname, mode, dtt) {
+function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatable, dbid, nodeid, chartname, mode, dtt) {
     this.name = name;
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
     this.fullname = fullname;
+    this.datatype = datatype;
     this.orbit = orbit;
     this.nodeId = nodeid;
     this.displayed = false;
@@ -208,15 +209,21 @@ ChartChannel.prototype.getData = function (time) {
             result = result.concat(piece.data);
         }
         else if ((piece.period[0] >= time[0]) && (piece.period[0] <= time[1]) && (piece.period[1] >= time[1])) {
-            result = result.concat(piece.data.slice(0, piece.data.findIndex((element) => (element.t >= time[1]))));
+            var indmax = piece.data.findIndex((element) => (element.t >= time[1]));
+            //if(indmax+1 < piece.data.length) indmax = indmax+1; //захватим дополнительную точку справа
+            result = result.concat(piece.data.slice(0, indmax));
         }
         else if ((piece.period[0] <= time[0]) && (piece.period[1] <= time[1]) && (piece.period[1] >= time[0])) {
             var ind = piece.data.findIndex((element) => (element.t >= time[0]));
+            //if((ind-1)>=0) ind = ind-1; //захватим дополнительную точку слева
             result = result.concat(piece.data.slice(ind, 9e9));
         }
         else if ((piece.period[0] <= time[0]) && (piece.period[1] >= time[1])) {
             var ind = piece.data.findIndex((element) => (element.t >= time[0]));
-            result = result.concat(piece.data.slice(ind, piece.data.findIndex((element) => (element.t >= time[1]))));
+            var indmax = piece.data.findIndex((element) => (element.t >= time[1]));
+            //if(indmax+1 < piece.data.length) indmax = indmax+1; //захватим дополнительную точку справа
+            if((ind-1)>=0) ind = ind-1;  //захватим дополнительную точку слева
+            result = result.concat(piece.data.slice(ind, indmax));
         }
     }
     return result;
@@ -318,7 +325,6 @@ Chart.prototype.addChannel = function (channel) {
         return ((obj.nodeId == channel.nodeId) && (obj.dbid == channel.dbid))
     })
     if (result) return;
-    console.log("F",channel);
     this.channels.push(channel);
     this.addScaleUnits(channel.units);
     loadChannelDataObject(channel, this.range, this.name);
@@ -348,7 +354,8 @@ Chart.prototype.setType = function(type){
 Chart.prototype.addScaleUnits = function (units){
     var scale_data = this.scales_units.get(units);
     if (!scale_data) {
-        var scale_num = this.scales_units.size;
+        var scale_arr = Array.from(this.scales_units, ([name, value]) => (value));
+        var scale_num = (this.scales_units.size == 0) ? 0 : scale_arr.reduce((acc,curr)=> acc.axis_n>curr.axis_n ? acc.axis_n:curr.axis_n,0);//this.scales_units.size;
         var color = colors_table[scale_num % colors_table.length][0];
         
         scale_data = {
@@ -633,6 +640,7 @@ Chart.prototype.renderTextChart = function(){
         xaxis: {
             range: this.range,
             domain: [domain_start/25, 1],
+            showgrid: false,
             type: "date"
         },
         yaxis:{
@@ -727,7 +735,8 @@ Chart.prototype.renderChart = function (channel, data) {
             range: this.range,
             domain: [domain_start/25, 1],
             type: "date",
-            gridwidth: 2,
+            gridwidth: 1,
+            gridcolor: '#dbdbdb',
         },
         yaxis: {
             color: color,
@@ -735,7 +744,8 @@ Chart.prototype.renderChart = function (channel, data) {
             domain: [0, 0.9],
             zerolinecolor: "#444",
             position: 0,
-            gridwidth: 2,
+            gridwidth: 1,
+            gridcolor: '#dbdbdb',
             //hoverformat: ",d",
             ticklabelposition: 'inside'
         },
@@ -766,6 +776,7 @@ Chart.prototype.renderChart = function (channel, data) {
                 eventdata["chart_zoomed_first"] = this.name;
                 relayoutAllPlots(eventdata);
             }
+            $(document).trigger("zoomed");
         });
     }
     chan_data.displayed = true;
@@ -846,7 +857,7 @@ Chart.prototype.setRange = function (time) {
                     type: "date"
                 }
             }
-            Plotly.update(this.name, [], relayout_data);
+            Plotly.update(this.name, [], relayout_data) ;
         }
         this.redrawChannels(time);
     }
@@ -872,6 +883,33 @@ Chart.prototype.getRange = function () {
     return this.range;//[start,end];
 }
 
+//добавляет данне про все оси y в relayout_data
+Chart.prototype.updateYAxes = function(relayout_data){
+    var scale_num = this.scales_units.size;
+    for (var i = 0/*axis_ind*/; i < scale_num; i++) {
+        this.axis_labels[i].x = i / 25 - 0.005;
+        var axis_color = this.axis_labels[i].font.color;
+        var scales_data = this.scales_units.get(this.axis_labels[i].text)
+        var yaxisname = "yaxis" + (scales_data.axis_n==1 ? "":scales_data.axis_n);
+        var ticklabelposition = (i == 0) ? "inside" : "outside";
+        relayout_data[yaxisname] = {
+            //overlaying: "y",
+            color: axis_color,
+            linecolor: axis_color,
+            zerolinecolor: "#ccc",
+            anchor: 'free',
+            side: "left",
+            showgrid: (scale_num>1) ? false : true,
+            gridwidth: 1,
+            gridcolor: '#dbdbdb',
+            ticklabelposition: ticklabelposition,
+            position: i / 25
+        };
+        if(i!=0) relayout_data[yaxisname].overlaying = "y";
+        //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
+    }
+}
+
 Chart.prototype.removeAxis = function (units) {
     //remove the scale
     if (this.type == "orbit") {
@@ -889,35 +927,44 @@ Chart.prototype.removeAxis = function (units) {
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
     this.axis_labels.splice(axis_ind, 1);
 
+    console.log(this.axis_labels,scale_num,this.scales_units);
+
     var relayout_data = {
         xaxis: {
             range: this.range,
             domain: [ domain_start / 25, 1],
             autorange: false,
-            gridwidth: 2,
+            showgrid: (scale_num>1) ? false : true,
+            gridwidth: 1,
+            gridcolor: '#dbdbdb',
             type: "date"
         },
         annotations: this.axis_labels
     };
-    for (var i = axis_ind; i < scale_num; i++) {
+    this.updateYAxes(relayout_data);
+    /*for (var i = 0/*axis_ind/; i < scale_num; i++) {
         this.axis_labels[i].x = i / 25 - 0.005;
         var axis_color = this.axis_labels[i].font.color;
         var scales_data = this.scales_units.get(this.axis_labels[i].text)
-        var yaxisname = "yaxis" + (scales_data.axis_n);
+        var yaxisname = "yaxis" + (scales_data.axis_n==1 ? "":scales_data.axis_n);
         var ticklabelposition = (i == 0) ? "inside" : "outside";
         relayout_data[yaxisname] = {
-            overlaying: "y",
+            //overlaying: "y",
             color: axis_color,
             linecolor: axis_color,
             zerolinecolor: "#ccc",
             anchor: 'free',
             side: "left",
-            gridwidth: 2,
+            showgrid: (scale_num>1) ? false : true,
+            gridwidth: 1,
+            gridcolor: '#dbdbdb',
             ticklabelposition: ticklabelposition,
             position: i / 25
         };
-
-    }
+        if(i==scale_num-1) relayout_data[yaxisname].overlaying = "y";
+        //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
+    }*/
+    console.log(relayout_data);
     Plotly.update(this.name, [], relayout_data);
 }
 
@@ -933,7 +980,7 @@ Chart.prototype.addPlot = function (channel, data) {
         var scale_num = this.scales_units.size - 1;
         var domain_start = scale_num;
         if(synched) domain_start = max_scale_num - 1;
-        var yaxisname = "yaxis" + (scale_num + 1);
+        var yaxisname = "yaxis" + (scale_data.axis_n);
         var color = scale_data.color;
         if (chan_data.color == null) chan_data.color = color;
         var relayout_data = {
@@ -941,7 +988,7 @@ Chart.prototype.addPlot = function (channel, data) {
                 range: this.range,
                 domain: [domain_start / 25, 1],
                 autorange: false,
-                gridwidth: 2,
+                showgrid: false,
                 type: "date"
             },
             annotations: this.axis_labels
@@ -951,16 +998,6 @@ Chart.prototype.addPlot = function (channel, data) {
                 domain: [scale_num / 25, 1]
             }
         }
-        relayout_data[yaxisname] = {
-            overlaying: "y",
-            color: color,
-            linecolor: color,
-            zerolinecolor: "#ccc",
-            anchor: 'free',
-            side: "left",
-            gridwidth: 2,
-            position: scale_num / 25
-        };
         this.axis_labels.push(
             {
                 xref: 'paper',
@@ -975,6 +1012,36 @@ Chart.prototype.addPlot = function (channel, data) {
                 showarrow: false
             }
         )
+        this.updateYAxes(relayout_data);
+        /*relayout_data[yaxisname] = {
+            overlaying: "y",
+            color: color,
+            linecolor: color,
+            zerolinecolor: "#ccc",
+            anchor: 'free',
+            side: "left",
+            showgrid: false,
+            position: scale_num / 25
+        };
+        //hide first yaxis grid
+        if(scale_num==1){
+            var axis_color = this.axis_labels[0].font.color;
+            if(this.scales_units.get(this.axis_labels[0].text).axis_n == 1){
+                relayout_data["yaxis"] = {
+                    showgrid: false,
+                    domain: [0, 0.9],
+                    zerolinecolor: "#444",
+                    position: 0,
+                    color: axis_color,
+                    //overlaying: "y",
+                    linecolor: axis_color,
+                    anchor: 'free',
+                    side: "left",
+                    ticklabelposition: "inside",
+                };
+            }
+        }*/
+        console.log(relayout_data);
         Plotly.update(this.name, [], relayout_data);
     }
     else {

@@ -580,12 +580,12 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
             time zone \'utc\')*1000::integer as t, value as "'+chan_name+'", color from \
             "'+datatable+'", \"05_textchan_values\" where date_time <=\''+dates[i]+'\' and \
             chan_id='+channel.address+' \
-            and "'+chan_name+'"=value order by date_time desc limit 1) UNION ';
+            and "'+chan_name+'"=value order by date_time desc limit 1) UNION ALL ';
             req = prereq+'(select extract(epoch from date_time at time zone \'-07\' at \
             time zone \'utc\')*1000::integer as t, value as "'+chan_name+'", color from \
             "'+datatable+'", \"05_textchan_values\" where date_time >=\''+dates[i]+'\' and \
             date_time <= \''+dates[i+1]+'\' and chan_id='+channel.address+' \
-            and "'+chan_name+'"=value order by date_time asc);'
+            and "'+chan_name+'"=value) order by date_time asc;'
         }
         else{
             req = 'select extract(epoch from date_time at time zone \'-07\' at \
@@ -601,11 +601,11 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
             var prereq = '(select extract(epoch from date_time at time zone \'-07\' at time zone \
             \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where \
             date_time <=\''+dates[i]+'\' and \
-            chan_id='+channel.address+' order by date_time desc limit 1) UNION ';
+            chan_id='+channel.address+' order by date_time desc limit 1) UNION ALL ';
             req = prereq + '(select extract(epoch from date_time at time zone \'-07\' at time zone \
             \'utc\')*1000::integer as t, value as "'+chan_name+'" from "'+datatable+'" where \
             date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' and \
-            chan_id='+channel.address+' order by date_time asc);'
+            chan_id='+channel.address+') order by t asc;'
         }
         else{
             req = 'select extract(epoch from date_time at time zone \'-07\' at time zone \'utc\')*1000::integer as t,"'+channel.name+'"'+datatype+' as "'+chan_name+'" from "'+datatable+'" where date_time >=\''+dates[i]+'\' and date_time <= \''+dates[i+1]+'\' order by date_time asc;'

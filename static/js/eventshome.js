@@ -24,3 +24,8 @@ $(document).on("asyncronized",function(event){
     var time = getActivePlotRange();
     timepicker.setDateTime(time[0],time[1]);
 });
+
+$(document).on("zoomed",function(event){
+    var time = getActivePlotRange();
+    timepicker.setDateTime(time[0],time[1]);
+});
