@@ -562,6 +562,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
+    var timenow = new Date().getTime();
     if(channel.fullname) chan_name = channel.fullname;
     //подсистема есть у пикапов
     if(subsystem){ 
@@ -623,8 +624,11 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 }*/
                 //console.log("REQ",req)
                 //console.log("RESULT",result)
-                if(data_tbl_type == "chan_id"){
+                if((data_tbl_type == "chan_id") && (result.length > 0)){
                     result[0].t = new Date(dates[i]).getTime();
+                    var endtime = new Date(dates[i+1]).getTime();
+                    result.push({t: (timenow<endtime ? timenow : endtime)});
+                    result[result.length-1][chan_name] = result[result.length-2][chan_name];
                 }
                 if(func){
                     result = applyMath(func,result,chan_name);

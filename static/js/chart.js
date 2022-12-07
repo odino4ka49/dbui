@@ -191,9 +191,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
         if(time_to_cut[1]>moment()){
             time_to_cut = [time_to_cut[0],moment()];
         }
-        else{
-            time_to_load.push(time_to_cut);
-        }
+        time_to_load.push(time_to_cut);
     }
     for (var i = 0; i < time_to_load.length; i++) {
         loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
@@ -480,13 +478,17 @@ Chart.prototype.parseToDiscrChartData = function (data,end_time){
         ynew.push(data.y[i]);
         if(i<data.x.length-1){
             xnew.push(data.x[i+1]);
+            ynew.push(data.y[i]);
         }
-        else{
-            var date = new Date();
-            xnew.push(date.setTime(end_time));
-        }
-        ynew.push(data.y[i]);
+        
     }
+    var date = new Date();
+    var endtime = date.setTime(end_time);
+    var timenow = new Date().getTime();
+    if(xnew[xnew.length-1]<endtime && endtime<timenow){
+            xnew.push(endtime);
+            ynew.push(ynew[ynew.length-1]);
+        }
     return { x: xnew, y: ynew };
 }
 
@@ -927,8 +929,6 @@ Chart.prototype.removeAxis = function (units) {
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
     this.axis_labels.splice(axis_ind, 1);
 
-    console.log(this.axis_labels,scale_num,this.scales_units);
-
     var relayout_data = {
         xaxis: {
             range: this.range,
@@ -1075,6 +1075,11 @@ Chart.prototype.addPlot = function (channel, data) {
     chan_data.displayed = true;
 }
 
+
+//если у холста время выставлено дальше текущего, то догрузить
+function monitorAllPlots(){
+    
+}
 
 function initCharts() {
     charts['chart_1'] = new Chart('chart_1');
