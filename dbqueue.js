@@ -2,7 +2,6 @@ const dbc = require('./dbconnection')
 const tm = require('./dbstructure')
 
 var databases = new Map();
-//console.log(dbc.dbs);
 
 Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
@@ -39,7 +38,6 @@ function removeSimilar(data,y){
     lastval = data[data.length-1];
     lastval.t = lastval.t-1;
     result.push(lastval);
-    //console.log(result);
     return result;
 }
 
@@ -367,7 +365,6 @@ function averageData(data,y){
     }
     var min = data[0];
     var max = data[0];
-    //console.log(data)
     for (var i=0;i<data.length;i++){
         if(min[y]>data[i][y]) min = data[i];
         if(max[y]<data[i][y]) max = data[i];
@@ -400,7 +397,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     else if (hierarchy.system && hierarchy.system.ss_id){
         ss = tree.findSS(hierarchy.system.ss_id);
     }
-    //console.log(hierarchy.subsystem);
     var subsystem = null;
     var date1 = new Date(datetime[0]+"Z");
     var date2 = new Date(datetime[1]+"Z");
@@ -455,7 +451,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
-    //console.log("dates",dates);
     if(datatable == "v4cod,v4-new"){
         if(channel.name.endsWith("set")){
             datatable = "v4cod";
@@ -473,7 +468,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
         }
     }
     if((db.type == "pickups") || (channel.orbit) || ("system" in hierarchy && hierarchy.system.name=="pickups v4")){    
-        console.log("SUBSYSTEM")
         if("subsystem" in hierarchy){
             subsystem = hierarchy.subsystem
         }
@@ -622,8 +616,6 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 /*if(result.length==0){
                     wsServer.sendError({"text":"There is no data on this period"},order)
                 }*/
-                //console.log("REQ",req)
-                //console.log("RESULT",result)
                 if((data_tbl_type == "chan_id") && (result.length > 0)){
                     result[0].t = new Date(dates[i]).getTime();
                     var endtime = new Date(dates[i+1]).getTime();
@@ -633,10 +625,9 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
                 if(func){
                     result = applyMath(func,result,chan_name);
                 }
-                //console.log(result[0]);
                 if(channel.unit == 'text'){
                     result = removeSimilar(result,chan_name);
-                }
+                }                    
                 var channel_data = {
                     "title": "full_channel_data",
                     "fullname": chan_name,
@@ -667,8 +658,6 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
 
 //загрузка данных с канала определенного перидоа на определенное число пикселей
 /*function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
-    //console.log("loadChannelData part "+i);
-    console.log("dates",dates);
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;
@@ -682,7 +671,6 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     try{
         db.sendRequest(req,order,function(result){
             if(result.type=="err"){
-                console.log("problem")
                 wsServer.sendError(result,order)
             }
             else{
@@ -715,7 +703,6 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
         },ordernum);
     }
     catch(e){
-        console.log(e);
     }
 }*/
 

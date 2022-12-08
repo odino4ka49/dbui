@@ -20,6 +20,7 @@ var plots_mode;
 var max_scale_num = 0;
 //начальные графики
 var charts = {};
+var monitoringTimer;
 
 //проверка на возраст браузера
 try {
@@ -187,6 +188,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
             }
         }
     }
+    console.log(time_to_cut,this.data);
     if(time_to_cut){
         if(time_to_cut[1]>moment()){
             time_to_cut = [time_to_cut[0],moment()];
@@ -325,7 +327,9 @@ Chart.prototype.addChannel = function (channel) {
     if (result) return;
     this.channels.push(channel);
     this.addScaleUnits(channel.units);
-    loadChannelDataObject(channel, this.range, this.name);
+    var dateDate = [Date.parse(this.range[0]), Date.parse(this.range[1])];
+    channel.checkIfMoreDataNeeded(dateDate);
+    //loadChannelDataObject(channel, this.range, this.name);
 }
 
 Chart.prototype.getWidth = function () {
@@ -917,6 +921,9 @@ Chart.prototype.removeAxis = function (units) {
     if (this.type == "orbit") {
         return;
     }
+    var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
+    if(axis_ind == 0) return;
+    
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
     var domain_start = scale_num - 1;
@@ -926,7 +933,7 @@ Chart.prototype.removeAxis = function (units) {
     }
     //while(scale_num>=tones.length) nextTone();
     //if(chan_data.color==null) chan_data.color = color;
-    var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
+
     this.axis_labels.splice(axis_ind, 1);
 
     var relayout_data = {
@@ -964,7 +971,6 @@ Chart.prototype.removeAxis = function (units) {
         if(i==scale_num-1) relayout_data[yaxisname].overlaying = "y";
         //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
     }*/
-    console.log(relayout_data);
     Plotly.update(this.name, [], relayout_data);
 }
 
@@ -1077,8 +1083,19 @@ Chart.prototype.addPlot = function (channel, data) {
 
 
 //если у холста время выставлено дальше текущего, то догрузить
-function monitorAllPlots(){
-    
+function monitorAllCharts(){
+    for (var name in charts) {
+        var chart = charts[name];
+        if(chart.range.length >=1 && moment(chart.range[1])>moment()){
+            charts[name].redrawChannels([chart.range[0],chart.range[1]]);
+        }
+    }
+}
+//запуск мониторинга
+function startMonitoring(){
+    monitoringTimer = setInterval(function() {
+        monitorAllCharts();
+    }, 120 * 1000);
 }
 
 function initCharts() {
@@ -1210,6 +1227,8 @@ function addChannelDataInOrder(json) {
     order.parts_num = json.parts;
     order.parts[json.index] = json;
     var i = 0;
+
+    console.log("nodata", json)
 
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
@@ -1479,4 +1498,5 @@ $(document).ready(function () {
     });
     $("#add_chart").click(addChart);
     synched = $("#synchronization").is(":checked");
+    startMonitoring();
 });
