@@ -73,8 +73,8 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.datatype, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode(),channel_node.data_tbl_type);
 
     //if we want to open new chart
-    if ((!activeplot) || (channel.datatype == "char" /* && chart.type != "text"*/) || (channel.datatype != "char" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
-        var istext = (channel.datatype == "char") ? true : false;
+    if ((!activeplot) || (channel.datatype == "char" || channel.datatype == "stringin" /* && chart.type != "text"*/) || (channel.datatype != "char" && chart.type == "text") || (channel.orbit && chart.type == "timeseries") || (!channel.orbit && chart.type == "orbit")) {
+        var istext = (channel.datatype == "char" || channel.datatype == "stringin" ) ? true : false;
         if(!activeplot){
             new_chart_n = addChartBeforeTarget($("#add_chart"),istext);
         }
@@ -92,7 +92,7 @@ function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     }
     else{
         if(chart.type == null){
-            if(channel.datatype == "text") chart.setType("text");
+            if(channel.datatype == "char" || channel.datatype == "stringin" ) chart.setType("text");
             else if(channel.orbit) chart.setType("orbit");
             else chart.setType("timeseries");
         }
@@ -188,13 +188,13 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
             }
         }
     }
-    console.log(time_to_cut,this.data);
     if(time_to_cut){
         if(time_to_cut[1]>moment()){
             time_to_cut = [time_to_cut[0],moment()];
         }
         time_to_load.push(time_to_cut);
     }
+    console.log(this.data);
     for (var i = 0; i < time_to_load.length; i++) {
         loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
     }
@@ -610,7 +610,7 @@ Chart.prototype.extendLine = function (channel, data) {
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
-    //console.log("redrawChannels",this.name,dateDate);
+
     if(this.type == "text"){
         if(this.channels.length !=0){
             this.channels[0].checkIfMoreDataNeeded(dateDate);
@@ -923,7 +923,7 @@ Chart.prototype.removeAxis = function (units) {
     }
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
     if(axis_ind == 0) return;
-    
+
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
     var domain_start = scale_num - 1;
@@ -1095,7 +1095,7 @@ function monitorAllCharts(){
 function startMonitoring(){
     monitoringTimer = setInterval(function() {
         monitorAllCharts();
-    }, 120 * 1000);
+    }, 10 * 1000);
 }
 
 function initCharts() {
@@ -1227,8 +1227,6 @@ function addChannelDataInOrder(json) {
     order.parts_num = json.parts;
     order.parts[json.index] = json;
     var i = 0;
-
-    console.log("nodata", json)
 
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {

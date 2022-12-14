@@ -26,7 +26,7 @@ wsServer.on('request', function (request) {
     var connection = request.accept(null, request.origin);
     var index = clients.push(connection) - 1;
 
-    console.log("connection is set with: "+connection.remoteAddress)
+    console.log("connection is set with: "+connection)
     connection.sendUTF(JSON.stringify({
         title: "databases",
         data: model.getDatabasesInfo()
@@ -68,7 +68,7 @@ wsServer.on('request', function (request) {
     });
 
     connection.on('close', function (connection) {
-        console.log("connection is closed with: "+connection.remoteAddress)
+        console.log("connection is closed with: "+connection)
         clients.splice(index, 1);
     });
 });
