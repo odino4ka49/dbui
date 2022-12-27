@@ -386,6 +386,7 @@ function filterData(data,pixels,chname){
 
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
+    if(!wsServer.isOrderExist(order)) return;
     var channel = hierarchy.channel;
     var ss;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
@@ -514,6 +515,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
 function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ordernum,order){
     //var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" ORDER BY date_time DESC LIMIT 1;'
     //var parts = dates.length-1;
+    if(!wsServer.isOrderExist(order)) return;
     var req = 'select date_time,"'+channel.name+'"'+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' ORDER BY date_time DESC;';
     if(data_tbl_type == ""){
         req = 'select date_time, value as '+channel.name+' from "'+datatable+'" where date_time >=\''+dates[0]+'\' and date_time <= \''+dates[1]+ '\' and chan_id='+channel.address+' ORDER BY date_time DESC;';
@@ -553,6 +555,7 @@ function loadFullOrbitData(db,datatable,data_tbl_type,channel,azimuths,dates,ord
 
 //загрузка данных с канала определенного перидоа
 function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,ordernum,order,datatype,func,i){
+    if(!wsServer.isOrderExist(order)) return;
     var parts = dates.length-1;
     var req;
     var chan_name = channel.name;

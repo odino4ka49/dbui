@@ -37,11 +37,13 @@ wsServer.on('request', function (request) {
             switch(message.type) { 
                 //depending on the msgtype we decide what to do
                 case 'channel_data':
+                    connection.ordernum = message.ordernum;
                     orders.set(order,connection);
                     model.getChannelData(message.chart,message.pixels,message.dbid,message.datatable,message.hierarchy,message.datetime,message.mode,message.ordernum,order);
                     order++;
                     break;
                 case 'get_full_channel_data':
+                    connection.ordernum = message.ordernum;
                     orders.set(order,connection);
                     model.getFullChannelData(message.dbid,message.datatable,message.hierarchy,message.datetime,message.ordernum,order);
                     order++;
@@ -62,18 +64,37 @@ wsServer.on('request', function (request) {
                     model.loadV3V4ChanDatetimeData(message.system,message.datetime,order);
                     order++;
                     break;
+                case 'cancel_orders':
+                    wsServer.cancelOrders(message.orders);
+                    break;
             }
             console.log("got message "+message.type+" from: "+connection.remoteAddress)
         }
     });
 
-    connection.on('close', function (connection) {
-        console.log("connection is closed with: "+connection)
+    connection.on('close', function (code) {
+        console.log("connection is closed with: "+code)
+        for (var k of orders.keys()) {
+            if ((orders.get(k).remoteAddress==clients[index].remoteAddress))
+                orders.delete(k);
+        }
         clients.splice(index, 1);
     });
 });
 
+wsServer.cancelOrders = function(orders_to_cancel){
+    for (var k of orders.keys()) {
+        if (orders_to_cancel.includes(orders.get(k).ordernum))
+            orders.delete(k);
+    }
+}
+
+wsServer.isOrderExist = function(ordernum){
+    return orders.has(ordernum);
+}
+
 wsServer.sendData = function(data,ordernum,end){
+    if(!this.isOrderExist(ordernum)) return;
     var connection = orders.get(ordernum);
     console.log("try to send data to: "+connection.remoteAddress)
     connection.sendUTF(JSON.stringify(data));
