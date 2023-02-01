@@ -125,11 +125,11 @@ function removeOrder(ordernum){
     orders.delete(ordernum);
 }
 
-function sendData(data,ordernum){
+/*function sendData(data,ordernum){
     wsServer.sendData(data,ordernum);
 }
 
 
 module.exports = {
     sendData: sendData
-}
+}*/

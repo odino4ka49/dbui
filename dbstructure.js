@@ -189,7 +189,6 @@ class System {
         //console.log(this);
     }
     getAzimuths(){
-        console.log(this.azimuths)
         if(this.azimuths){
             return JSON.parse(JSON.stringify(this.azimuths));
         }
@@ -259,10 +258,8 @@ class Subsystem {
             this.azimuths = [];
         }
         this.azimuths.push(az);
-        //console.log(this);
     }
     getAzimuths(){
-        console.log(this.azimuths)
         if(this.azimuths){
             return JSON.parse(JSON.stringify(this.azimuths));
         }
@@ -314,7 +311,7 @@ class Channel {
         this.name = name;
         this.fullname = fullname;
         this.address = address;
-        this.datatype = type;
+        this.datatype = type; // _type in DB
         this.unit = unit;
         this.divider = divider;
         this.status = status;

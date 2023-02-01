@@ -16,7 +16,6 @@ var resizeObserver;
 var orders = [];
 var orders_max_n = 0;
 var synched = true;
-var plots_mode;
 var max_scale_num = 0;
 //начальные графики
 var charts = {};
@@ -54,20 +53,12 @@ function setActivePlotByName(name) {
     $(document).trigger("activePlotSet");
 }
 
-function parseDates(dates) {
-    var result = [];
-    dates.forEach(element => {
-        result.push(Date.parse(element.substring(0, element.length - 1)));
-    });
-    return result;
-}
-
 //возвращает ширину полотна в пикселях
 function getActivePlotWidth() {
     return Math.ceil($("#" + activeplot).width());
 }
 
-//добавляет новый канал на активный Plot или создает новый холст соответствующего
+//добавляет новый канал на активный Plot или создает новый холст соответствующего типа
 function addChannelToActivePlot(channel_node, hierarchy, datatable, dbid) {
     var chart = charts[activeplot];
     var channel = new ChartChannel(channel_node.name, channel_node.fullname, channel_node.unit, channel_node.datatype, channel_node.orbit, hierarchy, datatable, dbid, channel_node.nodeId, activeplot, getMode(),channel_node.data_tbl_type);
@@ -343,7 +334,7 @@ ChartChannel.prototype.setData = function(data){
     this.data = data;
 }
 
-//класс полотна с графиками
+//класс холста с графиками
 function Chart(name) {
     this.name = name;
     this.is_chart_rendered = false;
@@ -355,7 +346,7 @@ function Chart(name) {
     this.type = null;
 }
 
-//добавляет новый канал на канвас
+//добавляет новый канал на холст
 Chart.prototype.addChannel = function (channel) {
     var result = this.channels.find(obj => {
         return ((obj.nodeId == channel.nodeId) && (obj.dbid == channel.dbid))
@@ -388,7 +379,7 @@ Chart.prototype.setType = function(type){
     this.type = type;
 }
 
-//add new scale and axis_labels
+//add new scale 
 Chart.prototype.addScaleUnits = function (units){
     var scale_data = this.scales_units.get(units);
     if (!scale_data) {
@@ -429,7 +420,7 @@ Chart.prototype.addChannelData = function (json) {
 }
 
 //добавляет график орбиты
-Chart.prototype.addOrbitData = function (json, chart) {
+Chart.prototype.addOrbitData = function (json) {
     if (this.type == "timeseries" || this.type == "text") {
         return false;
     }
@@ -530,16 +521,6 @@ Chart.prototype.parseToDiscrChartData = function (data,end_time){
             ynew.push(ynew[ynew.length-1]);
         }
     return { x: xnew, y: ynew };
-}
-
-//готовит данные для вывода в виде графика
-Chart.prototype.parseToArrayData = function (data) {
-    var result = []
-    data.forEach(element => {
-        result.push([parseInt(element["date_part"]) * 1000, element.v4_current]);
-    });
-    data = null;
-    return result;
 }
 
 //дорисовываем текстовый график графиками
@@ -866,11 +847,11 @@ Chart.prototype.removeLine = function (id) {
 }
 
 //удаление канала
-Chart.prototype.removeChannel = function (id) {
+//Chart.prototype.removeChannel = function (id) {
     //TODO
-}
+//}
 
-//сохраняем асинхронное состояние
+//сохраняет асинхронное состояние
 Chart.prototype.saveAsyncState = function () {
     this.last_async_range = [this.range[0],this.range[1]];
 }
@@ -904,7 +885,7 @@ Chart.prototype.setRange = function (time) {
     }
 }
 
-//изменить домен оси х
+//изменяет домен оси х
 Chart.prototype.setDomain = function (domain_start){
     if(!this.is_chart_rendered) return;
     var relayout_data = {
@@ -924,7 +905,7 @@ Chart.prototype.getRange = function () {
     return this.range;//[start,end];
 }
 
-//добавляет данне про все оси y в relayout_data
+//добавляет данные про все оси y в relayout_data
 Chart.prototype.updateYAxes = function(relayout_data){
     var scale_num = this.scales_units.size;
     for (var i = 0/*axis_ind*/; i < scale_num; i++) {
@@ -1009,7 +990,7 @@ Chart.prototype.removeAxis = function (units) {
     Plotly.update(this.name, [], relayout_data);
 }
 
-//отрисовывает новый график на полотне
+//отрисовывает новый график на холсте
 Chart.prototype.addPlot = function (channel, data) {
     var scale_data = this.scales_units.get(channel.units);
     var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
@@ -1145,11 +1126,12 @@ function removeLine(id) {
     }
 }
 
+/*
 function removeChanFromActivePlot(node, dbid) {
     if (activeplot) {
         charts[activeplot].removeChannel(node, dbid);
     }
-}
+}*/
 
 //удаляет канал
 function terminateChannel(id) {
@@ -1159,7 +1141,7 @@ function terminateChannel(id) {
 }
 
 
-//sets variable range of the active plot
+//устанавливает промежуток времени на нужные холсты
 function setRange(time) {    
     if (synched) {
         for (var chart in charts) {
@@ -1171,13 +1153,14 @@ function setRange(time) {
     }
 }
 
+//возвращает промежуток времени активного холста
 function getActivePlotRange() {
     if (activeplot) {
         return charts[activeplot].getRange();
     }
 }
 
-//returns channels of the active plot
+// возвращает список каналов активного холста
 function getActivePlotChanels() {
     if (activeplot) {
         return charts[activeplot].getChannels();
@@ -1196,14 +1179,14 @@ Array.prototype.unique = function () {
     return a;
 };
 
-//returns channels of all the plots
-function getAllPlotsChannels() {
+//возвращает каналы всех холстов
+/*function getAllPlotsChannels() {
     var channels = [];
     for (var chart in charts) {
         channels.concat(charts[chart].getChannels()).unique();
     }
     return channels;
-}
+}*/
 
 //синхронизация всех холстов
 function synchronizePlots() {
@@ -1226,7 +1209,7 @@ function asynchronizePlots() {
     $(document).trigger("asyncronized");
 }
 
-//распространить зум на все холсты
+//распространяет зум на все холсты
 function relayoutAllPlots(ed) {
     if("yaxis.range[0]" in ed){
         delete ed["yaxis.range[0]"];
@@ -1256,7 +1239,7 @@ function relayoutAllPlots(ed) {
     }
 }
 
-//добавляет данные о канале 
+//добавляет данные о канале согласно заказу
 function addChannelDataInOrder(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
     order.parts_num = json.parts;
@@ -1356,18 +1339,19 @@ function addOrbitData(json) {
     json = null;
 }
 
-//удалить заказ
+//удаляет заказ
 function removeOrder(ordernum) {
     var order = orders.filter(obj => { return obj.number === ordernum })[0];
     orders.splice(orders.indexOf(order), 1);
     defaultCursor();
 }
 
-//добавление полотна
+//добавляет холст
 function addChart(e) {
     addChartBeforeTarget(e.target);
 }
 
+//добавляет холст перед элементом DOM target
 function addChartBeforeTarget(target,is_text=false) {
     chart_max_n++;
     var style = '';
@@ -1379,6 +1363,7 @@ function addChartBeforeTarget(target,is_text=false) {
     return chart_max_n;
 }
 
+//обрабатывает событие закрытия холста
 function closeChart(e) {
     var graph = $(e.target).parent().children(":first");
     var name = graph.attr("id");
@@ -1386,7 +1371,7 @@ function closeChart(e) {
     terminateChart(name);
 }
 
-//удаление полотна
+//удаляет холст
 function terminateChart(name) {
     var graph = $("#" + name).parent();
     resizeObserver.unobserve(document.getElementById(name));
@@ -1400,6 +1385,7 @@ function terminateChart(name) {
     name = null;
 }
 
+//удаляет все холсты
 function terminateAllPlots(){
     for (var chart in charts) {
         terminateChart(chart);
@@ -1407,7 +1393,7 @@ function terminateAllPlots(){
 }
 
 //перезагрузка каждого графика
-function reloadChannels(channels, time) {
+/*function reloadChannels(channels, time) {
     channels.forEach(function (channel) {
         //TODO:reloadallthegraphs    
 
@@ -1415,10 +1401,10 @@ function reloadChannels(channels, time) {
         //removeLine(0);
         //loadChannelDataObject(channel,time);
     })
-}
+}*/
 
 //работа с кодом цвета
-function hslToHex(h, s, l) {
+/*function hslToHex(h, s, l) {
     l /= 100;
     const a = s * Math.min(l, 1 - l) / 100;
     const f = n => {
@@ -1452,10 +1438,10 @@ function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
-}
+}*/
 
 
-//посылает запрос на данные о канале с помощью объекта канал
+//посылает запрос к серверу на данные о канале с помощью объекта канала channel_object
 function loadChannelDataObject(channel_object, time, chartname) {
     var msg = {
         type: "get_full_channel_data",
@@ -1480,6 +1466,7 @@ function loadChannelDataObject(channel_object, time, chartname) {
     msg = null;
 }
 
+//посылает данные на сервер с запросом об отмене заказов холста chartname
 function cancelOrders(chartname){
     var orders_to_cancel = orders.filter(order => order.chart == chartname);
     orders = orders.filter(order => order.chartname != chartname);
@@ -1491,6 +1478,7 @@ function cancelOrders(chartname){
     msg = null;
 }
 
+//обрабатывает событие нажатия кнопки синхронизации
 function synchronizePlotsEvent(checkboxElem) {
     if (checkboxElem.checked) {
         if (!activeplot) {
@@ -1507,6 +1495,7 @@ function synchronizePlotsEvent(checkboxElem) {
     }
 }
 
+//подсчитывает самое большое число y-осей на всех холстах
 function countMaxScaleNum(channel_name){
     var old = max_scale_num;
     max_scale_num = 0;
@@ -1524,7 +1513,6 @@ function countMaxScaleNum(channel_name){
     }
     return max_scale_num;
 }
-
 
 $(document).ready(function () {
     dragula([document.getElementById('graphset')], {
