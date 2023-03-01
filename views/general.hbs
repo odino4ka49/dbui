@@ -19,6 +19,14 @@
                 <input id="datetimerange" type="text" name="datetimes" />
             </td>
             <td>
+                <p id="syncronize_text">Synchronize:</p>
+                <label class="switch">
+                    <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
+                    <span class="slider round"></span>
+                </label>
+            </td>
+            <td class="white_space"></td>
+            <td>
                 <div id="linetype">
                     <div>
                         <input type="radio" id="markers" name="linetype" value="markers">
@@ -31,14 +39,6 @@
                     </div>
                 </div>
             </td>
-            <td>
-                <p id="syncronize_text">Synchronize:</p>
-                <label class="switch">
-                    <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
-                    <span class="slider round"></span>
-                </label>
-            </td>
-            <td class="white_space"></td>
             <td>
                 <div id="search_line">
                     <input id="input_search" placeholder="Search..." value="">

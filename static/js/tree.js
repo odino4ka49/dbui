@@ -238,30 +238,15 @@ function alertError(err){
 function searchAll(){
     var results = [];
     var isAnyDbOpened = false;
-    //search_results = {};
     var results_n = 0;
     var output = "";
 
     databases.forEach(function(db){
-        //var db_tree = $("#"+db.id+"_tree");
-        //search(db.id);
         results = search(db.id);
         if(results){
             isAnyDbOpened = true;
             results_n+=results.length;
         }
-        //search_results[db.id] = results;
-        //console.log(db,results);
-        //$.each(results, function (index, result) {
-            //var parent = result;
-            //var line = parent.text + '</p>';
-            //while(parent.type!="system"){
-            //    line = parent.text + ': '+line;
-            //    parent = db_tree.treeview('getParent', parent);
-             //   console.log(parent);
-            //}
-            //output += "<p>"+db.name+": "+line;
-        //});
     })
     
     if(isAnyDbOpened){

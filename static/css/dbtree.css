@@ -1,6 +1,7 @@
 
 body{
     background-color: #fafafa;
+    accent-color: dimgray;
 }
 
 .daterangepicker .drp-calendar{
