@@ -19,11 +19,22 @@
                 <input id="datetimerange" type="text" name="datetimes" />
             </td>
             <td>
-                <p id="syncronize_text">Synchronize:</p>
+                <div id="synchronization">
+                    <div>
+                        <input onchange="handleSyncChange(this);"  type="radio" id="sync" name="synchronization" value="sync" checked>
+                        <label for="sync">Sync</label>
+                    </div>
+
+                    <div>
+                        <input onchange="handleSyncChange(this);"  type="radio" id="async" name="synchronization" value="async">
+                        <label for="async">Async</label>
+                    </div>
+                </div>
+                <!--p id="syncronize_text">Synchronize:</p>
                 <label class="switch">
                     <input id="synchronization" type="checkbox" onchange="synchronizePlotsEvent(this)" checked>
                     <span class="slider round"></span>
-                </label>
+                </label-->
             </td>
             <td class="white_space"></td>
             <td>

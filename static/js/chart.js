@@ -205,9 +205,12 @@ ChartChannel.prototype.getFirstAfter = function(time){
     var result = null;
     for(var i=0; i < this.data.length; i++){
         var piece = this.data[i];
-        var dot = piece.data.find((element) => (element.t >= time));
-        if(dot) result = (!result) ? dot : ((result.t > dot.t) ? dot : result);
+        if(piece.period[0]<=time && piece.period[1]>=time){
+            var dot = piece.data.find((element) => (element.t >= time));
+            if(dot) result = (!result) ? dot : ((result.t > dot.t) ? dot : result);
+        }
     }
+    //if(result) if(time-result.t<-20000000) console.log("getFA",time-result.t,result);
     return result;
 }
 
@@ -216,9 +219,12 @@ ChartChannel.prototype.getFirstBefore = function(time){
     var result = null;
     for(var i=0; i < this.data.length; i++){
         var piece = this.data[i];
-        var dot = piece.data.find((element) => (element.t <= time));
-        if(dot) result = (!result) ? dot : ((result.t < dot.t) ? dot : result);
+        if(piece.period[0]<=time && piece.period[1]>=time){
+            var dot = piece.data.findLast((element) => (element.t <= time));
+            if(dot) result = (!result) ? dot : ((result.t < dot.t) ? dot : result);
+        }
     }
+    //if(result) if(time-result.t>20000000) console.log("getFB",time-result.t,result);
     return result;
 }
 
@@ -621,6 +627,8 @@ Chart.prototype.extendLine = function (channel, data) {
     var id = this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
     data.x.push(null);
     data.y.push(null);
+    console.log(channel);
+    console.log(data);
     Plotly.extendTraces(this.name, { y: [data.y], x: [data.x] }, [id])
 }
 
@@ -779,6 +787,7 @@ Chart.prototype.renderChart = function (channel, data) {
         };
         //layout.showlegend = false;
     }
+    console.log(chartData)
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         resizeObserver.observe(gd);
     });
@@ -1479,11 +1488,28 @@ function cancelOrders(chartname){
 }
 
 //обрабатывает событие нажатия кнопки синхронизации
-function synchronizePlotsEvent(checkboxElem) {
+/*function synchronizePlotsEvent(checkboxElem) {
     if (checkboxElem.checked) {
         if (!activeplot) {
             alert("Please select a canvas to sync all the plots");
             checkboxElem.removeAttr("checked");
+        }
+        else {
+            synched = true;
+            synchronizePlots();
+        }
+    } else {
+        synched = false;
+        asynchronizePlots();
+    }
+}*/
+
+//обрабатыавет событие изменения режима синхронизации
+function handleSyncChange(src) {
+    if (src.value == "sync") {
+        if (!activeplot) {
+            alert("Please select a canvas to sync all the plots");
+            $("input[name=synchronization][value=async]").prop('checked', true);
         }
         else {
             synched = true;
@@ -1530,6 +1556,7 @@ $(document).ready(function () {
         handles: 'e, w'
     });
     $("#add_chart").click(addChart);
-    synched = $("#synchronization").is(":checked");
+    synched = $('input[name="linetype"]:checked').val() == 'sync' ? true : false;
+    //synched = $("#synchronization").is(":checked");
     startMonitoring();
 });

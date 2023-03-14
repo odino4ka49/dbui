@@ -22,7 +22,9 @@ $(document).on("treeChannelChosen",function(event,node,dbid){
 
 $(document).on("asyncronized",function(event){
     var time = getActivePlotRange();
-    timepicker.setDateTime(time[0],time[1]);
+    if(time){
+        timepicker.setDateTime(time[0],time[1]);
+    }
 });
 
 $(document).on("zoomed",function(event){

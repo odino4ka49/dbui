@@ -220,7 +220,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     position: relative;
 }
 
-#linetype label{
+#linetype label,#synchronization label{
     font-weight: normal;
 }
 .menu_chosen{
