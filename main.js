@@ -42,7 +42,7 @@ app.get('/t-diagnostics', (request, response) => {
     response.render('t-diagnostics', {})
 })
 app.get('/get_magnet_sensors/:magnet', (request, response) => {
-    response.json(model.getSensors(request.params.magnet))
+    //response.json(model.getSensors(request.params.magnet))
 })
 app.post('/get_channel_data/:channel', (request, response) => {
     model.getChannelData(request.body.datatable,request.params.channel);

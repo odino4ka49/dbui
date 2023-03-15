@@ -8,7 +8,7 @@ Date.prototype.addHours = function(h) {
     return this;
 }
 
-function parseToChartData(channel,data){
+/*function parseToChartData(channel,data){
     var x = [];
     var y = [];
     data.forEach(element => {
@@ -19,7 +19,7 @@ function parseToChartData(channel,data){
         y.push(element[channel])
     });
     return {x: x,y: y};
-}
+}*/
 
 //оставим только моменты изменения значений канала
 function removeSimilar(data,y){
@@ -41,6 +41,7 @@ function removeSimilar(data,y){
     return result;
 }
 
+//применяет к данным data канала name функцию func 
 function applyMath(func,data,name){
     if(func == "dispersion"){
         var x0_data = data.find(element => !(element[name].every(el => isNaN(el))));
@@ -92,7 +93,7 @@ function findAverage(my_arr){
     return [srednee,otklonenie];
 }
 
-//returns just medium
+//returns just medium, переводит данные data в орбитные для лучшего отображения ввиде списка объектов {x - азимут, y - среднее значение, sigma - среднеквадратическкое отклонение}
 function parseToOrbitData(channel,data,azimuths){
     //var records = [];
     var x = [];
@@ -176,13 +177,13 @@ function parseToOrbitData(channel,data,azimuths){
     return result;
 }*/
 
-function checkIfError(result,order){
+/*function checkIfError(result,order){
     if(result.name == 'error'){
         wsServer.sendError(result,order);
         return true;
     }
     return false;
-}
+}*/
 
 //загрузка начальных данных для списка орбит v3v4chan или v4
 function loadV3V4ChanOrbitsStartData(system,order){
@@ -344,7 +345,7 @@ function loadTreeData(dbid,order){
     }
 }
 
-function loadAzimuths(db){
+/*function loadAzimuths(db){
     //HARDCODE!!! CHANGE
     db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".abscissa_tbl = \'orbits\' and "01_system".subsystem = \'v4\' order by azimuth',null,function(result){
         db.setAzimuths(result); 
@@ -356,10 +357,10 @@ function loadDtAzimuths(db,data_tbl){
     db.sendRequest('select pkp_name,azimuth from "'+data_tbl+'" join "01_system" on "01_system".subsys_id = "'+data_tbl+'".subsys_id where "01_system".abscissa_tbl = \''+data_tbl+'\' order by azimuth',null,function(result){
         db.setAzimuths(result); 
     });
-}
+}*/
 
 //усреднение данных
-function averageData(data,y){
+/*function averageData(data,y){
     if(!data || data.length==0){
         return [];
     }
@@ -372,17 +373,17 @@ function averageData(data,y){
     if(min[y]==max[y]) min = data[0];
     var result = min.t>max.t? [max,min] : [min,max]
     return(result)
-}
+}*/
 
 //фильтр данных - по точке на пиксель
-function filterData(data,pixels,chname){
+/*function filterData(data,pixels,chname){
     var partsize = data.length/pixels;
     var result = [];
     for (var i=0;i<pixels;i++){
         result = result.concat(averageData(data.slice(i*partsize,(i+1)*partsize-1),chname));
     }
     return(result);
-}
+}*/
 
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
@@ -709,10 +710,11 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     }
 }*/
 
-function getSensors(magnet_name){
+/*function getSensors(magnet_name){
     var sensors = systems.find(o => o.name === "Temperature").findAll(magnet_name)
     return sensors
 }
+*/
 
 function initDatabases(){
     for(var i=1;i<6;i++){
@@ -742,9 +744,9 @@ module.exports = {
     loadTreeData: loadTreeData,
     loadV3V4ChanOrbitsStartData: loadV3V4ChanOrbitsStartData,
     loadV3V4ChanDatetimeData: loadV3V4ChanDatetimeData,
-    getSensors: getSensors,
+    //getSensors: getSensors,
     //getChannelData: getChannelData,
     getFullChannelData: getFullChannelData,
     getDatabasesInfo: getDatabasesInfo,
-    loadDtAzimuths: loadDtAzimuths
+    //loadDtAzimuths: loadDtAzimuths
 }
