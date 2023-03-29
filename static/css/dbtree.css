@@ -454,3 +454,7 @@ input {
   .slider.round:before {
     border-radius: 50%;
   }
+
+  #grid_v3v4_check_all{
+      display: none;
+  }

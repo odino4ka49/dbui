@@ -138,8 +138,6 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
     }
     else if (this.data[this.data.length - 1].period[1] <= data_str.period[0]) {
         var last = this.data[this.data.length - 1];
-        //console.log("last",last);
-        //console.log(this.data);
         //если последний промежуток меньше 12 часов и стоит рядом с новыми данными, сшиваем
         if((last.period[1]-last.period[0]<43200000)&&last.period[1]==data_str.period[0]){
             last.period[1] = data_str.period[1];
@@ -210,7 +208,6 @@ ChartChannel.prototype.getFirstAfter = function(time){
             if(dot) result = (!result) ? dot : ((result.t > dot.t) ? dot : result);
         }
     }
-    //if(result) if(time-result.t<-20000000) console.log("getFA",time-result.t,result);
     return result;
 }
 
@@ -224,7 +221,6 @@ ChartChannel.prototype.getFirstBefore = function(time){
             if(dot) result = (!result) ? dot : ((result.t < dot.t) ? dot : result);
         }
     }
-    //if(result) if(time-result.t>20000000) console.log("getFB",time-result.t,result);
     return result;
 }
 
@@ -254,7 +250,6 @@ ChartChannel.prototype.getData = function (time) {
             result = result.concat(piece.data.slice(ind, indmax));
         }
     }
-    //console.log("time",time);
     return result;
 }
 
@@ -627,8 +622,6 @@ Chart.prototype.extendLine = function (channel, data) {
     var id = this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
     data.x.push(null);
     data.y.push(null);
-    console.log(channel);
-    console.log(data);
     Plotly.extendTraces(this.name, { y: [data.y], x: [data.x] }, [id])
 }
 
@@ -766,7 +759,7 @@ Chart.prototype.renderChart = function (channel, data) {
             domain: [domain_start/25, 1],
             type: "date",
             gridwidth: 1,
-            gridcolor: '#dbdbdb',
+            gridcolor: '#dbdbdb'
         },
         yaxis: {
             color: color,
@@ -783,11 +776,11 @@ Chart.prototype.renderChart = function (channel, data) {
     };
     if (this.type == "orbit") {
         layout.xaxis = {
-            domain: [0, 1]
+            domain: [0, 1],
+            zeroline: false
         };
         //layout.showlegend = false;
     }
-    console.log(chartData)
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         resizeObserver.observe(gd);
     });
@@ -1026,7 +1019,8 @@ Chart.prototype.addPlot = function (channel, data) {
         };
         if (this.type == "orbit") {
             relayout_data.xaxis = {
-                domain: [scale_num / 25, 1]
+                domain: [scale_num / 25, 1],
+                zeroline: false
             }
         }
         this.axis_labels.push(
@@ -1072,7 +1066,6 @@ Chart.prototype.addPlot = function (channel, data) {
                 };
             }
         }*/
-        //console.log(relayout_data);
         Plotly.update(this.name, [], relayout_data);
     }
     else {
@@ -1331,7 +1324,6 @@ function addOrbitData(json) {
     else{
         if (order.chart in charts) {
             if (!charts[order.chart].addOrbitData(json)) {
-                console.log("error");
                 /*var new_chart_n = addChartBeforeTarget($("#" + order.chart).parent());
                 setActivePlotByName("chart_" + new_chart_n);
                 charts["chart_" + new_chart_n].addOrbitData(json);*/
@@ -1506,6 +1498,7 @@ function cancelOrders(chartname){
 
 //обрабатыавет событие изменения режима синхронизации
 function handleSyncChange(src) {
+    console.log(synched);
     if (src.value == "sync") {
         if (!activeplot) {
             alert("Please select a canvas to sync all the plots");
@@ -1519,6 +1512,7 @@ function handleSyncChange(src) {
         synched = false;
         asynchronizePlots();
     }
+    console.log(synched);
 }
 
 //подсчитывает самое большое число y-осей на всех холстах
@@ -1556,7 +1550,7 @@ $(document).ready(function () {
         handles: 'e, w'
     });
     $("#add_chart").click(addChart);
-    synched = $('input[name="linetype"]:checked').val() == 'sync' ? true : false;
+    synched = $('input[name="synchronization"]:checked').val() == 'sync' ? true : false;
     //synched = $("#synchronization").is(":checked");
     startMonitoring();
 });
