@@ -214,11 +214,10 @@ ChartChannel.prototype.getFirstAfter = function(time){
 //finds first before given time
 ChartChannel.prototype.getFirstBefore = function(time){
     var result = null;
-    console.log(this.data);
     for(var i=0; i < this.data.length; i++){
         var piece = this.data[i];
         if(piece.period[0]<=time && piece.period[1]>=time){
-            var dot = piece.data.findLast((element) => (element.t <= time));
+            var dot = piece.data.find((element) => (element.t >= time));
             if(dot) result = (!result) ? dot : ((result.t < dot.t) ? dot : result);
         }
     }
