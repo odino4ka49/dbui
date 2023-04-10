@@ -217,7 +217,8 @@ ChartChannel.prototype.getFirstBefore = function(time){
     for(var i=0; i < this.data.length; i++){
         var piece = this.data[i];
         if(piece.period[0]<=time && piece.period[1]>=time){
-            var dot = piece.data.find((element) => (element.t >= time));
+            var ind = piece.data.findIndex((element) => (element.t > time));
+            var dot = (ind!=0) ? piece.data[ind-1] : piece.data[0];
             if(dot) result = (!result) ? dot : ((result.t < dot.t) ? dot : result);
         }
     }
