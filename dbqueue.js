@@ -664,6 +664,8 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
 function logConnection(ip,status){
     var db = databases.get("db1");
     var now = new Date(Date.now()).toLocaleString();
+    var pieces = ip.split(":");
+    ip = pieces[pieces.length-1];
     db.sendRequest('insert into "06_web_connection" (date_time,ip,status) values (\''+now+'\',\''+ip+'\','+status+');');
 }
 
