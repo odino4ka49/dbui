@@ -660,6 +660,13 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     }
 }
 
+// записываем данные о подключениях и отключениях в базу
+function logConnection(ip,status){
+    var db = databases.get("db1");
+    var now = new Date(Date.now()).toLocaleString();
+    db.sendRequest('insert into "06_web_connection" (date_time,ip,status) values (\''+now+'\',\''+ip+'\','+status+');');
+}
+
 //загрузка данных с канала определенного перидоа на определенное число пикселей
 /*function loadChannelData(chart,pixels,db,datatable,channel,subsystem,dates,ordernum,order,datatype,mode,i){
     var parts = dates.length-1;
@@ -748,5 +755,6 @@ module.exports = {
     //getChannelData: getChannelData,
     getFullChannelData: getFullChannelData,
     getDatabasesInfo: getDatabasesInfo,
+    logConnection: logConnection
     //loadDtAzimuths: loadDtAzimuths
 }

@@ -27,13 +27,13 @@ class DBConnection {
                 this.status = true;
                 return client.query(request)
                     .then(res => {
-                        callback(res.rows);
+                        if(callback) callback(res.rows);
                         client.release();
                     })
                     .catch(err => {
                         client.release();
                         this.status = false;
-                        wsServer.sendError(err,order,clientordernum);
+                        if(order) wsServer.sendError(err,order,clientordernum);
                     })
             })
             .catch(err => {
@@ -52,7 +52,7 @@ class DBConnection {
                             break;  
                     }
                     err.dbid = this.id;
-                    console.log(err);
+                    console.log("error"+err);
                     wsServer.sendError(err,order,clientordernum);
                 }
             })
