@@ -1,5 +1,7 @@
 var databases;
 var search_results = {};
+var dbs_to_open;
+var channels_to_open;
 
 //приведение данных к виду для отрисовки
 function parseTree(data){
@@ -30,6 +32,7 @@ function parseTree(data){
 //обновить дерево БД
 function refreshTree(dbid,data) {
     var db_li = $("#"+dbid);
+    var is_new_db_tree = !(db_li.siblings("#treefor_"+dbid).length);
     db_li.siblings("#treefor_"+dbid).remove();
     var treedb_tr = $("<tr>").attr("id","treefor_"+dbid).append("<td>");
     var db_tree = $("<ul>").attr("id",dbid+"_tree");
@@ -72,6 +75,7 @@ function refreshTree(dbid,data) {
             }
         });
     db_li.addClass("opened");
+    if(is_new_db_tree) checkOutDb(dbid);
     db_li = null;
     db_tree = null;
 };
@@ -89,6 +93,12 @@ function selectChannelsByDB(channels,dbid){
         //console.log(channels[i].nodeid)
         db_tree.treeview('selectNode', [ channels[i].nodeId, { silent: true } ]);
     }
+}
+
+//клик на канал
+function clickTheChannel(channel){
+    var db_tree = $("#"+channel[0]+"_tree");
+    db_tree.treeview('selectNode', [ channel[1] ]);
 }
 
 function selectChannelsInAllTrees(channels){
@@ -183,6 +193,8 @@ function displayDatabases(data){
     db_table.children("tr").not('.inactive').children("td").children(".plus").click(showDatabaseTree);
     data = null;
     db_table = null;
+
+    $(document).trigger("databasesLoaded");
 }
 
 //подсказка
@@ -212,6 +224,35 @@ function showDatabaseTree(event){
     db_tr = null;
     dbid = null;
     db_tree = null;
+}
+
+//открывает деревья заранее
+function preOpenDbs(db_config,charts_config){
+    dbs_to_open = db_config;
+    channels_to_open = charts_config;
+    for(var i=0;i<db_config.length;i++){
+        document.getElementById(db_config[i]).querySelector('.plus').click();
+    }
+}
+//вычеркивает id загруженной бд, если все загружены - загружет каналы
+function checkOutDb(dbid){
+    dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
+    if(dbs_to_open && dbs_to_open.length == 0){
+        preSetChannels(channels_to_open);
+    }
+}
+//кликает по каждому нужному каналу, открывая новые полотна, если нужно
+function preSetChannels(charts){
+    for(var i=0;i<charts.length;i++){
+        for(var j=0;j<charts[i].length;j++){
+            var channel = charts[i][j];
+            clickTheChannel(channel);
+        }
+        console.log("check",i)
+        if(i<charts.length-1){
+            $(document).trigger("addNewChart");
+        }
+    }
 }
 
 //показывает, что БД неактивна
@@ -257,6 +298,18 @@ function searchAll(){
     }
     
     $('#search_output').html(output);
+}
+
+function getOpenedDbs(){
+    var result = []
+    for(var i=0;i<databases.length;i++){
+        var id = databases[i].id;
+        var db_tree = $("#"+id+"_tree");
+        if(db_tree.length){
+            result.push(id);
+        }
+    }
+    return result;
 }
 
 function search(dbid) {

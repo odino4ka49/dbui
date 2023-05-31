@@ -71,6 +71,16 @@ TimePicker.prototype.setDateTime = function(start,end) {
 function getMode(){
     return($('input[name="linetype"]:checked').val());
 }
+function presetLineMode(mode){
+    if(mode == "line"){
+        $("input[name=linetype][value=line]").prop('checked', true);
+        $("input[name=linetype][value=markers]").prop('checked', false);
+    }
+    else if(mode == "markers"){
+        $("input[name=linetype][value=line]").prop('checked', false);
+        $("input[name=linetype][value=markers]").prop('checked', true);
+    }
+}
 
 function getDateTime(){
     return timepicker.getDateTime();

@@ -336,6 +336,10 @@ ChartChannel.prototype.setData = function(data){
     this.data = data;
 }
 
+ChartChannel.prototype.getConfigInfo = function(){
+    return [this.dbid,this.nodeId];
+}
+
 //класс холста с графиками
 function Chart(name) {
     this.name = name;
@@ -358,6 +362,8 @@ Chart.prototype.addChannel = function (channel) {
     this.addScaleUnits(channel.units);
     var dateDate = [Date.parse(this.range[0]), Date.parse(this.range[1])];
     channel.checkIfMoreDataNeeded(dateDate);
+
+    $(document).trigger("configIsChanged");
     //loadChannelDataObject(channel, this.range, this.name);
 }
 
@@ -375,6 +381,14 @@ Chart.prototype.getHeight = function () {
 
 Chart.prototype.getChannels = function () {
     return this.channels;
+}
+
+Chart.prototype.getChannelsConfig = function () {
+    var chan_config = [];
+    for(var i = 0; i < this.channels.length; i++){
+        chan_config.push(this.channels[i].getConfigInfo());
+    }
+    return chan_config;
 }
 
 Chart.prototype.setType = function(type){
@@ -1171,6 +1185,14 @@ function getActivePlotChanels() {
     return [];
 }
 
+function getChartsConfig() {
+    var charts_config = [];
+    for (var chart in charts) {
+        charts_config.push(charts[chart].getChannelsConfig());
+    }
+    return charts_config;
+}
+
 Array.prototype.unique = function () {
     var a = this.concat();
     for (var i = 0; i < a.length; ++i) {
@@ -1252,6 +1274,7 @@ function addChannelDataInOrder(json) {
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
         if (order.parts[i] != undefined) {
+            console.log(order);
             addChannelData(order.parts[i], order.chart);
             order.last_displayed = i;
             //order.parts[i]=1;
@@ -1499,7 +1522,6 @@ function cancelOrders(chartname){
 
 //обрабатыавет событие изменения режима синхронизации
 function handleSyncChange(src) {
-    console.log(synched);
     if (src.value == "sync") {
         if (!activeplot) {
             alert("Please select a canvas to sync all the plots");
@@ -1513,7 +1535,7 @@ function handleSyncChange(src) {
         synched = false;
         asynchronizePlots();
     }
-    console.log(synched);
+    $(document).trigger("configIsChanged");
 }
 
 //подсчитывает самое большое число y-осей на всех холстах
@@ -1535,6 +1557,30 @@ function countMaxScaleNum(channel_name){
     return max_scale_num;
 }
 
+function isSynchedMode(){
+    return synched;
+}
+
+function presetSynchedMode(synch){
+    if(typeof(synch) == "boolean"){
+        $("input[name=synchronization][value=sync]").prop('checked', synch);
+        $("input[name=synchronization][value=async]").prop('checked', !synch);
+        synched = synch;
+    }
+}
+
+function addNewChart(){
+    var id = addChartBeforeTarget($("#add_chart"));
+    setActivePlotByName("chart_"+id);
+}
+
+/*no need in this one
+function preOpenCharts(length){
+    for(var i=0;i<length-1;i++){
+        addChartBeforeTarget($("#add_chart"));
+    }
+}*/
+
 $(document).ready(function () {
     dragula([document.getElementById('graphset')], {
         moves: function (el, container, handle) {
@@ -1552,6 +1598,8 @@ $(document).ready(function () {
     });
     $("#add_chart").click(addChart);
     synched = $('input[name="synchronization"]:checked').val() == 'sync' ? true : false;
-    //synched = $("#synchronization").is(":checked");
     startMonitoring();
 });
+
+
+
