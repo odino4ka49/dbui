@@ -562,7 +562,8 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
     var chan_name = channel.name;
     var timenow = new Date().getTime();
     if(channel.fullname) chan_name = channel.fullname;
-    var channel_name_quotes = /[A-Z]/.test(channel.name) ? '"'+channel.name+'"' : channel.name;
+    //var channel_name_quotes = /[A-Z]/.test(channel.name) ? '"'+channel.name+'"' : channel.name;
+    var channel_name_quotes = '"'+channel.name+'"';
     //подсистема есть у пикапов
     /*if(subsystem){ 
         if(data_tbl_type == "chan_id"){

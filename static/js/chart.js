@@ -925,7 +925,8 @@ Chart.prototype.getRange = function () {
 //добавляет данные про все оси y в relayout_data
 Chart.prototype.updateYAxes = function(relayout_data){
     var scale_num = this.scales_units.size;
-    for (var i = 0/*axis_ind*/; i < scale_num; i++) {
+    console.log(this.axis_labels,this.scales_units);
+    for (var i = 0; i < scale_num; i++) {           /*axis_ind*/
         this.axis_labels[i].x = i / 25 - 0.005;
         var axis_color = this.axis_labels[i].font.color;
         var scales_data = this.scales_units.get(this.axis_labels[i].text)
@@ -1274,7 +1275,6 @@ function addChannelDataInOrder(json) {
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
         if (order.parts[i] != undefined) {
-            console.log(order);
             addChannelData(order.parts[i], order.chart);
             order.last_displayed = i;
             //order.parts[i]=1;
