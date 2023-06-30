@@ -6,7 +6,7 @@ var chart_max_n = 0;
 //var colors = ['#ff66ff','#b266ff','#66ffff','#66ffb2','#66ff66','#ffff66','#ffb266','#66b2ff'];
 //var colors = ['#fa8eb4','#b48efa','#62b4ec','#32d4b4','#b4ffb4','#b4d432','#ecb462','#ec62b4','#b4b4ff','#62ecb4']
 var colors_table = [
-    ["478DB8", "#009EFF", "#00FFF0", "#0D4B72", "#175ABE", "#1C736E", "#47B8B1", "#7B9DBC", "#4E7FFB", "#8EE7ED", "#A4CFEA"],
+    ["#478DB8", "#009EFF", "#00FFF0", "#0D4B72", "#175ABE", "#1C736E", "#47B8B1", "#7B9DBC", "#4E7FFB", "#8EE7ED", "#A4CFEA"],
     ["#7BBC9A", "#00FF7A", "#0D6B3A", "#23F900", "#2E981D", "#64830B", "#64D651", "#83F3B8", "#A1BF49", "#A3EA98", "#B5F10B"],
     ["#A40C1B", "#FF0019", "#A1420D", "#AB2264", "#FA1B86", "#FB9AA3", "#FB9ACE", "#FF0000", "#FF4D00", "#FFA184"],
     ["#783C8D", "#4D056F", "#4D056F", "#BC07BF", "#BD00FF", "#C078D9", "#D09AFB"],
@@ -717,6 +717,7 @@ Chart.prototype.renderTextChart = function(){
 //отрисовывает полотно с первым графиком
 Chart.prototype.renderChart = function (channel, data) {
     this.is_chart_rendered = true;
+    var scale_data = this.scales_units.get(channel.units);
     var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
 
     data.mode = channel.mode;//'markers';//
@@ -724,9 +725,10 @@ Chart.prototype.renderChart = function (channel, data) {
     //if(this.type == "orbit") data.name = channel+":"+data.datetime;
     if (channel.fullname) data.name = channel.fullname;
     //auto generate line color with the right tone
-    var color = colors_table[0][0];//hsvToHex(tones[0], 80, 80)
+    var color = scale_data.color;//colors_table[0][0];//hsvToHex(tones[0], 80, 80)
     chan_data.color = color;
     data.line = { color: color };
+    scale_data.axis_n = 1;
     data.marker = { size: 3 };
     var domain_start = 0;
     if(synched) domain_start = max_scale_num - 1;
@@ -927,25 +929,27 @@ Chart.prototype.updateYAxes = function(relayout_data){
     var scale_num = this.scales_units.size;
     console.log(this.axis_labels,this.scales_units);
     for (var i = 0; i < scale_num; i++) {           /*axis_ind*/
-        this.axis_labels[i].x = i / 25 - 0.005;
-        var axis_color = this.axis_labels[i].font.color;
-        var scales_data = this.scales_units.get(this.axis_labels[i].text)
-        var yaxisname = "yaxis" + (scales_data.axis_n==1 ? "":scales_data.axis_n);
-        var ticklabelposition = (i == 0) ? "inside" : "outside";
-        relayout_data[yaxisname] = {
-            //overlaying: "y",
-            color: axis_color,
-            linecolor: axis_color,
-            zerolinecolor: "#ccc",
-            anchor: 'free',
-            side: "left",
-            showgrid: (scale_num>1) ? false : true,
-            gridwidth: 1,
-            gridcolor: '#dbdbdb',
-            ticklabelposition: ticklabelposition,
-            position: i / 25
-        };
-        if(i!=0) relayout_data[yaxisname].overlaying = "y";
+        if(this.axis_labels.length>i){
+            this.axis_labels[i].x = i / 25 - 0.005;
+            var axis_color = this.axis_labels[i].font.color;
+            var scales_data = this.scales_units.get(this.axis_labels[i].text)
+            var yaxisname = "yaxis" + (i==0 ? "":(i+1));//(scales_data.axis_n==1 ? "":scales_data.axis_n);
+            var ticklabelposition = (i == 0) ? "inside" : "outside";
+            relayout_data[yaxisname] = {
+                //overlaying: "y",
+                color: axis_color,
+                linecolor: axis_color,
+                zerolinecolor: "#ccc",
+                anchor: 'free',
+                side: "left",
+                showgrid: (scale_num>1) ? false : true,
+                gridwidth: 1,
+                gridcolor: '#dbdbdb',
+                ticklabelposition: ticklabelposition,
+                position: i / 25
+            };
+            if(i!=0) relayout_data[yaxisname].overlaying = "y";
+        }
         //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
     }
 }
@@ -1011,16 +1015,17 @@ Chart.prototype.removeAxis = function (units) {
 //отрисовывает новый график на холсте
 Chart.prototype.addPlot = function (channel, data) {
     var scale_data = this.scales_units.get(channel.units);
+    var axis_label = this.axis_labels.find((el) => el.text == channel.units);
     var chan_data = this.channels.find((element) => ((element.nodeId == channel.nodeId)&&(element.dbid==channel.dbid)));
     
     var chan_name = channel.name;
     if (channel.fullname) chan_name = channel.fullname;
-    if (this.scales_units.size > this.axis_labels.length) {
+    if (!axis_label) {
         //add new scale
         var scale_num = this.scales_units.size - 1;
         var domain_start = scale_num;
         if(synched) domain_start = max_scale_num - 1;
-        var yaxisname = "yaxis" + (scale_data.axis_n);
+        //var yaxisname = "yaxis" + (scale_data.axis_n);
         var color = scale_data.color;
         if (chan_data.color == null) chan_data.color = color;
         var relayout_data = {
@@ -1053,6 +1058,7 @@ Chart.prototype.addPlot = function (channel, data) {
                 showarrow: false
             }
         )
+        scale_data.axis_n = this.axis_labels.length;
         this.updateYAxes(relayout_data);
         /*relayout_data[yaxisname] = {
             overlaying: "y",
