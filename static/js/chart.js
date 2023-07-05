@@ -97,6 +97,7 @@ function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatab
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
+    this.display_id = null;
     this.fullname = fullname;
     this.datatype = datatype;
     this.orbit = orbit;
@@ -109,6 +110,10 @@ function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatab
     this.type = null;
     this.mode = mode;
     this.data_tbl_type = dtt;
+}
+
+ChartChannel.prototype.setDisplayId = function(id){
+    this.display_id = id;
 }
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
@@ -350,6 +355,7 @@ function Chart(name) {
     var range = getDateTime();
     this.range = [range[0],range[1]];
     this.type = null;
+    this.displayed_channels_counter = 0;
 }
 
 //добавляет новый канал на холст
@@ -634,7 +640,7 @@ Chart.prototype.addDataToTraces = function(new_data,chan_vals){
 //дорисовывает график
 Chart.prototype.extendLine = function (channel, data) {
     data.name = channel.fullname;
-    var id = this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
+    var id = channel.display_id;//this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
     data.x.push(null);
     data.y.push(null);
     Plotly.extendTraces(this.name, { y: [data.y], x: [data.x] }, [id])
@@ -801,6 +807,8 @@ Chart.prototype.renderChart = function (channel, data) {
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         resizeObserver.observe(gd);
     });
+    channel.setDisplayId(0);
+    this.displayed_channels_counter = 1;
     /*this.scales_units.set(channel.units, {
         color: color,
         axis_n: 1,
@@ -838,8 +846,8 @@ Chart.prototype.loadNewDataAfterZoom = function (eventdata) {
 
 //удаляет линию графика с осями и пр. (не сделано)
 Chart.prototype.terminateChannel = function (id) {
-    var channel = this.channels[id];
-    this.channels.splice(id, 1);
+    var channel = this.channels.find((x) => x.display_id == id);
+    this.channels.splice(channel.display_id, 1);
     if (this.channels.length == 0) {
         terminateChart(this.name);
         return;
@@ -852,6 +860,7 @@ Chart.prototype.terminateChannel = function (id) {
         this.removeAxis(channel.units);
     }
     $(document).trigger("channelsUpdated");
+    $(document).trigger("configIsChanged");
     /*for(var i=0;i<this.channels.length;i++){
         if(id<this.channels.id)
         { 
@@ -927,7 +936,6 @@ Chart.prototype.getRange = function () {
 //добавляет данные про все оси y в relayout_data
 Chart.prototype.updateYAxes = function(relayout_data){
     var scale_num = this.scales_units.size;
-    console.log(this.axis_labels,this.scales_units);
     for (var i = 0; i < scale_num; i++) {           /*axis_ind*/
         if(this.axis_labels.length>i){
             this.axis_labels[i].x = i / 25 - 0.005;
@@ -1089,6 +1097,8 @@ Chart.prototype.addPlot = function (channel, data) {
             }
         }*/
         Plotly.update(this.name, [], relayout_data);
+        channel.setDisplayId(this.displayed_channels_counter);
+        this.displayed_channels_counter++;
     }
     else {
         if (chan_data.color == null) {
@@ -1413,6 +1423,7 @@ function terminateChart(name) {
         activeplot = null;
     }
     $(document).trigger("channelsUpdated");
+    $(document).trigger("configIsChanged");
     name = null;
 }
 
