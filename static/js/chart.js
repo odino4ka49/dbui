@@ -333,6 +333,10 @@ ChartChannel.prototype.getSegmentedData = function(time){
     return [result, new_values];
 }
 
+ChartChannel.prototype.getTextData = function(range){
+    return this.getData(range);
+}
+
 ChartChannel.prototype.setType = function(type){
     this.type = type;
 }
@@ -399,6 +403,15 @@ Chart.prototype.getChannelsConfig = function () {
 
 Chart.prototype.setType = function(type){
     this.type = type;
+}
+
+Chart.prototype.getCurrentTextData = function(){
+    var allChannelsData = [];
+    var datetime = [Date.parse(this.range[0]), Date.parse(this.range[1])];
+    for(var i = 0; i < this.channels.length; i++){
+        allChannelsData.push(this.channels[i].getTextData(datetime));
+    }
+    return JSON.stringify(allChannelsData);
 }
 
 //add new scale 
@@ -765,7 +778,19 @@ Chart.prototype.renderChart = function (channel, data) {
         }
     ];
     var chartData = [data];
-    var config = { responsive: true, doubleClickDelay: 2000 };
+    var disk = {
+        width: 857.1,
+        height: 1000,
+        path: 'm214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z',
+        transform: 'matrix(1 0 0 -1 0 850)'
+    }
+    var config = { modeBarButtonsToAdd: [
+        {
+          name: 'text',
+          icon: Plotly.Icons.disk,
+          direction: 'up',
+          click: function(gd) { saveTextChartData($(gd).attr('id'));
+        }}], responsive: true, doubleClickDelay: 2000 };
     var layout = {
         legend: {
             yanchor: "top",
@@ -1591,12 +1616,30 @@ function addNewChart(){
     setActivePlotByName("chart_"+id);
 }
 
+function saveTextChartData(name){
+    var chart = charts[name];
+    var chartTextData = chart.getCurrentTextData();
+    download(name,"test");
+}
+
 /*no need in this one
 function preOpenCharts(length){
     for(var i=0;i<length-1;i++){
         addChartBeforeTarget($("#add_chart"));
     }
 }*/
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}  
 
 $(document).ready(function () {
     dragula([document.getElementById('graphset')], {

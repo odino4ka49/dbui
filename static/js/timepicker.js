@@ -6,6 +6,7 @@ function TimePicker(div_id){
 }
 
 TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined) {
+    console.log(typeof lastrec)
     $(this.div).daterangepicker({   
         showDropdowns: true, 
         autoApply: true,
@@ -16,7 +17,7 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
         endDate: end,
         //minYear: 2017,
         minDate: firstrec,
-        maxDate: lastrec,
+        //maxDate:  lastrec,
         locale: {
             format: 'YYYY-MM-DD HH:mm:ss'
         }

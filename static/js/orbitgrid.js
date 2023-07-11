@@ -150,6 +150,11 @@ function createV3V4OrbitTable(system,data){
         },
         onReload: function(event) {
             loadSystemTable(system)
+        },
+        onUnselect: function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
         }
     });
     //v3v4basicdata[system].loaded = true;
