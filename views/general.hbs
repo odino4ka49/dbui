@@ -12,6 +12,24 @@
 <link href="/static/css/dragula.css" rel="stylesheet">
 <script src='/static/js/jquery.tooltip.js'></script>
 
+<dialog id="dialog">
+  <form method="dialog">
+    <div id="timeformat">
+        <div>
+            <input type="radio" name="timeformat" value="ms">
+            <label for="ms">Seconds</label>
+        </div>
+        <div>
+            <input type="radio" name="timeformat" value="timestamp" id="timestamp_dialog">
+            <label for="timestamp">Timestamp</label>
+        </div>
+    </div>
+    <div id="channels_dialog"></div>
+    <button type="submit" id="close_dialog">Close</button>
+    <button type="submit" id="download_dialog">Download</button>
+  </form>
+</dialog>
+
 <div id="topnav" class="floating">
     <table id="topnavtable">
         <tr>
@@ -88,6 +106,7 @@
 </table>
 <div id="mirror"></div>
 
+
 <br />
 
 <script>
@@ -118,21 +137,27 @@
             //console.log("got message "+json.title)
             switch (json.title) {
                 case "channel_data":
+                    console.log("channel_data",json);
                     addChannelDataInOrder(json);
                     break;
                 case "full_channel_data":
+                    console.log("full_channel_data",json);
                     addChannelDataInOrder(json);
                     break;
                 case "orbit_data":
+                    console.log("orbit_data",json);
                     addOrbitData(json);
                     break;
                 case "databases":
+                    console.log("databases",json);
                     displayDatabases(json.data);
                     break;
                 case "tree_data":
+                    console.log("tree_data",json);
                     refreshTree(json.database, json.data);
                     break;
                 case "error":
+                    console.log("error",json);
                     if (json.clientordernum != undefined) {
                         removeOrder(json.clientordernum);
                     }
@@ -147,6 +172,7 @@
     };
 
     function sendMessageToServer(message) {
+        console.log(message);
         connection.send(message);
     }
 
@@ -155,6 +181,9 @@
     
     $("#topnav").appendTo("#topmenu");
     $("#menu_data_button").addClass("menu_chosen");
+    $("#download_dialog").on("click",downloadChannelTxtFiles);
+    $("#close_dialog").on("click",closeChartDialog);
+    
     //$(".floating").floatingFixed({ padding: 0 });
 
 </script>

@@ -64,6 +64,7 @@ function saveCurrentConfig(){
 function loadCurrentConfig(){
     console.log(window.location.hash);
     var config_objects = window.location.hash.substring(1).replaceAll("%22",'"').replaceAll("%20",' ').split('&');
+    if(config_objects == "") return;
     var time_config = JSON.parse(config_objects[0]);
     var synched_config = JSON.parse(config_objects[1]);
     var mode_config = JSON.parse(config_objects[2]);

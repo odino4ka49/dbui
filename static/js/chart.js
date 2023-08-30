@@ -20,6 +20,7 @@ var max_scale_num = 0;
 //начальные графики
 var charts = {};
 var monitoringTimer;
+var chart_to_download_name;
 
 //проверка на возраст браузера
 try {
@@ -36,7 +37,13 @@ catch (error) {
 function defaultCursor() {
     if (orders.length == 0) {
         document.body.style.cursor = 'default';
+        $("#blocker").addClass("invisible");
     }
+}
+
+function waitCursor(){
+    document.body.style.cursor = 'wait';
+    $("#blocker").removeClass("invisible");
 }
 
 function setActivePlot(div) {
@@ -97,7 +104,7 @@ function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatab
     this.hierarchy = hierarchy;
     this.datatable = datatable;
     this.dbid = dbid;
-    this.display_id = null;
+    //this.display_id = null;
     this.fullname = fullname;
     this.datatype = datatype;
     this.orbit = orbit;
@@ -112,9 +119,10 @@ function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatab
     this.data_tbl_type = dtt;
 }
 
+/*
 ChartChannel.prototype.setDisplayId = function(id){
     this.display_id = id;
-}
+}*/
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
     var data_str = { 'period': datetime, 'data': newdata };/*[newdata[0][t],newdata[newdata.length-1][t]]*/
@@ -385,9 +393,22 @@ Chart.prototype.getHeight = function () {
     return Math.ceil($("#" + this.name).parent().height());
 }
 
-/*for(var i=0; i<arr.length; i++){
-    if(arr[i])
-}*/
+Chart.prototype.getPlotlyData = function(){
+    var gd = document.getElementById(this.name);
+    console.log("gddata",gd.data);
+    console.log("gdlayout",gd.layout);
+}
+
+
+Chart.prototype.getChannelPlotlyId = function(ch_fullname){
+    var gd = document.getElementById(this.name);
+    return gd.data.findIndex(x => x.name === ch_fullname);
+}
+
+Chart.prototype.getChannelByPlotlyId = function(id){
+    var gd = document.getElementById(this.name);
+    return this.channels.find(x => x.fullname === gd.data[id].name);
+}
 
 Chart.prototype.getChannels = function () {
     return this.channels;
@@ -405,13 +426,16 @@ Chart.prototype.setType = function(type){
     this.type = type;
 }
 
-Chart.prototype.getCurrentTextData = function(){
-    var allChannelsData = [];
+Chart.prototype.getCurrentTextData = function(channel_names){
+    var allChannelsData = {};
     var datetime = [Date.parse(this.range[0]), Date.parse(this.range[1])];
     for(var i = 0; i < this.channels.length; i++){
-        allChannelsData.push(this.channels[i].getTextData(datetime));
+        if(channel_names.includes(this.channels[i].name)){
+            allChannelsData[this.channels[i].name] = this.channels[i].getTextData(datetime);
+        }
     }
-    return JSON.stringify(allChannelsData);
+    console.log(allChannelsData);
+    return allChannelsData;
 }
 
 //add new scale 
@@ -653,7 +677,7 @@ Chart.prototype.addDataToTraces = function(new_data,chan_vals){
 //дорисовывает график
 Chart.prototype.extendLine = function (channel, data) {
     data.name = channel.fullname;
-    var id = channel.display_id;//this.channels.findIndex((element) => ((element.nodeId == channel.nodeId) && (element.dbid == channel.dbid)));
+    var id = this.getChannelPlotlyId(channel.fullname);
     data.x.push(null);
     data.y.push(null);
     Plotly.extendTraces(this.name, { y: [data.y], x: [data.x] }, [id])
@@ -692,7 +716,13 @@ Chart.prototype.renderTextChart = function(){
     var domain_start = 0;
     if(synched) domain_start = max_scale_num - 1;
 
-    var config = { responsive: true, doubleClickDelay: 2000 };
+    var config = { modeBarButtonsToAdd: [
+        {
+          name: 'text',
+          icon: Plotly.Icons.disk,
+          direction: 'up',
+          click: function(gd) { saveTextChartData($(gd).attr('id'));
+    }}],responsive: true, doubleClickDelay: 2000 };
     var layout = {
         margin: { l: 20, r: 10, b: 40, t: 40 },
         xaxis: {
@@ -778,12 +808,6 @@ Chart.prototype.renderChart = function (channel, data) {
         }
     ];
     var chartData = [data];
-    var disk = {
-        width: 857.1,
-        height: 1000,
-        path: 'm214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z',
-        transform: 'matrix(1 0 0 -1 0 850)'
-    }
     var config = { modeBarButtonsToAdd: [
         {
           name: 'text',
@@ -832,14 +856,16 @@ Chart.prototype.renderChart = function (channel, data) {
     Plotly.react(this.name, chartData, layout, config).then(function (gd) {
         resizeObserver.observe(gd);
     });
-    channel.setDisplayId(0);
-    this.displayed_channels_counter = 1;
+
+    //channel.setDisplayId(0);
+    //this.displayed_channels_counter = 1;
     /*this.scales_units.set(channel.units, {
         color: color,
         axis_n: 1,
         channel_counter: 1
     });*/
     document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
+            console.log(data);
             terminateChannel(data.curveNumber)
             return false;
         })
@@ -868,11 +894,11 @@ Chart.prototype.loadNewDataAfterZoom = function (eventdata) {
     }
 }
 
-
-//удаляет линию графика с осями и пр. (не сделано)
+//удаляет линию графика с осями и пр.
 Chart.prototype.terminateChannel = function (id) {
-    var channel = this.channels.find((x) => x.display_id == id);
-    this.channels.splice(channel.display_id, 1);
+    var channel = this.getChannelByPlotlyId(id);
+    //удаляем канал из списка каналов холста
+    this.channels.splice(this.channels.findIndex(c => c.name === channel.name), 1);
     if (this.channels.length == 0) {
         terminateChart(this.name);
         return;
@@ -886,12 +912,6 @@ Chart.prototype.terminateChannel = function (id) {
     }
     $(document).trigger("channelsUpdated");
     $(document).trigger("configIsChanged");
-    /*for(var i=0;i<this.channels.length;i++){
-        if(id<this.channels.id)
-        { 
-            this.channels.id--;
-        }
-    }*/
 }
 
 //удаляет только линию графика
@@ -965,7 +985,8 @@ Chart.prototype.updateYAxes = function(relayout_data){
         if(this.axis_labels.length>i){
             this.axis_labels[i].x = i / 25 - 0.005;
             var axis_color = this.axis_labels[i].font.color;
-            var scales_data = this.scales_units.get(this.axis_labels[i].text)
+            var scales_data = this.scales_units.get(this.axis_labels[i].text);
+            scales_data.axis_n = i+1;
             var yaxisname = "yaxis" + (i==0 ? "":(i+1));//(scales_data.axis_n==1 ? "":scales_data.axis_n);
             var ticklabelposition = (i == 0) ? "inside" : "outside";
             relayout_data[yaxisname] = {
@@ -993,7 +1014,7 @@ Chart.prototype.removeAxis = function (units) {
         return;
     }
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
-    if(axis_ind == 0) return;
+    //if(axis_ind == 0) return;
 
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
@@ -1004,7 +1025,8 @@ Chart.prototype.removeAxis = function (units) {
     }
     //while(scale_num>=tones.length) nextTone();
     //if(chan_data.color==null) chan_data.color = color;
-
+    
+    console.log(axis_ind);
     this.axis_labels.splice(axis_ind, 1);
 
     var relayout_data = {
@@ -1019,7 +1041,10 @@ Chart.prototype.removeAxis = function (units) {
         },
         annotations: this.axis_labels
     };
-    this.updateYAxes(relayout_data);
+    this.updateYAxes(relayout_data);        
+    console.log(this.axis_labels);
+    console.log(this.scales_units);
+    console.log("LOLOLO",relayout_data);
     /*for (var i = 0/*axis_ind/; i < scale_num; i++) {
         this.axis_labels[i].x = i / 25 - 0.005;
         var axis_color = this.axis_labels[i].font.color;
@@ -1086,13 +1111,12 @@ Chart.prototype.addPlot = function (channel, data) {
                 y: 0.91,
                 yanchor: 'bottom',
                 text: channel.units,
-                //textangle: -45,
                 font: { color: color },
                 showarrow: false
             }
         )
         scale_data.axis_n = this.axis_labels.length;
-        this.updateYAxes(relayout_data);
+        this.updateYAxes(relayout_data); 
         /*relayout_data[yaxisname] = {
             overlaying: "y",
             color: color,
@@ -1122,8 +1146,8 @@ Chart.prototype.addPlot = function (channel, data) {
             }
         }*/
         Plotly.update(this.name, [], relayout_data);
-        channel.setDisplayId(this.displayed_channels_counter);
-        this.displayed_channels_counter++;
+        //channel.setDisplayId(this.displayed_channels_counter);
+        //this.displayed_channels_counter++;
     }
     else {
         if (chan_data.color == null) {
@@ -1397,7 +1421,8 @@ function addOrbitData(json) {
         else {
             alert("Can't find plot to display the data.");
             $(document).trigger("channelsUpdated");
-            document.body.style.cursor = 'default';
+            defaultCursor();
+            //document.body.style.cursor = 'default';
         }
     }
     orders.splice(orders.indexOf(order), 1);
@@ -1528,7 +1553,8 @@ function loadChannelDataObject(channel_object, time, chartname) {
         parts: []
     })
     orders_max_n++;
-    document.body.style.cursor = 'wait';
+    //document.body.style.cursor = 'wait';
+    waitCursor();
     sendMessageToServer(JSON.stringify(msg));
     msg = null;
 }
@@ -1543,6 +1569,15 @@ function cancelOrders(chartname){
     }
     sendMessageToServer(JSON.stringify(msg));
     msg = null;
+}
+
+function cancelCurrentOrders(){
+    var msg = {
+        type: "cancel_orders",
+        orders: orders.map(order => order.number)
+    }
+    sendMessageToServer(JSON.stringify(msg));
+    orders = [];
 }
 
 //обрабатывает событие нажатия кнопки синхронизации
@@ -1618,8 +1653,51 @@ function addNewChart(){
 
 function saveTextChartData(name){
     var chart = charts[name];
-    var chartTextData = chart.getCurrentTextData();
-    download(name,"test");
+    chart_to_download_name = name;
+    const dialog = document.getElementById("dialog");
+    //create checklist
+    for(var i=0;i<chart.channels.length;i++){
+        $("#channels_dialog").append('<input type="checkbox" name="channels_list_dialog" value="'+chart.channels[i].name+'" /> '+chart.channels[i].fullname+'_.txt <br/>')
+    }
+    $("#channels_dialog").append('<br/>');
+    dialog.showModal();
+}
+
+function downloadChannelTxtFiles(){
+    var chart = charts[chart_to_download_name];
+    var range = chart.getRange();
+    var channels_to_download = [];
+    var markedCheckbox = document.getElementsByName('channels_list_dialog');  
+    for (var checkbox of markedCheckbox) {  
+      if (checkbox.checked)
+        channels_to_download.push(checkbox.value);  
+    }
+    var timeformat = $("input[name='timeformat']:checked").val();
+    //if ($("#timestamp_dialog").checked)
+    var chartTextData = chart.getCurrentTextData(channels_to_download);
+    for(var i=0;i<channels_to_download.length;i++){
+        var name = channels_to_download[i];
+        if(name in chartTextData){
+            download(name+"-"+range[0]+"-"+range[1],convertChanDataToFileText(chartTextData[name],name,timeformat));
+        }
+    }
+    closeChartDialog();
+}
+
+function closeChartDialog(){
+    $("#channels_dialog").empty();
+}
+
+function convertChanDataToFileText(data,name,timeformat){
+    var result = "";
+    for(var i=0;i<data.length;i++){
+        var time = data[i].t.toString();
+        if(timeformat=="timestamp"){
+            time = moment(data[i].t).format('YYYY-MM-DD HH:mm:ss');
+        }
+        result = result.concat(time+"   "+data[i][name]+"\n");
+    }
+    return result;
 }
 
 /*no need in this one
@@ -1639,7 +1717,7 @@ function download(filename, text) {
     element.click();
 
     document.body.removeChild(element);
-}  
+}
 
 $(document).ready(function () {
     dragula([document.getElementById('graphset')], {

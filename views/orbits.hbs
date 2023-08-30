@@ -7,6 +7,7 @@
 <script src="/static/js/v3v4orbitschart.js"></script>
 <script src="/static/js/timepicker.js"></script>
 <script src="/static/js/orbitgrid.js"></script>
+<script src="/static/js/eventsorbits.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/js/color.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
@@ -107,7 +108,7 @@
         if (system_id==null) system_id = "v3v4";
         setTabs(system_id);
         //loadOrbitsLastTime(system_id);
-        loadStartSystemTable(system_id);
+        //loadStartSystemTable(system_id);
         // connection is opened and ready to use
     };
 
@@ -128,21 +129,29 @@
             //console.log("got message "+json.title)
             switch (json.title) {
                 case "tree_data":
+                    console.log("tree_data",json)
                     refreshTree(json.database,json.data);
                     break;
+                case "v3v4_calendar":
+                    console.log("v3v4_calendar",json)
+                    setV3V4Calendar("v3v4",json);
+                    break;
                 case "v3v4chan_orbits_data":
+                    console.log("v3v4chan_orbits_data",json)
                     if(json.last){
-                        initV3V4Time("v3v4",json.data[0].t)
+                        initV3V4Time("v3v4",json.data[0].t);
                     }
                     refreshV3V4OrbitTable("v3v4",parseToTableData("v3v4",json.data));
                     break;
-                case "v4_orbits_data":
+                /*case "v4_orbits_data":
+                    console.log("v4_orbits_data",json)
                     if(json.last){
                         initV3V4Time("v4",json.data[0].t);
                     }
-                    //refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
-                    break;
+                    refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
+                    break;*/
                 case "v3v4_firstrecord":
+                    console.log("v3v4_firstrecord",json)
                     setFirstRecTime(json.system,json.data);
                     break;
                 case "v3v4chan_pkppos_data":
@@ -150,6 +159,7 @@
                     setV3V4PkpData(json.system,json.data);
                     break;
                 case "v4orbits_start_data":
+                    console.log("v4orbits_start_data",json)
                     setV4OrbitsNames(json.data);
                     break;
                 case "error":

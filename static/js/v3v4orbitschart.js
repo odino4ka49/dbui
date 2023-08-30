@@ -139,7 +139,6 @@ Chart.prototype.extendLine = function(channel,data,units){
 
 
 Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
-    //console.log("channeldata",channel,data);
     this.is_chart_rendered = true;
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
@@ -216,7 +215,6 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
 }
 
 Chart.prototype.loadNewDataAfterZoom = function(eventdata){
-    //console.log('zoom',this,eventdata);
     if('xaxis.range[0]' in eventdata){
         setActiveGraphByName(this.name);
         this.max_id = 0;
@@ -227,14 +225,12 @@ Chart.prototype.loadNewDataAfterZoom = function(eventdata){
 //удаляет линию графика с осями и пр.
 Chart.prototype.terminatePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    //console.log(id,Plotly)
     Plotly.deleteTraces(this.name, id);
 }
 
 //удаляет только линию графика с готовностью к обновлению
 Chart.prototype.removePlot = function(id){
     //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    //console.log(id,this)
     Plotly.deleteTraces(this.name, id);
 }
 
@@ -253,7 +249,6 @@ Chart.prototype.setRange = function(time){
 }
 
 Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
-    console.log("channeldata",channel,data);
     var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;

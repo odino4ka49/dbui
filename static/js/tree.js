@@ -166,7 +166,8 @@ function getDatatable(channel,dbid){
 //посылает запрос на данные о БД
 function loadDatabaseTree(dbid){
     //console.log(dbid);
-    document.body.style.cursor='wait';
+    //document.body.style.cursor='wait';
+    waitCursor();
     var msg = {
         type: "tree_data", //type of msg: get tree of this
         database: dbid

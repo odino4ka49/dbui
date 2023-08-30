@@ -5,7 +5,8 @@ var v3v4basicdata = {
         system: "orbits v3v4chan",
         timepicker: new TimePicker("#v3v4dtr"),
         azimuths: [],
-        firstrec: null
+        firstrec: null,
+        grid: null
     }/*,
     "v4": { 
         loaded: false,
@@ -102,8 +103,24 @@ function initV3V4Time(system,time){
         start = v3v4basicdata[system].firstrec
     }
     if(v3v4basicdata[system].loaded==false){
-        v3v4basicdata[system].timepicker.init(new Date(start-25200000),new Date(time-25200000),new Date(v3v4basicdata[system].firstrec-25200000),new Date(time-25200000));
+        v3v4basicdata[system].timepicker.init(new Date(start-25200000),null,new Date(v3v4basicdata[system].firstrec-25200000),new Date(time-25200000),true,v3v4basicdata[system].av_days);
+        //v3v4basicdata[system].timepicker.init(new Date(start-25200000),new Date(time-25200000),new Date(v3v4basicdata[system].firstrec-25200000),new Date(time-25200000),true);
     }
+}
+
+//приводит дату к строке вида YYYY-MM-DD
+function formatCalendarDates(dates){
+    var result = [];
+    for(var i=0;i<dates.length;i++){
+        result.push(dates[i].date_trunc.slice(0,10));
+    }
+    console.log("JJJ",result);
+    return result;
+}
+
+//сохраним данные о доступных датах
+function setV3V4Calendar(system,dates){
+    v3v4basicdata[system].av_days = formatCalendarDates(dates.data);
 }
 
 function setFirstRecTime(system,time){
@@ -125,7 +142,7 @@ function refreshV3V4OrbitTable(system,data){
 //создание таблицы
 function createV3V4OrbitTable(system,data){
     //("tabledata",data);
-    $('#'+system).w2grid({
+    v3v4basicdata[system].grid = $('#'+system).w2grid({
         name: system,
         header: 'Orbits V3V4',
         show: { 
@@ -152,12 +169,17 @@ function createV3V4OrbitTable(system,data){
             loadSystemTable(system)
         },
         onUnselect: function(event) {
-            event.stopPropagation();
+            /*event.stopPropagation();
             event.preventDefault();
-            return false;
+            return false;*/
         }
     });
     //v3v4basicdata[system].loaded = true;
+}
+
+function reloadGrids(){
+    loadSystemTable("v3v4");
+    //loadSystemTable("v4");
 }
 
 function setV4OrbitsNames(data){
@@ -166,7 +188,6 @@ function setV4OrbitsNames(data){
 }
 
 function setV3V4PkpData(system,data){
-    console.log("azimuths",data)
     v3v4basicdata[system].azimuths = {azimuths:[],pkps:[]};
     //v3v4basicdata[system].azimuths = data;
     data.forEach(function(element){
@@ -258,10 +279,13 @@ function loadStartSystemTable(system_id){
 }
 
 function loadSystemTable(system_id){
+    var datetime = v3v4basicdata[system_id].timepicker.getDateTime();
+    datetime[1] = moment(datetime[1]).add(6, 'hours').format('YYYY-MM-DD HH:mm:ss');
+    //console.log("loadSystemTable",v3v4basicdata[system_id].timepicker.getDateTime())
     sendMessageToServer(JSON.stringify({
         type: "v3v4chan_orbits_data",
         system: system_id,
-        datetime: v3v4basicdata[system_id].timepicker.getDateTime()
+        datetime: datetime
     }))
 }
 

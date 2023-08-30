@@ -5,9 +5,18 @@ function TimePicker(div_id){
     this.div = div_id;
 }
 
-TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined) {
-    console.log(typeof lastrec)
+TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined,single_date=false,available=null) {
+    console.log(available);
+    var calendarfunc = function(){};
+    if(available!=null){
+        calendarfunc = function(date) {
+            if (available.includes(date.format('YYYY-MM-DD'))) {
+                return "greendate"//true;
+            }
+        };
+    }
     $(this.div).daterangepicker({   
+        singleDatePicker:single_date,
         showDropdowns: true, 
         autoApply: true,
         timePicker: true,
@@ -18,6 +27,13 @@ TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=mome
         //minYear: 2017,
         minDate: firstrec,
         //maxDate:  lastrec,
+        linkedCalendars: false,
+        isCustomDate: calendarfunc /*function(date) {
+            if(available==null) return;
+            if (available.includes(date.format('YYYY-MM-DD'))) {
+                return "greendate"//true;
+            }
+        }*/,
         locale: {
             format: 'YYYY-MM-DD HH:mm:ss'
         }
