@@ -1333,6 +1333,7 @@ function relayoutAllPlots(ed) {
 //добавляет данные о канале согласно заказу
 function addChannelDataInOrder(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
+    if(order == undefined) return;
     order.parts_num = json.parts;
     order.parts[json.index] = json;
     var i = 0;
@@ -1572,12 +1573,14 @@ function cancelOrders(chartname){
 }
 
 function cancelCurrentOrders(){
+    if(orders.length == 0) return;
     var msg = {
         type: "cancel_orders",
         orders: orders.map(order => order.number)
     }
     sendMessageToServer(JSON.stringify(msg));
     orders = [];
+    defaultCursor();
 }
 
 //обрабатывает событие нажатия кнопки синхронизации

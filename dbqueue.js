@@ -255,13 +255,12 @@ function loasV3V4CalendarDays(system,order){
     var db = databases.get("db1");
     if(system=="v3v4"){
         db.sendRequest(//where date_trunc(\'day\',date_time) >= \'2023-01-01\' and  date_trunc(\'day\',date_time)<=\'2023-08-30\'
-            'select date_trunc(\'day\',date_time) from "14_orb_v3v4chan"   group by date_trunc(\'day\',date_time)  order by date_trunc(\'day\',date_time) desc;',order,function(result){
+            'select date_trunc(\'day\',date_time) from "14_orb_v3v4chan"   group by date_trunc(\'day\',date_time)  order by date_trunc(\'day\',date_time) asc;',order,function(result){
                 wsServer.sendData({
                     "title": "v3v4_calendar",
                     "system": system,
                     "data": result
                 },order,false);
-                console.log(result);
                 loadV3V4ChanLastDatetimeData(system,order);
             })
     }

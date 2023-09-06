@@ -27,6 +27,7 @@ class DBConnection {
                 this.status = true;
                 return client.query(request)
                     .then(res => {
+                        //console.log(res);
                         if(callback) callback(res.rows);
                         client.release();
                     })
