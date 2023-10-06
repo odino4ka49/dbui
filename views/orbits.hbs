@@ -128,10 +128,10 @@
             var json = JSON.parse(message.data);
             //console.log("got message "+json.title)
             switch (json.title) {
-                case "tree_data":
+                /*case "tree_data":
                     console.log("tree_data",json)
                     refreshTree(json.database,json.data);
-                    break;
+                    break;*/
                 case "v3v4_calendar":
                     console.log("v3v4_calendar",json)
                     setV3V4Calendar("v3v4",json);

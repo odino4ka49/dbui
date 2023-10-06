@@ -42,14 +42,14 @@ function getActiveGraphWidth(){
 }
 
 function addChannelToGraph(channel,graph){
-    var chart = charts[graph];
-    var new_chart_n = chart.name;
+    /*var chart = charts[graph];
+    /*var new_chart_n = chart.name;
     if(channel.hierarchy!=null){
         if((channel.hierarchy.channel.orbit && chart.type=="timeseries")||(!channel.hierarchy.channel.orbit && chart.type=="orbit")){
             new_chart_n = addChartBeforeTarget($("#"+chart.name).parent());
             setActiveGraphByName("chart_"+new_chart_n);
         }
-    }
+    }*/
     charts[graph].addChannel(channel);
 }
 
@@ -202,13 +202,12 @@ Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
         resizeObserver.observe(gd);
       });
     this.scales_units.set(units,{
-        //color: color,
         axis_n: 1
     });
-    document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
+    /*document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
         terminatePlot(data.curveNumber)
         return false;
-    });
+    });*/
     chan_data.displayed = true;
     chartData = null;
     transform_x_scale = null;
@@ -249,12 +248,12 @@ Chart.prototype.setRange = function(time){
 }
 
 Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
-    var scale_data = this.scales_units.get(units);
+    //var scale_data = this.scales_units.get(units);
     var chan_data = this.channels.find((element)=>(element.name==channel));
     chan_data.id = this.max_id;
     this.max_id++;
     if(fullname) channel = fullname;
-    if(!scale_data){
+    /*if(!scale_data){
         //add new scale
         var scale_num = this.scales_units.size;
         var yaxisname = "yaxis" + (scale_num+1);
@@ -307,15 +306,16 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
     }
     else{
         scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-    }
+    }*/
+    var color = hsvToHex(tones[0], getRandomInt(30,100), getRandomInt(40,100));
     data.mode = mode//'markers'; //type of plot
     data.name = channel;
-    data.line = {color: scale_data.color};
+    data.line = {color: color};
     data.marker = {size:3}; //size of markers
-    data.yaxis = "y"+scale_data.axis_n;
+    data.yaxis = "y";//+scale_data.axis_n;
     Plotly.addTraces(this.name, data);
     chan_data.displayed = true;
-    scale_data = null;
+    //scale_data = null;
 }
 
 var charts = {'v3v4i_chart': new Chart('v3v4i_chart'),'v3v4x_chart': new Chart('v3v4x_chart'),
@@ -362,15 +362,16 @@ function addGraphData(json){
 
 function addOrbitData(json){
     if(json.chart in charts){
-        if(!charts[json.chart].addOrbitData(json)){
+        charts[json.chart].addOrbitData(json);
+        /*if(!charts[json.chart].addOrbitData(json)){
             var new_chart_n = addChartBeforeTarget($("#"+json.chart).parent());
             setActiveGraphByName("chart_"+new_chart_n);
             charts["chart_"+new_chart_n].addOrbitData(json);
             new_chart_n = null;
-        }
+        }*/
     }
     else{
-        alert("Please choose a canvas to display the data");
+        alert("There is no canvas to display the data for "+json.name);
         document.body.style.cursor='default';
     }
     json = null;
@@ -448,12 +449,12 @@ function getRandomInt(min, max) {
 }
 
 $(document).ready(function(){
-    dragula([document.getElementById('graphset')], {
+    /*dragula([document.getElementById('graphset')], {
         moves: function (el, container, handle) {
           return handle.classList.contains('handle');
         },
         mirrorContainer: document.getElementById('mirror')
-    });
+    });*/
     $("body").on("click",".pchart",function(){
         setActiveGraph($(this));
     });

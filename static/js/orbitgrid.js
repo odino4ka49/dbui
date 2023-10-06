@@ -114,7 +114,6 @@ function formatCalendarDates(dates){
     for(var i=0;i<dates.length;i++){
         result.push(dates[i].date_trunc.slice(0,10));
     }
-    console.log("JJJ",result);
     return result;
 }
 
@@ -208,7 +207,7 @@ function displayOrbit(system,channel){
         var data = {
             "name": channel_object.name,
             "data": parseToOrbitData(channel_object.name,chan.value,v3v4basicdata[system].azimuths),
-            "units": /*graph_name[1]*/chan.name.slice(-1)=='i' ? "mA" : "mm",
+            "units": chan.name.slice(-1)=='i' ? "mA" : "mm",
             "chart": graph_name,
             "color": color,
             "mode": getMode()
