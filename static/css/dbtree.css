@@ -8,7 +8,6 @@ body{
     max-width: none!important;
 }
 .graphset{
-    overflow-y: scroll;
     padding: 10px;
 }
 #v3v4_graphset{
@@ -31,9 +30,15 @@ body{
     height: 100vh;
 }
 
-#dbtree{
+#dbtree_old{
     width: 103%;
     height: 70vh;
+    overflow-y: scroll;
+    padding: 0 20px;
+}
+#dbtree{
+    width: 100%;
+    height: 100%;
     overflow-y: scroll;
     padding: 0 20px;
 }
@@ -66,6 +71,9 @@ body{
 }
 .greendate{
     background-color:lightgreen;
+}
+.filler{
+    flex-grow: 3;
 }
 
 #blocker{
@@ -262,6 +270,15 @@ form{
 #tree_and_plots{
     /*top: 80px;*/
     position: relative;
+}
+#tree_plots{
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+}
+#tree_part{
+    width: 25vw;
+    height: 100%;
 }
 
 #linetype label,#synchronization label{
@@ -502,3 +519,42 @@ input {
   #grid_v3v4_check_all{
       display: none;
   }
+
+
+
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+.main-flex-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-panel {
+    flex-grow: 1;
+    display: flex;
+    min-height: 0; /* can NOT work without this line!! */
+}
+
+.nav-flex-container {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-right-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-scrollable-content {
+    flex-grow: 1;
+    overflow: auto;
+}
