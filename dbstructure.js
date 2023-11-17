@@ -47,6 +47,7 @@ class SystemTree {
                     sys.function = ss.function;
                 }
             //}
+            if(ss.id == 6) console.log(sys); //TODO найти ошибку
         }
     }
 
@@ -124,6 +125,8 @@ class System {
         this.name = name;
         this.type = "system";
         this.status = status;
+        this.selectable = false;//для отрисовки дерева на клиенте
+        this.checkIfDisabled();
     }
     appendSubsystem(item){
         if(!this.subsystems){
@@ -174,11 +177,23 @@ class System {
             this.checkIfDisabled();
         }
     }
+    //для отрисовки дерева на клиенте
     checkIfDisabled(){
-        if(!this.status){
+        /*if(!this.status){
             this.state = {
                 disabled: true
             }
+        }
+        else{
+            this.state = {
+                disabled: false
+            }
+        }*/
+        if(!this.status){
+            this.color = "#C0C0C0";
+        }
+        else{
+            this.color = "#000000";
         }
     }
     addAzimuth(az){
@@ -208,6 +223,7 @@ class Subsystem {
         this.abscissa_tbl = abscissa_tbl;
         this.type = "subsystem";
         this.function = func;
+        this.selectable = false;//для отрисовки дерева на клиенте
         this.checkIfDisabled();
     }
     appendGroup(item){
@@ -234,7 +250,7 @@ class Subsystem {
         return result;
     }
     checkStatus(){
-        if(this.status == true && (this.channels||this.groups)){
+        if(this.status == false && (this.channels||this.groups)){
             var newstatus = false;
             var children;
             if("channels" in this) children = this.channels;
@@ -246,11 +262,23 @@ class Subsystem {
             this.checkIfDisabled();
         }
     }
+    //для отрисовки дерева на клиенте
     checkIfDisabled(){
-        if(!this.status){
+        /*if(!this.status){
             this.state = {
                 disabled: true
             }
+        }
+        else{
+            this.state = {
+                disabled: false
+            }
+        }*/
+        if(!this.status){
+            this.color = "#C0C0C0";
+        }
+        else{
+            this.color = "#000000";
         }
     }
     addAzimuth(az){
@@ -275,6 +303,7 @@ class Group {
         this.status = status;
         this.channels = [];
         this.type = "group";
+        this.selectable = false;//для отрисовки дерева на клиенте
         this.checkIfDisabled();
     }
     appendChannel(item){
@@ -298,11 +327,23 @@ class Group {
             this.checkIfDisabled();
         }
     }
+    //для отрисовки дерева на клиенте
     checkIfDisabled(){
-        if(!this.status){
+        /*if(!this.status){
             this.state = {
                 disabled: true
             }
+        }
+        else{
+            this.state = {
+                disabled: false
+            }
+        }*/
+        if(!this.status){
+            this.color = "#C0C0C0";
+        }
+        else{
+            this.color = "#000000";
         }
     }
 }
@@ -317,6 +358,7 @@ class Channel {
         this.status = status;
         this.type = "channel";
         this.data_tbl_type = dtt;
+        this.selectable = true;//для отрисовки дерева на клиенте
         //this.pvname = pvname;
         this.checkIfDisabled();
         if(!fullname) this.fullname = name;
@@ -327,11 +369,25 @@ class Channel {
         }
         return false;
     }
+    //для отрисовки дерева на клиенте
     checkIfDisabled(){
-        if(!this.status){
+        /*if(!this.status){
             this.state = {
                 disabled: true
             }
+        }
+        else{
+            this.state = {
+                disabled: false
+            }
+        }*/
+        if(!this.status){
+            this.color = "#C0C0C0";
+            this.selectable = false;
+        }
+        else{
+            this.color = "#000000";
+            this.selectable = true;
         }
     }
 }

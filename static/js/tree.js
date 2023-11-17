@@ -237,8 +237,8 @@ function preOpenDbs(db_config,charts_config){
 }
 //вычеркивает id загруженной бд, если все загружены - загружет каналы
 function checkOutDb(dbid){
-    dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
     if(dbs_to_open && dbs_to_open.length == 0){
+        dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
         preSetChannels(channels_to_open);
     }
 }

@@ -25,6 +25,11 @@ body{
     height: 100%;
     overflow: hidden;
 }
+.flex {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
 
 #dbtree{
     width: 103%;
