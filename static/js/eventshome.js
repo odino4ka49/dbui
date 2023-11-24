@@ -23,6 +23,13 @@ $(document).on("treeChannelChosen",function(event,node,dbid){
     var [datatable,hierarchy] = getDatatable(node,dbid);
     addChannelToActivePlot(node,hierarchy,datatable,dbid);
 });
+//происходит, когда человек выбирает систему или подсистему
+$(document).on("treeSystemChosen",function(event,node,dbid){
+    if(node)
+        setSelectedSystemName(node.name);//отобразить название выбранной системы
+    else
+        setSelectedSystemName(null);
+});
 
 $(document).on("asyncronized",function(event){
     var time = getActivePlotRange();
@@ -74,7 +81,6 @@ function loadCurrentConfig(){
     presetSynchedMode(synched_config);
     presetLineMode(mode_config);
     preOpenDbs(db_config,charts_config);
-    //preOpenCharts(charts_config.length);
     console.log(time_config,synched_config,mode_config,db_config,charts_config);
 }
 

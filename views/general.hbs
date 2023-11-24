@@ -34,6 +34,7 @@
     <table id="topnavtable">
         <tr>
             <td id="datetimerangetd">
+                <div id="chosen_system_name"></div>
                 <input id="datetimerange" type="text" name="datetimes" />
             </td>
             <td>
@@ -175,6 +176,9 @@
                 case "tree_data":
                     console.log("tree_data",json);
                     refreshTree(json.database, json.data);
+                    break;
+                case "datatbl_range":
+                    console.log("datatbl_range",json);
                     break;
                 case "error":
                     console.log("error",json);

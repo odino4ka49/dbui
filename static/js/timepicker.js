@@ -83,6 +83,13 @@ TimePicker.prototype.setDateTime = function(start,end) {
     $(this.div).data('daterangepicker').setEndDate(end);
 }
 
+//установить надпись о системе
+function setSelectedSystemName(name){
+    if(name)
+        $("#chosen_system_name").text("Выбрана система: "+name);
+    else
+        $("#chosen_system_name").text("");
+}
 
 //линиями или точками
 function getMode(){

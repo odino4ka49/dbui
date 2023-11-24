@@ -2,6 +2,7 @@ var databases;
 var search_results = {};
 var dbs_to_open;
 var channels_to_open;
+var selected_sys;
 
 //приведение данных к виду для отрисовки
 function parseTree(data){
@@ -62,6 +63,13 @@ function refreshTree(dbid,data) {
                     //loadChannelData(node,dbid);
                     //$("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                 }
+                else if("data_tbl" in node)//(node.type=="system")||(node.type=="subsystem"))
+                {
+                    unselectCurrentSystemNode(); //развыбрать предыдущую выбранную систему
+                    selected_sys = [dbid,node]; //присвоить в переменную новую систему
+                    loadSelectedSystemTree();
+                    $(document).trigger("treeSystemChosen",[node,dbid]); //посылаем событие - чтобы подсветить календарь
+                }
                 else{
                     $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
                     $("#"+dbid+"_tree").treeview('toggleNodeExpanded', [ node.nodeId, { silent: true } ]);
@@ -71,6 +79,11 @@ function refreshTree(dbid,data) {
                 //db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
                 if(node.type=="channel"){
                     $("#"+dbid+"_tree").treeview('selectNode', [ node.nodeId, { silent: true } ]);
+                }
+                else if((node.type=="system")||(node.type=="subsystem"))
+                {   
+                    selected_sys = null;
+                    $(document).trigger("treeSystemChosen",null); //посылаем событие - чтобы подсветить календарь
                 }
             }
         });
@@ -86,13 +99,19 @@ function selectChannelsByDB(channels,dbid){
     var db_tree = $("#"+dbid+"_tree");
     var selectednodes = db_tree.treeview('getSelected');
     for(var j=0; j<selectednodes.length;j++){
-        //console.lo
         db_tree.treeview('unselectNode', [ selectednodes[j], { silent: true } ]);
     }
     for(var i = 0; i < channels.length; i++){
-        //console.log(channels[i].nodeid)
         db_tree.treeview('selectNode', [ channels[i].nodeId, { silent: true } ]);
     }
+}
+
+//развыделить текущую систему
+function unselectCurrentSystemNode()
+{
+    if(!selected_sys) return;
+    var db_tree = $("#"+selected_sys[0]+"_tree");
+    db_tree.treeview('unselectNode', [ selected_sys[1].nodeId, { silent: true } ]);
 }
 
 //клик на канал
@@ -175,6 +194,18 @@ function loadDatabaseTree(dbid){
     sendMessageToServer(JSON.stringify(msg));
     msg = null;
 }
+//посылает запрос в БД о доступных данных выбранной системы
+function loadSelectedSystemTree(){
+    if(!selected_sys) return;
+    waitCursor();
+    var msg = {
+        type: "get_datatbl_range",
+        database: selected_sys[0],
+        datatable: selected_sys[1].data_tbl
+    };
+    sendMessageToServer(JSON.stringify(msg));
+    msg = null;
+}
 
 //отрисовка дерева БД
 function displayDatabases(data){
@@ -233,12 +264,14 @@ function preOpenDbs(db_config,charts_config){
     channels_to_open = charts_config;
     for(var i=0;i<db_config.length;i++){
         document.getElementById(db_config[i]).querySelector('.plus').click();
+        //dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
     }
 }
 //вычеркивает id загруженной бд, если все загружены - загружет каналы
 function checkOutDb(dbid){
+    dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
     if(dbs_to_open && dbs_to_open.length == 0){
-        dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
+        //dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
         preSetChannels(channels_to_open);
     }
 }
@@ -249,7 +282,6 @@ function preSetChannels(charts){
             var channel = charts[i][j];
             clickTheChannel(channel);
         }
-        console.log("check",i)
         if(i<charts.length-1){
             $(document).trigger("addNewChart");
         }

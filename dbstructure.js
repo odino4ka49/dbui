@@ -125,7 +125,7 @@ class System {
         this.name = name;
         this.type = "system";
         this.status = status;
-        this.selectable = false;//для отрисовки дерева на клиенте
+        this.selectable = true;//для отрисовки дерева на клиенте
         this.checkIfDisabled();
     }
     appendSubsystem(item){
@@ -223,7 +223,7 @@ class Subsystem {
         this.abscissa_tbl = abscissa_tbl;
         this.type = "subsystem";
         this.function = func;
-        this.selectable = false;//для отрисовки дерева на клиенте
+        this.selectable = true;//для отрисовки дерева на клиенте
         this.checkIfDisabled();
     }
     appendGroup(item){

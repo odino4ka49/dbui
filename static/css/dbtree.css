@@ -60,6 +60,10 @@ body{
     width: 320px;
     margin: 5px 0px;
 }
+#chosen_system_name{
+    color: #6d9c60;
+    font-size: 11pt;
+}
 #v3v4dtr,#v4dtr{
     width: 160px;
     margin: 5px 0px;
@@ -165,7 +169,7 @@ div.calendar-time, .test_zingchart-menu-item, #test_zingchart-text-ruler{
     margin-top: 10px;
     height: 260px;
     border: 1px solid lightgray;
-    border-radius: 8px;
+    border-radius: 3px;
 }
 
 #test_zingchart {

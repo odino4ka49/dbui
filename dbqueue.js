@@ -250,7 +250,7 @@ function loadFirstRecortTime(system,order){
     }
 }
 
-//загрузка доступных дней
+//загрузка доступных дней для орбит
 function loasV3V4CalendarDays(system,order){
     var db = databases.get("db1");
     if(system=="v3v4"){
@@ -361,6 +361,21 @@ function loadTreeData(dbid,order){
     }
 }
 
+//загрузка доступных дней для любой таблицы
+function loadDatatableRangeData(dbid,data_tbl,order)
+{
+    var db = databases.get(dbid);
+    db.sendRequest(
+        //'select date_trunc(\'day\',date_time) from "'+data_tbl+'"   group by date_trunc(\'day\',date_time)  order by date_trunc(\'day\',date_time) asc;',order,function(result){
+        'select date_time from "'+data_tbl+'" order by date_time asc limit 1;',order,function(result){
+            wsServer.sendData({
+                "title": "datatbl_range",
+                "datatable": data_tbl,
+                "data": result
+            },order,true);
+            console.log(result);
+        })
+}
 /*function loadAzimuths(db){
     //HARDCODE!!! CHANGE
     db.sendRequest('select pkp_name,azimuth from "04_pkp_position" join "01_system" on "01_system".subsys_id = "04_pkp_position".subsys_id where "01_system".abscissa_tbl = \'orbits\' and "01_system".subsystem = \'v4\' order by azimuth',null,function(result){
@@ -774,6 +789,7 @@ module.exports = {
     //getChannelData: getChannelData,
     getFullChannelData: getFullChannelData,
     getDatabasesInfo: getDatabasesInfo,
-    logConnection: logConnection
+    logConnection: logConnection,
+    loadDatatableRangeData: loadDatatableRangeData
     //loadDtAzimuths: loadDtAzimuths
 }

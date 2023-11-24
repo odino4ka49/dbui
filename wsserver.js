@@ -55,6 +55,11 @@ wsServer.on('request', function (request) {
                     model.loadTreeData(message.database,order);
                     order++;
                     break;
+                case "get_datatbl_range":
+                    orders.set(order,connection);
+                    model.loadDatatableRangeData(message.database,message.datatable,order);
+                    order++;
+                    break;
                 case 'v3v4chan_orbits_start_data':
                     orders.set(order,connection);
                     model.loadV3V4ChanOrbitsStartData(message.system,order);
