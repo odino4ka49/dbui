@@ -393,12 +393,22 @@ Chart.prototype.getHeight = function () {
     return Math.ceil($("#" + this.name).parent().height());
 }
 
+//оч важные данные, прямо из Plotly
 Chart.prototype.getPlotlyData = function(){
     var gd = document.getElementById(this.name);
     console.log("gddata",gd.data);
     console.log("gdlayout",gd.layout);
 }
-
+Chart.prototype.getPlotlyDataData = function()
+{
+    var gd = document.getElementById(this.name);
+    return gd.data;
+}
+Chart.prototype.getPlotlyDataLayout = function()
+{
+    var gd = document.getElementById(this.name);
+    return gd.layout;
+}
 
 Chart.prototype.getChannelPlotlyId = function(ch_fullname){
     var gd = document.getElementById(this.name);
@@ -685,15 +695,18 @@ Chart.prototype.extendLine = function (channel, data) {
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
+    console.log(datetime);
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
+    var channels_by_plotly = this.getPlotlyDataData();
+    var length = channels_by_plotly.length;
     if(this.type == "text"){
         if(this.channels.length !=0){
             this.channels[0].checkIfMoreDataNeeded(dateDate);
         }
         return;
     }
-    for (var i = 0; i < this.channels.length; i++) {
+    for (var i = 0; i < length; i++) {
         this.removeLine(0);
     }
     for (var i = 0; i < this.channels.length; i++) {
@@ -865,8 +878,7 @@ Chart.prototype.renderChart = function (channel, data) {
         channel_counter: 1
     });*/
     document.getElementById(this.name).on('plotly_legenddoubleclick', function (data) {
-            console.log(data);
-            terminateChannel(data.curveNumber)
+            terminateChannel(data.curveNumber);
             return false;
         })
     if(this.type != "orbit"){
@@ -905,11 +917,15 @@ Chart.prototype.terminateChannel = function (id) {
     }
     Plotly.deleteTraces(this.name, id);
     //вычтем 1 из счетчика каналов на оси
+    console.log(this.scales_units,this.getPlotlyDataLayout());
     var scales_data = this.scales_units.get(channel.units);
     scales_data.channel_counter--;
     if (scales_data.channel_counter == 0) {
+        //this.updateAxes();
         this.removeAxis(channel.units);
     }
+    console.log(this.scales_units,this.getPlotlyDataLayout());
+    this.redrawChannels(this.range);
     $(document).trigger("channelsUpdated");
     $(document).trigger("configIsChanged");
 }
@@ -996,16 +1012,19 @@ Chart.prototype.updateYAxes = function(relayout_data){
                 zerolinecolor: "#ccc",
                 anchor: 'free',
                 side: "left",
+                autorange: true,
                 showgrid: (scale_num>1) ? false : true,
                 gridwidth: 1,
                 gridcolor: '#dbdbdb',
                 ticklabelposition: ticklabelposition,
+                type:"linear",
                 position: i / 25
             };
             if(i!=0) relayout_data[yaxisname].overlaying = "y";
         }
         //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
     }
+    console.log(this.getPlotlyDataLayout());
 }
 
 Chart.prototype.removeAxis = function (units) {
@@ -1014,7 +1033,6 @@ Chart.prototype.removeAxis = function (units) {
         return;
     }
     var axis_ind = this.axis_labels.findIndex((element) => (element.text == units));
-    //if(axis_ind == 0) return;
 
     this.scales_units.delete(units);
     var scale_num = this.scales_units.size;
@@ -1023,10 +1041,7 @@ Chart.prototype.removeAxis = function (units) {
     if(synched){
         domain_start = max_scale_num - 1;
     }
-    //while(scale_num>=tones.length) nextTone();
-    //if(chan_data.color==null) chan_data.color = color;
-    
-    console.log(axis_ind);
+
     this.axis_labels.splice(axis_ind, 1);
 
     var relayout_data = {
@@ -1041,32 +1056,10 @@ Chart.prototype.removeAxis = function (units) {
         },
         annotations: this.axis_labels
     };
-    this.updateYAxes(relayout_data);        
-    console.log(this.axis_labels);
-    console.log(this.scales_units);
-    console.log("LOLOLO",relayout_data);
-    /*for (var i = 0/*axis_ind/; i < scale_num; i++) {
-        this.axis_labels[i].x = i / 25 - 0.005;
-        var axis_color = this.axis_labels[i].font.color;
-        var scales_data = this.scales_units.get(this.axis_labels[i].text)
-        var yaxisname = "yaxis" + (scales_data.axis_n==1 ? "":scales_data.axis_n);
-        var ticklabelposition = (i == 0) ? "inside" : "outside";
-        relayout_data[yaxisname] = {
-            //overlaying: "y",
-            color: axis_color,
-            linecolor: axis_color,
-            zerolinecolor: "#ccc",
-            anchor: 'free',
-            side: "left",
-            showgrid: (scale_num>1) ? false : true,
-            gridwidth: 1,
-            gridcolor: '#dbdbdb',
-            ticklabelposition: ticklabelposition,
-            position: i / 25
-        };
-        if(i==scale_num-1) relayout_data[yaxisname].overlaying = "y";
-        //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
-    }*/
+    this.updateYAxes(relayout_data,axis_ind);
+    var yaxisname = "yaxis" + (scale_num==0 ? "":(scale_num+1));
+    relayout_data[yaxisname] = null;
+    
     Plotly.update(this.name, [], relayout_data);
 }
 
