@@ -361,9 +361,9 @@ ChartChannel.prototype.getConfigInfo = function(){
 function Chart(name) {
     this.name = name;
     this.is_chart_rendered = false;
-    this.scales_units = new Map();
+    this.scales_units = new Map(); //данные об осях
     this.channels = [];
-    this.axis_labels = [];
+    this.axis_labels = []; //данные о подписях к осям
     var range = getDateTime();
     this.range = [range[0],range[1]];
     this.type = null;
@@ -444,8 +444,44 @@ Chart.prototype.getCurrentTextData = function(channel_names){
             allChannelsData[this.channels[i].name] = this.channels[i].getTextData(datetime);
         }
     }
-    console.log(allChannelsData);
     return allChannelsData;
+}
+
+//choose color for new scase
+Chart.prototype.chooseScaleColor = function()
+{
+    var colors = new Array(colors_table.length).fill(0);
+    this.scales_units.forEach((value, key) => {
+        var ind = colors_table.findIndex((el)=>el[0]==value.color);
+        if(ind >= 0 && ind < colors.length) colors[ind]++;
+    })
+    const min = Math.min (...colors);
+    const index = colors.indexOf(min);
+
+    return colors_table[index][0];
+}
+
+//choose color for new line on plot
+Chart.prototype.chooseLineColor = function(scale_data, channels)
+{
+    console.log(scale_data,channels);;
+    var ind = colors_table.findIndex((el)=>el[0]==scale_data.color);
+    if(ind >= 0 && ind < colors_table.length)
+    {
+        var colors = new Array(colors_table[ind].length).fill(0)
+        var color_tones = colors_table[ind];
+        for(var i=0;i<channels.length;i++)
+        {
+            var ci = color_tones.findIndex((el)=>el==channels[i].color);
+            if(ci >= 0 && ci < colors.length) colors[ci]++;
+        }
+        const min = Math.min (...colors);
+        const index = colors.indexOf(min);
+
+        return color_tones[index];
+    }
+
+    return colors_table[ind][0];
 }
 
 //add new scale 
@@ -454,7 +490,7 @@ Chart.prototype.addScaleUnits = function (units){
     if (!scale_data) {
         var scale_arr = Array.from(this.scales_units, ([name, value]) => (value));
         var scale_num = (this.scales_units.size == 0) ? 0 : scale_arr.reduce((acc,curr)=> acc.axis_n>curr.axis_n ? acc.axis_n:curr.axis_n,0);//this.scales_units.size;
-        var color = colors_table[scale_num % colors_table.length][0];
+        var color = this.chooseScaleColor();//colors_table[scale_num % colors_table.length][0];//
         
         scale_data = {
             color: color,
@@ -695,7 +731,6 @@ Chart.prototype.extendLine = function (channel, data) {
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime) {
-    console.log(datetime);
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
     var channels_by_plotly = this.getPlotlyDataData();
@@ -917,14 +952,12 @@ Chart.prototype.terminateChannel = function (id) {
     }
     Plotly.deleteTraces(this.name, id);
     //вычтем 1 из счетчика каналов на оси
-    console.log(this.scales_units,this.getPlotlyDataLayout());
     var scales_data = this.scales_units.get(channel.units);
     scales_data.channel_counter--;
     if (scales_data.channel_counter == 0) {
         //this.updateAxes();
         this.removeAxis(channel.units);
     }
-    console.log(this.scales_units,this.getPlotlyDataLayout());
     this.redrawChannels(this.range);
     $(document).trigger("channelsUpdated");
     $(document).trigger("configIsChanged");
@@ -1024,7 +1057,6 @@ Chart.prototype.updateYAxes = function(relayout_data){
         }
         //if(scales_data.axis_n!=1) relayout_data[yaxisname].overlaying = "y";
     }
-    console.log(this.getPlotlyDataLayout());
 }
 
 Chart.prototype.removeAxis = function (units) {
@@ -1144,11 +1176,7 @@ Chart.prototype.addPlot = function (channel, data) {
     }
     else {
         if (chan_data.color == null) {
-            var color_tones = colors_table[(scale_data.axis_n-1) % colors_table.length];
-            var color_index = scale_data.channel_counter % color_tones.length;//opacity = (100-(scale_data.channel_counter*10))/100;
-            //if(opacity < 0.2) opacity = 0.2;
-            //scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-            chan_data.color = color_tones[color_index];//"rgba("+hexToRgb(colors[(scale_data.axis_n-1) % colors.length])+","+opacity+")";
+            chan_data.color = this.chooseLineColor(scale_data,this.channels);
         }
     }
     data.mode = channel.mode//'markers'; //type of plot

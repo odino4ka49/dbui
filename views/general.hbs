@@ -5,7 +5,8 @@
 <script src="/static/js/timepicker.js"></script>
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/eventshome.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<!--script src="https://cdn.plot.ly/plotly-latest.min.js"></script-->
 <script src="/static/js/color.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -16,12 +17,12 @@
   <form method="dialog">
     <div id="timeformat">
         <div>
-            <input type="radio" name="timeformat" value="ms">
-            <label for="ms">Seconds</label>
+            <input type="radio" name="timeformat" value="ms" id="ms_dialog">
+            <label for="ms_dialog">Seconds</label>
         </div>
         <div>
             <input type="radio" name="timeformat" value="timestamp" id="timestamp_dialog">
-            <label for="timestamp">Timestamp</label>
+            <label for="timestamp_dialog">Timestamp</label>
         </div>
     </div>
     <div id="channels_dialog"></div>
@@ -196,7 +197,7 @@
     };
 
     function sendMessageToServer(message) {
-        console.log(message);
+        //console.log(message);
         connection.send(message);
     }
 

@@ -8,9 +8,9 @@ var selected_sys;
 function parseTree(data){
     data.forEach(function(node){
         node.text = node.name;
-        /*if(node.fullname){
+        if(node.fullname){
             node.text = node.fullname;
-        }*/
+        }
         if('subsystems' in node && node.subsystems.length!=0){
             node.nodes = node.subsystems;
             delete node.subsystems;
@@ -269,6 +269,7 @@ function preOpenDbs(db_config,charts_config){
 }
 //вычеркивает id загруженной бд, если все загружены - загружет каналы
 function checkOutDb(dbid){
+    if(!dbs_to_open) return;
     dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);
     if(dbs_to_open && dbs_to_open.length == 0){
         //dbs_to_open.splice(dbs_to_open.indexOf(dbid), 1);

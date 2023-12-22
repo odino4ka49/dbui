@@ -433,7 +433,6 @@ input {
     opacity: 0.85;
     filter: alpha(opacity=85);
     background-repeat: no-repeat;
-    background-image: url(tooltip.gif);
 }
 .tooltip-inner {
     padding: 5px 10px;
