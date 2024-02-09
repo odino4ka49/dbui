@@ -808,6 +808,7 @@ Chart.prototype.renderTextChart = function(){
             eventdata["chart_zoomed_first"] = this.name;
             relayoutAllPlots(eventdata);
         }
+        $(document).trigger("zoomed");
     });
 }
 
@@ -921,6 +922,10 @@ Chart.prototype.renderChart = function (channel, data) {
             this.loadNewDataAfterZoom(eventdata);
             if (synched && !("chart_zoomed_first" in eventdata)) {
                 eventdata["chart_zoomed_first"] = this.name;
+                if((eventdata["yaxis.autorange"]) && ("xaxis.range" in eventdata))
+                {
+                    this.setRange(eventdata["xaxis.range"]);
+                }
                 relayoutAllPlots(eventdata);
             }
             $(document).trigger("zoomed");
@@ -938,6 +943,9 @@ Chart.prototype.loadNewDataAfterZoom = function (eventdata) {
         //this.max_id = 0;
         this.redrawChannels([eventdata['xaxis.range[0]'], eventdata['xaxis.range[1]']]);
         //reloadChannels(this.channels,[eventdata['xaxis.range[0]'],eventdata['xaxis.range[1]']]);
+    }
+    else if('xaxis.range' in eventdata){
+        this.redrawChannels([eventdata['xaxis.range'][0], eventdata['xaxis.range'][1]]);
     }
 }
 
@@ -989,6 +997,7 @@ Chart.prototype.gotoAsyncState = function () {
 
 //устанавливает границы оси х
 Chart.prototype.setRange = function (time) {
+    console.log("setrange",this.name, time);
     this.range = [time[0],time[1]];
     if (this.is_chart_rendered ) {
         if( this.type != "orbit"){
@@ -1203,7 +1212,7 @@ Chart.prototype.addPlot = function (channel, data) {
 
 
 //если у холста время выставлено дальше текущего, то догрузить
-function monitorAllCharts(){
+function monitorAllCharts() {
     for (var name in charts) {
         var chart = charts[name];
         if(chart.range.length >=1 && moment(chart.range[1])>moment()){
@@ -1323,15 +1332,17 @@ function asynchronizePlots() {
 
 //распространяет зум на все холсты
 function relayoutAllPlots(ed) {
+    console.log(ed);
     if("yaxis.range[0]" in ed){
         delete ed["yaxis.range[0]"];
     }
     if("yaxis.range[1]" in ed){
         delete ed["yaxis.range[1]"];
     }
-    if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)){
+    if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)||("xaxis.range" in ed)){
+        console.log(charts[ed.chart_zoomed_first].getRange());
         for (var chart in charts) {
-            if(ed.autosize) return;
+            //if(ed.autosize) return;
             if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
                 if(charts[chart].type=="orbit"){
                     charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
@@ -1343,7 +1354,7 @@ function relayoutAllPlots(ed) {
                         if (ed["xaxis.autorange"] && x.autorange) return;
                         if (x.range[0] != ed["xaxis.range[0]"] || x.range[1] != ed["xaxis.range[1]"]) {
                             Plotly.relayout(div, ed);
-                        }   
+                        }
                     }
                 }
             }
@@ -1375,7 +1386,7 @@ function addChannelDataInOrder(json) {
             }
         }
         if (no_data) {
-            alert("Sorry, no data to display for "+json.fullname);
+            alertify.error("Sorry, no data to display for "+json.fullname);
         }
         orders.splice(orders.indexOf(order), 1);
         defaultCursor();
@@ -1430,7 +1441,7 @@ function addChannelData(json, chart) {
 function addOrbitData(json) {
     var order = orders.filter(obj => { return obj.number === json.ordernum })[0];
     if(json.data.length == 0){
-        alert("Sorry, no data to display "+json.fullname);
+        alertify.error("Sorry, no data to display "+json.fullname);
     }
     else{
         if (order.chart in charts) {
@@ -1636,7 +1647,20 @@ function handleSyncChange(src) {
         synched = false;
         asynchronizePlots();
     }
+    checkMonitoringOption();
     $(document).trigger("configIsChanged");
+}
+function handleMonitoringChange(src){
+    /*if(src.checked) startMonitoringMode(true);
+    else startMonitoringMode(false);*/
+}
+function checkMonitoringOption(){
+    if(synched) $("#monitoring").removeClass("hidden");
+    else $("#monitoring").addClass("hidden");
+}
+function monitoringDropdownClicked(src)
+{
+    console.log(src);
 }
 
 //подсчитывает самое большое число y-осей на всех холстах
@@ -1761,6 +1785,7 @@ $(document).ready(function () {
     $("#add_chart").click(addChart);
     synched = $('input[name="synchronization"]:checked').val() == 'sync' ? true : false;
     startMonitoring();
+    checkMonitoringOption();
 });
 
 

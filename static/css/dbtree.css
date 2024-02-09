@@ -20,6 +20,31 @@ body{
 ::-webkit-scrollbar-corner { background-color: #999;}
 ::-webkit-resizer { background-color: #666;}
 
+
+.hidden_radio{
+    display: none;
+}
+.hidden_radio:checked + label{
+    text-decoration: underline;
+    color: #474747;
+}
+.hidden_radio + label {
+    color: gray;
+}
+.hidden_check input{
+    display: none;
+}
+.hidden_check{
+    color: gray;
+}
+#monitoring label:has(input:checked){
+    color: #474747;
+    text-decoration: underline;
+}
+#monitoring label{
+    font-weight: normal;
+}
+
 .disable-scrolling{
     height: 100%;
     overflow: hidden;

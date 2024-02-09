@@ -10,6 +10,7 @@ $(document).on("channelsUpdated",function(event){
 
 $(document).on("dateTimeApplied",function(event){
     var time = timepicker.getDateTime();
+    console.log("dateTimeApplied", time);
     setRange(time);
     $(document).trigger("configIsChanged");
 });
@@ -40,6 +41,7 @@ $(document).on("asyncronized",function(event){
 
 $(document).on("zoomed",function(event){
     var time = getActivePlotRange();
+    console.log("zoomed", time);
     timepicker.setDateTime(time[0],time[1]);
 });
 
@@ -69,7 +71,6 @@ function saveCurrentConfig(){
 
 //
 function loadCurrentConfig(){
-    console.log(window.location.hash);
     var config_objects = window.location.hash.substring(1).replaceAll("%22",'"').replaceAll("%20",' ').split('&');
     if(config_objects == "") return;
     var time_config = JSON.parse(config_objects[0]);
@@ -81,6 +82,6 @@ function loadCurrentConfig(){
     presetSynchedMode(synched_config);
     presetLineMode(mode_config);
     preOpenDbs(db_config,charts_config);
-    console.log(time_config,synched_config,mode_config,db_config,charts_config);
+    //console.log(time_config,synched_config,mode_config,db_config,charts_config);
 }
 

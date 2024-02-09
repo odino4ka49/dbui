@@ -5,12 +5,14 @@
 <script src="/static/js/timepicker.js"></script>
 <script src="/static/js/chart.js"></script>
 <script src="/static/js/eventshome.js"></script>
+<script src="/static/js/alertify.js"></script>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
 <!--script src="https://cdn.plot.ly/plotly-latest.min.js"></script-->
 <script src="/static/js/color.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dragula.css" rel="stylesheet">
+<link href="/static/css/alertify.css" rel="stylesheet">
 <script src='/static/js/jquery.tooltip.js'></script>
 
 <dialog id="dialog">
@@ -39,14 +41,27 @@
                 <input id="datetimerange" type="text" name="datetimes" />
             </td>
             <td>
+                <div id="linetype">
+                    <div>
+                        <input type="radio" id="markers" name="linetype" value="markers" class="hidden_radio">
+                        <label for="markers">Markers</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="line" name="linetype" value="line" class="hidden_radio" checked>
+                        <label for="line">Line</label>
+                    </div>
+                </div>
+            </td>
+            <td>
                 <div id="synchronization">
                     <div>
-                        <input onchange="handleSyncChange(this);"  type="radio" id="sync" name="synchronization" value="sync" checked>
+                        <input onchange="handleSyncChange(this);"  type="radio" id="sync" name="synchronization" value="sync" class="hidden_radio" checked>
                         <label for="sync">Sync</label>
                     </div>
 
                     <div>
-                        <input onchange="handleSyncChange(this);"  type="radio" id="async" name="synchronization" value="async">
+                        <input onchange="handleSyncChange(this);"  type="radio" id="async" name="synchronization" value="async" class="hidden_radio">
                         <label for="async">Async</label>
                     </div>
                 </div>
@@ -56,19 +71,21 @@
                     <span class="slider round"></span>
                 </label-->
             </td>
-            <td>
-                <div id="linetype">
-                    <div>
-                        <input type="radio" id="markers" name="linetype" value="markers">
-                        <label for="markers">Markers</label>
+            <!--td>
+                <div id="monitoring">
+                    <div class="hidden_check">
+                        <label><input onchange="handleMonitoringChange(this);"  type="checkbox" id="monitoring_check" name="monitoring">
+                        Monitoring</label>
                     </div>
-
-                    <div>
-                        <input type="radio" id="line" name="linetype" value="line" checked>
-                        <label for="line">Line</label>
-                    </div>
+                    <select onchange="monitoringDropdownClicked(this)">
+                        <option>hour</option>
+                        <option>12 hours</option>
+                        <option>day</option>
+                        <option>month</option>
+                        <option>year</option>
+                    </select>
                 </div>
-            </td>
+            </td-->
             <td class="white_space"></td>
             <td>
                 <div id="search_line">

@@ -6,12 +6,11 @@ function TimePicker(div_id){
 }
 
 TimePicker.prototype.init = function(start=moment().subtract(1, 'days'),end=moment(),firstrec=undefined,lastrec=undefined,single_date=false,available=null) {
-    console.log(available);
     var calendarfunc = function(){};
     if(available!=null){
         calendarfunc = function(date) {
             if (available.includes(date.format('YYYY-MM-DD'))) {
-                return "greendate"//true;
+                return "greendate";
             }
         };
     }
