@@ -169,11 +169,14 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
     }
 }
 
-ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
+ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {        
+    //console.log("moredataneeded0", [moment(time[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time[1]).format('YYYY-MM-DD HH:mm:ss')]);
+    //if(this.data.length>0)
+    //    console.log("moredataneeded1", [moment(this.data[0].period[0]).format('YYYY-MM-DD HH:mm:ss'), moment(this.data[0].period[1]).format('YYYY-MM-DD HH:mm:ss')]);
     //отрезки времени, которые мы будем догружать
     var time_to_load = [];
     //отрезок времени, из которого мы потихоньку будем отрезать проверенные части и части для загрузки
-    var time_to_cut = [time[0],time[1]];
+    var time_to_cut = [Math.floor(time[0]/1000)*1000,Math.floor(time[1])*1000];
     if((this.data.length!=0) && (time_to_cut[1]>=this.data[0].period[0]) && (time_to_cut[0]<=this.data[this.data.length-1].period[1])){
         for (var i = 0; i < this.data.length; i++) {
             var piece = this.data[i];
@@ -182,13 +185,14 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
                 {
                     if(time_to_cut[1]>=piece.period[0]) {
                         time_to_load.push([time_to_cut[0], piece.period[0]]);
-                        time_to_cut = null;
+                        //time_to_cut = null;
+                        time_to_cut = [piece.period[0],time_to_cut[1]];
                     }
                     else{
                         break;
                     }
                 }
-                else if(time_to_cut[0] < piece.period[1]){
+                if(time_to_cut[0] < piece.period[1]){
                     if (time_to_cut[1] > piece.period[1]) {
                         time_to_cut = [piece.period[1], time_to_cut[1]];
                     }
@@ -207,6 +211,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
         time_to_load.push(time_to_cut);
     }
     for (var i = 0; i < time_to_load.length; i++) {
+        //console.log("moredataneeded2", this.data, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')]);
         loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
     }
 }
@@ -366,6 +371,8 @@ function Chart(name) {
     this.axis_labels = []; //данные о подписях к осям
     var range = getDateTime();
     this.range = [range[0],range[1]];
+    this.zoom_history = [];
+    this.zoom_history_index = 0;
     this.type = null;
     this.displayed_channels_counter = 0;
 }
@@ -384,6 +391,70 @@ Chart.prototype.addChannel = function (channel) {
     $(document).trigger("configIsChanged");
     //loadChannelDataObject(channel, this.range, this.name);
 }
+
+Chart.prototype.addZoomHistory = function (autosize) {
+    var layout = this.getPlotlyDataLayout();
+    var new_zoom = {xaxisrange:[layout.xaxis.range[0],layout.xaxis.range[1]],yaxisrange:[layout.yaxis.range[0],layout.yaxis.range[1]]};
+    //если х и у совпадают
+    if(JSON.stringify(this.zoom_history[this.zoom_history_index]) === JSON.stringify(new_zoom)) return;
+    //если автосайз, записывать последнее значение
+    if(autosize)
+    {
+        this.zoom_history = this.zoom_history.slice(0,this.zoom_history_index);
+        this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
+    }
+    else
+    {
+        //если y был null (дописать)
+        this.zoom_history = this.zoom_history.slice(0,this.zoom_history_index+1);
+        this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
+        if(this.zoom_history.length != 0) allChartsAddZoomHistory(this.name);
+    }
+    //console.log("addZoomHistory",this);
+}
+Chart.prototype.setZoomHistory = function(zhistory) {
+    this.zoom_history = zhistory[0];
+    for(var i=0;i<this.zoom_history.length;i++)
+    {
+        this.zoom_history[i].yaxisrange = null;
+    }
+    this.zoom_history_index = zhistory[1];
+}
+Chart.prototype.getZoomHistory = function() {
+    return [this.zoom_history,this.zoom_history_index];
+}
+//no conditions
+Chart.prototype.JustAddZoomHistory = function(basic_chart_history)
+{
+    var layout = this.getPlotlyDataLayout();
+    if(!layout)
+    {
+        this.setZoomHistory(basic_chart_history);
+    }
+    else
+    {
+        var new_zoom = {xaxisrange:[layout.xaxis.range[0],layout.xaxis.range[1]],yaxisrange:[layout.yaxis.range[0],layout.yaxis.range[1]]};
+        this.zoom_history = this.zoom_history.slice(0,this.zoom_history_index+1);
+        this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
+    }
+}
+Chart.prototype.takeStepBack = function () {
+    if(this.zoom_history_index > 0)
+    {
+        this.zoom_history_index--;
+        var newrange = this.zoom_history[this.zoom_history_index];
+        this.setXYRange(newrange.xaxisrange,newrange.yaxisrange);
+    }
+}
+Chart.prototype.takeStepForward = function () {
+    if(this.zoom_history_index < this.zoom_history.length-1)
+    {
+        this.zoom_history_index++;
+        var newrange = this.zoom_history[this.zoom_history_index];
+        this.setXYRange(newrange.xaxisrange,newrange.yaxisrange);
+    }
+}
+
 
 Chart.prototype.getWidth = function () {
     return Math.ceil($("#" + this.name).width());
@@ -464,7 +535,7 @@ Chart.prototype.chooseScaleColor = function()
 //choose color for new line on plot
 Chart.prototype.chooseLineColor = function(scale_data, channels)
 {
-    console.log(scale_data,channels);;
+    //console.log(scale_data,channels);;
     var ind = colors_table.findIndex((el)=>el[0]==scale_data.color);
     if(ind >= 0 && ind < colors_table.length)
     {
@@ -587,6 +658,7 @@ Chart.prototype.drawTextData = function(channel,datetime){
         var [new_data,new_values] = channel.getSegmentedData(datetime);
         if (!this.is_chart_rendered) {
             this.renderTextChart();
+            //this.addZoomHistory();
         }
         this.addNewTraces(new_values,channel.values);
         this.addDataToTraces(new_data,channel.values);
@@ -764,13 +836,40 @@ Chart.prototype.renderTextChart = function(){
     var domain_start = 0;
     if(synched) domain_start = max_scale_num - 1;
 
+    var icon_left = {
+        'width': 500,
+        'height': 600,
+        'path': 'M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z'
+    }
+    var icon_right = {
+        'width': 500,
+        'height': 600,
+        'path': 'M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z'
+    }
     var config = { modeBarButtonsToAdd: [
+        {
+            name: 'back',
+            icon: icon_left,
+            direction: 'up',
+            click: function(gd) { takeStepBackOnChart($(gd).attr('id'));
+        }},
+        {
+            name: 'forward',
+            icon: icon_right,
+            direction: 'up',
+            click: function(gd) { takeStepForwardOnChart($(gd).attr('id'));
+        }},
         {
           name: 'text',
           icon: Plotly.Icons.disk,
           direction: 'up',
           click: function(gd) { saveTextChartData($(gd).attr('id'));
-    }}],responsive: true, doubleClickDelay: 2000 };
+        }}],
+        responsive: true, 
+        doubleClickDelay: 2000,
+        //showEditInChartStudio: true,
+        //plotlyServerURL: "https://chart-studio.plotly.com" 
+    };
     var layout = {
         margin: { l: 20, r: 10, b: 40, t: 40 },
         xaxis: {
@@ -857,13 +956,40 @@ Chart.prototype.renderChart = function (channel, data) {
         }
     ];
     var chartData = [data];
+    var icon_left = {
+        'width': 500,
+        'height': 600,
+        'path': 'M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z'
+    }
+    var icon_right = {
+        'width': 500,
+        'height': 600,
+        'path': 'M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z'
+    }
     var config = { modeBarButtonsToAdd: [
+        {
+            name: 'back',
+            icon: icon_left,
+            direction: 'up',
+            click: function(gd) { takeStepBackOnChart($(gd).attr('id'));
+        }},
+        {
+            name: 'forward',
+            icon: icon_right,
+            direction: 'up',
+            click: function(gd) { takeStepForwardOnChart($(gd).attr('id'));
+        }},
         {
           name: 'text',
           icon: Plotly.Icons.disk,
           direction: 'up',
           click: function(gd) { saveTextChartData($(gd).attr('id'));
-        }}], responsive: true, doubleClickDelay: 2000 };
+        }}], 
+        responsive: true, 
+        doubleClickDelay: 2000,
+        //showEditInChartStudio: true,
+        //plotlyServerURL: "https://chart-studio.plotly.com" 
+    };
     var layout = {
         legend: {
             yanchor: "top",
@@ -920,6 +1046,7 @@ Chart.prototype.renderChart = function (channel, data) {
     if(this.type != "orbit"){
         document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
+            console.log(this.name,eventdata);
             if (synched && !("chart_zoomed_first" in eventdata)) {
                 eventdata["chart_zoomed_first"] = this.name;
                 if((eventdata["yaxis.autorange"]) && ("xaxis.range" in eventdata))
@@ -927,6 +1054,7 @@ Chart.prototype.renderChart = function (channel, data) {
                     this.setRange(eventdata["xaxis.range"]);
                 }
                 relayoutAllPlots(eventdata);
+                this.addZoomHistory(eventdata.autosize);
             }
             $(document).trigger("zoomed");
         });
@@ -997,7 +1125,7 @@ Chart.prototype.gotoAsyncState = function () {
 
 //устанавливает границы оси х
 Chart.prototype.setRange = function (time) {
-    console.log("setrange",this.name, time);
+    //console.log("setrange",this.name, time);
     this.range = [time[0],time[1]];
     if (this.is_chart_rendered ) {
         if( this.type != "orbit"){
@@ -1013,6 +1141,33 @@ Chart.prototype.setRange = function (time) {
             Plotly.update(this.name, [], relayout_data) ;
         }
         this.redrawChannels(time);
+    }
+}
+
+//устанавливает границы осей x и y
+Chart.prototype.setXYRange = function(x_range,y_range) {
+    //console.log("setXYRange",this);
+    this.range = [x_range[0],x_range[1]];
+    if (this.is_chart_rendered ) {
+        if( this.type != "orbit"){
+            var domain_start = this.scales_units.size - 1;
+            if(synched) domain_start = max_scale_num - 1;
+            var relayout_data = {
+                xaxis: {
+                    range: this.range,
+                    domain: [domain_start / 25, 1],
+                    type: "date"
+                }
+            }
+            if(y_range != null)
+            {
+                relayout_data.yaxis = {
+                    range: [y_range[0],y_range[1]]
+                }
+            }
+            Plotly.update(this.name, [], relayout_data) ;
+        }
+        this.redrawChannels(x_range);
     }
 }
 
@@ -1332,7 +1487,7 @@ function asynchronizePlots() {
 
 //распространяет зум на все холсты
 function relayoutAllPlots(ed) {
-    console.log(ed);
+    //console.log(ed);
     if("yaxis.range[0]" in ed){
         delete ed["yaxis.range[0]"];
     }
@@ -1340,14 +1495,14 @@ function relayoutAllPlots(ed) {
         delete ed["yaxis.range[1]"];
     }
     if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)||("xaxis.range" in ed)){
-        console.log(charts[ed.chart_zoomed_first].getRange());
+        //console.log(charts[ed.chart_zoomed_first].getRange());
         for (var chart in charts) {
             //if(ed.autosize) return;
             if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
-                if(charts[chart].type=="orbit"){
+                //if(charts[chart].type=="orbit"){
                     charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
-                }
-                else {
+                //}
+                //else {
                     var div = document.getElementById(chart);
                     if(div.layout){
                         var x = div.layout.xaxis;
@@ -1356,7 +1511,8 @@ function relayoutAllPlots(ed) {
                             Plotly.relayout(div, ed);
                         }
                     }
-                }
+                //}
+                //charts[chart].addZoomHistory();
             }
         }
     }
@@ -1484,6 +1640,11 @@ function addChartBeforeTarget(target,is_text=false) {
         + ' class="resizable"><div id="chart_' + chart_max_n
         + '" class="pchart"></div><div class="close_chart"></div><div class="handle"></div></div>').insertBefore(target).resizable();
     charts["chart_" + chart_max_n] = new Chart("chart_" + chart_max_n);
+    //if synched we have to copy zoom history to the new chart
+    if(synched)
+    {
+        charts["chart_" + chart_max_n].setZoomHistory(Object.values(charts)[0].getZoomHistory());
+    }
     return chart_max_n;
 }
 
@@ -1660,7 +1821,7 @@ function checkMonitoringOption(){
 }
 function monitoringDropdownClicked(src)
 {
-    console.log(src);
+    //console.log(src);
 }
 
 //подсчитывает самое большое число y-осей на всех холстах
@@ -1709,6 +1870,53 @@ function saveTextChartData(name){
     }
     $("#channels_dialog").append('<br/>');
     dialog.showModal();
+}
+
+function takeStepBackOnChart(name)
+{
+    if(isSynchedMode()) 
+    {
+        allChartsStepBack();
+    }
+    else
+    {
+        var chart = charts[name];
+        chart.takeStepBack();
+    }
+}
+function takeStepForwardOnChart(name)
+{
+    if(isSynchedMode()) 
+    {
+        allChartsStepForward();
+    }
+    else
+    {
+        var chart = charts[name];
+        chart.takeStepForward();
+    }
+}
+function allChartsStepBack()
+{
+    for (var name in charts) {
+        var chart = charts[name];
+        chart.takeStepBack();
+    }
+}
+function allChartsStepForward()
+{
+    for (var name in charts) {
+        var chart = charts[name];
+        chart.takeStepForward();
+    }
+}
+function allChartsAddZoomHistory(basic_chart_name)
+{
+    for (var name in charts) {
+        var chart = charts[name];
+        if(name != basic_chart_name)
+            chart.JustAddZoomHistory(charts[basic_chart_name].getZoomHistory());
+    }
 }
 
 function downloadChannelTxtFiles(){

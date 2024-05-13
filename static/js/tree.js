@@ -306,7 +306,7 @@ function refreshDatabaseTree(event){
 }
 
 function alertError(err){
-    alertiry.error(err.text);
+    alertify.error(err.text);
     deactivateDatabase(err.dbid);
 }
 

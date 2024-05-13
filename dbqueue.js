@@ -435,6 +435,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var date2 = new Date(datetime[1]+"Z");
     var hours = Math.abs(date1 - date2) / 36e5;
     var parts = Math.ceil(hours/12.0);
+    if (parts == 0) parts = 1;
     var dates = [date1.toISOString().replace(/T/, ' ').replace(/\..+/, '')];
     if(datatable.includes(',')){
         var dbs = datatable.split(',',2);
@@ -453,6 +454,8 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
+    console.log("DATES",dates);
+    console.log("DATETIME",datetime);
     if(ss.function && ss.function.startsWith("dispersion")){
         loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,datetime,ordernum,order,datatype,"dispersion",0);
         return;
@@ -605,6 +608,7 @@ function loadFullChannelData(db,datatable,data_tbl_type,channel,subsystem,dates,
         }
     }*/
     //else if(channel.unit == 'text'){
+    //if(dates.length <= i+1) return;
     if(channel.datatype == 'char' || channel.datatype == 'stringin'){
         if(data_tbl_type == "chan_id"){
             var prereq = '(select extract(epoch from date_time at time zone \'-07\' at \

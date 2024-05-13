@@ -41,8 +41,11 @@ $(document).on("asyncronized",function(event){
 
 $(document).on("zoomed",function(event){
     var time = getActivePlotRange();
-    console.log("zoomed", time);
-    timepicker.setDateTime(time[0],time[1]);
+    if(time)
+    {
+        timepicker.setDateTime(time[0],time[1]);
+        $(document).trigger("configIsChanged");
+    }
 });
 
 $(document).on("configIsChanged",function(event){
@@ -69,7 +72,6 @@ function saveCurrentConfig(){
     window.location.hash = [time_config,synched_config,mode_config,db_config,charts_config].join('&');
 }
 
-//
 function loadCurrentConfig(){
     var config_objects = window.location.hash.substring(1).replaceAll("%22",'"').replaceAll("%20",' ').split('&');
     if(config_objects == "") return;
@@ -78,6 +80,7 @@ function loadCurrentConfig(){
     var mode_config = JSON.parse(config_objects[2]);
     var db_config = JSON.parse(config_objects[3]);
     var charts_config = JSON.parse(config_objects[4]);
+    setRange([time_config[0],time_config[1]]);
     timepicker.setDateTime(time_config[0],time_config[1]);
     presetSynchedMode(synched_config);
     presetLineMode(mode_config);
