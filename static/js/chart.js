@@ -806,6 +806,7 @@ Chart.prototype.redrawChannels = function (datetime) {
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
     var channels_by_plotly = this.getPlotlyDataData();
+    if(channels_by_plotly == undefined) return;
     var length = channels_by_plotly.length;
     if(this.type == "text"){
         if(this.channels.length !=0){
@@ -904,6 +905,7 @@ Chart.prototype.renderTextChart = function(){
     document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
         this.loadNewDataAfterZoom(eventdata);
         if (synched && !("chart_zoomed_first" in eventdata)) {
+            setActivePlotByName(this.name);
             eventdata["chart_zoomed_first"] = this.name;
             relayoutAllPlots(eventdata);
         }
@@ -1047,6 +1049,10 @@ Chart.prototype.renderChart = function (channel, data) {
         document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
             console.log(this.name,eventdata);
+            if(!("chart_zoomed_first" in eventdata) && (!eventdata["autosize"]))
+            {
+                setActivePlotByName(this.name);
+            }
             if (synched && !("chart_zoomed_first" in eventdata)) {
                 eventdata["chart_zoomed_first"] = this.name;
                 if((eventdata["yaxis.autorange"]) && ("xaxis.range" in eventdata))

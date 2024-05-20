@@ -1,5 +1,6 @@
 const pg = require('pg')
 var fs = require('fs');
+
 var dbs = JSON.parse(fs.readFileSync('databases.json', 'utf8'));
 
 class DBConnection {
@@ -72,6 +73,17 @@ class DBConnection {
     }*/
 }
 
+function GetDbNumber()
+{
+    var num = 0;
+    for(var key in dbs)
+    {
+        num++;
+    }
+    return num;
+}
+
 module.exports = {
-    DBConnection: DBConnection
+    DBConnection: DBConnection,
+    GetDbNumber: GetDbNumber
 }

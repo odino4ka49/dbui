@@ -1,13 +1,4 @@
 {
-    "db2": {
-        "name": "v4_Sep2015-July2021",
-        "user": "vepp4",
-        "port": 5432,
-        "host": "vepp4-pg",
-        "database": "v4parameters",
-        "type": "v4",
-        "active": true
-    },
     "db1": {
         "name": "v4_Jun2019-now",
         "user": "vepp4",
@@ -17,7 +8,25 @@
         "type": "v4",
         "active": true
     },
+    "db2": {
+        "name": "v4_Jun2019-April2024",
+        "user": "vepp4",
+        "port": 5432,
+        "host": "192.168.144.83",
+        "database": "v4",
+        "type": "v4",
+        "active": true
+    },
     "db3": {
+        "name": "v4_Sep2015-July2021",
+        "user": "vepp4",
+        "port": 5432,
+        "host": "vepp4-pg",
+        "database": "v4parameters",
+        "type": "v4",
+        "active": true
+    },
+    "db4": {
         "name": "v4pickups_Oct2019-..",
         "user": "vepp4",
         "port": 5432,
@@ -26,7 +35,7 @@
         "type": "pickups",
         "active": true
     },
-    "db4":{
+    "db5":{
         "name": "v4_2013-2015",
         "user": "vepp4",
         "port": 5433,
@@ -35,7 +44,7 @@
         "type": "v4",
         "active": false
     },
-    "db5":{
+    "db6":{
         "name": "v4_2007-2013",
         "user": "vepp4",
         "port": 5432,
@@ -44,4 +53,5 @@
         "type": "v4",
         "active": false
     }
+
 }

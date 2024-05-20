@@ -762,7 +762,8 @@ function logConnection(ip,status){
 */
 
 function initDatabases(){
-    for(var i=1;i<6;i++){
+    var databases_number = dbc.GetDbNumber();
+    for(var i=1;i<=databases_number;i++){
         var db = new dbc.DBConnection("db"+i);
         databases.set(db.id,db);
         //if(db.type=="pickups"){
