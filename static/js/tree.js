@@ -283,7 +283,7 @@ function preSetChannels(charts){
             var channel = charts[i][j];
             clickTheChannel(channel);
         }
-        if(i<charts.length-1){
+        if((i<charts.length-1) && (charts[i].length != 0)){
             $(document).trigger("addNewChart");
         }
     }

@@ -176,7 +176,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
     //отрезки времени, которые мы будем догружать
     var time_to_load = [];
     //отрезок времени, из которого мы потихоньку будем отрезать проверенные части и части для загрузки
-    var time_to_cut = [Math.floor(time[0]/1000)*1000,Math.floor(time[1])*1000];
+    var time_to_cut = [Math.floor(time[0]/1000)*1000,Math.floor(time[1]/1000)*1000];
     if((this.data.length!=0) && (time_to_cut[1]>=this.data[0].period[0]) && (time_to_cut[0]<=this.data[this.data.length-1].period[1])){
         for (var i = 0; i < this.data.length; i++) {
             var piece = this.data[i];
@@ -204,6 +204,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
             }
         }
     }
+    //console.log("moredataneeded1", this.data, [moment(time_to_cut[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_cut[1]).format('YYYY-MM-DD HH:mm:ss')]);
     if(time_to_cut){
         if(time_to_cut[1]>moment()){
             time_to_cut = [time_to_cut[0],moment()];
@@ -408,11 +409,12 @@ Chart.prototype.addZoomHistory = function (autosize) {
         //если y был null (дописать)
         this.zoom_history = this.zoom_history.slice(0,this.zoom_history_index+1);
         this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
-        if(this.zoom_history.length != 0) allChartsAddZoomHistory(this.name);
+        if((this.zoom_history.length != 0) && synched) allChartsAddZoomHistory(this.name);
     }
-    //console.log("addZoomHistory",this);
+    console.log("addZoomHistory",this);
 }
 Chart.prototype.setZoomHistory = function(zhistory) {
+    console.log("setZoomHistory",this);
     this.zoom_history = zhistory[0];
     for(var i=0;i<this.zoom_history.length;i++)
     {
@@ -426,6 +428,7 @@ Chart.prototype.getZoomHistory = function() {
 //no conditions
 Chart.prototype.JustAddZoomHistory = function(basic_chart_history)
 {
+    console.log("JustAddZoomHistory",this);
     var layout = this.getPlotlyDataLayout();
     if(!layout)
     {
@@ -453,6 +456,13 @@ Chart.prototype.takeStepForward = function () {
         var newrange = this.zoom_history[this.zoom_history_index];
         this.setXYRange(newrange.xaxisrange,newrange.yaxisrange);
     }
+}
+Chart.prototype.clearZoomHistory = function () {
+    console.log("clearZoomHistory",this);
+    if(this.zoom_history.length <= 1) return;
+    this.zoom_history = [];
+    this.zoom_history_index = 0;
+    this.addZoomHistory(false);
 }
 
 
@@ -722,6 +732,7 @@ Chart.prototype.addNewTraces = function(new_values,chan_vals){
 }
 
 Chart.prototype.addDataToTraces = function(new_data,chan_vals){
+    console.log("addDataToTraces",chan_vals,new_data);
     var ids = [];
     var ys = [];
     var xs = []
@@ -1049,18 +1060,20 @@ Chart.prototype.renderChart = function (channel, data) {
         document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
             console.log(this.name,eventdata);
-            if(!("chart_zoomed_first" in eventdata) && (!eventdata["autosize"]))
+            if(!("chart_zoomed_first" in eventdata))
             {
-                setActivePlotByName(this.name);
-            }
-            if (synched && !("chart_zoomed_first" in eventdata)) {
-                eventdata["chart_zoomed_first"] = this.name;
+                if(!eventdata["autosize"])
+                    setActivePlotByName(this.name);
                 if((eventdata["yaxis.autorange"]) && ("xaxis.range" in eventdata))
                 {
                     this.setRange(eventdata["xaxis.range"]);
                 }
-                relayoutAllPlots(eventdata);
                 this.addZoomHistory(eventdata.autosize);
+                if(synched)
+                {
+                    eventdata["chart_zoomed_first"] = this.name;
+                    relayoutAllPlots(eventdata);
+                }
             }
             $(document).trigger("zoomed");
         });
@@ -1479,6 +1492,7 @@ function synchronizePlots() {
         }
         for (var chart in charts) {
             charts[chart].setRange(range);
+            charts[chart].clearZoomHistory();
         }
     }
 }
@@ -1487,6 +1501,7 @@ function synchronizePlots() {
 function asynchronizePlots() {
     for (var chart in charts) {
         charts[chart].gotoAsyncState();
+        charts[chart].clearZoomHistory();
     }
     $(document).trigger("asyncronized");
 }
@@ -1531,7 +1546,15 @@ function addChannelDataInOrder(json) {
     order.parts_num = json.parts;
     order.parts[json.index] = json;
     var i = 0;
+    /*var loaded = true;
 
+    for ( i=0; i <= order.parts_num; i++) {
+        if (order.parts[i] == undefined) {
+            loaded = false;
+        }
+    }
+    i=0;*/
+    
     if (order.last_displayed != null) i = order.last_displayed + 1;
     for (; i <= json.index; i++) {
         if (order.parts[i] != undefined) {
@@ -1540,7 +1563,8 @@ function addChannelDataInOrder(json) {
             //order.parts[i]=1;
         }
     }
-    if (order.last_displayed == order.parts_num - 1) {
+    if //(loaded){
+        (order.last_displayed == order.parts_num - 1) {
         var no_data = true;
         for (i = 0; i <= order.last_displayed; i++) {
             if (order.parts[i].data.length != 0) {
@@ -1553,6 +1577,7 @@ function addChannelDataInOrder(json) {
         orders.splice(orders.indexOf(order), 1);
         defaultCursor();
     }
+
 }
 
 //добавляет график: old
@@ -1735,6 +1760,7 @@ function getRandomInt(min, max) {
 
 //посылает запрос к серверу на данные о канале с помощью объекта канала channel_object
 function loadChannelDataObject(channel_object, time, chartname) {
+    console.log("loadChannelDataObject",chartname,time);
     var msg = {
         type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
