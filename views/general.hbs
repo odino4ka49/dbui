@@ -200,10 +200,11 @@
                     break;
                 case "error":
                     console.log("error",json);
+                    if(!checkIfMonitoring(json.clientordernum))
+                        alertError(json.data);
                     if (json.clientordernum != undefined) {
                         removeOrder(json.clientordernum);
                     }
-                    alertError(json.data);
                     break;
             }
             json = null;

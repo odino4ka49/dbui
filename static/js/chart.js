@@ -169,7 +169,7 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
     }
 }
 
-ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {        
+ChartChannel.prototype.checkIfMoreDataNeeded = function (time, monitoring = false) {        
     //console.log("moredataneeded0", [moment(time[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time[1]).format('YYYY-MM-DD HH:mm:ss')]);
     //if(this.data.length>0)
     //    console.log("moredataneeded1", [moment(this.data[0].period[0]).format('YYYY-MM-DD HH:mm:ss'), moment(this.data[0].period[1]).format('YYYY-MM-DD HH:mm:ss')]);
@@ -213,7 +213,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time) {
     }
     for (var i = 0; i < time_to_load.length; i++) {
         //console.log("moredataneeded2", this.data, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')]);
-        loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname);
+        loadChannelDataObject(this, [moment(time_to_load[i][0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_load[i][1]).format('YYYY-MM-DD HH:mm:ss')], this.chartname, monitoring);
     }
 }
 
@@ -813,7 +813,7 @@ Chart.prototype.extendLine = function (channel, data) {
 }
 
 //перерисовать все графики
-Chart.prototype.redrawChannels = function (datetime) {
+Chart.prototype.redrawChannels = function (datetime, monitoring = false) {
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
     var channels_by_plotly = this.getPlotlyDataData();
@@ -821,7 +821,7 @@ Chart.prototype.redrawChannels = function (datetime) {
     var length = channels_by_plotly.length;
     if(this.type == "text"){
         if(this.channels.length !=0){
-            this.channels[0].checkIfMoreDataNeeded(dateDate);
+            this.channels[0].checkIfMoreDataNeeded(dateDate, monitoring);
         }
         return;
     }
@@ -832,11 +832,11 @@ Chart.prototype.redrawChannels = function (datetime) {
         var channel = this.channels[i];
         channel.displayed = false;
         if(this.type=="orbit"){
-            loadChannelDataObject(channel, datetime, this.name);
+            loadChannelDataObject(channel, datetime, this.name, monitoring);
         }
         else{
             this.drawChannelData(channel, dateDate);
-            channel.checkIfMoreDataNeeded(dateDate);
+            channel.checkIfMoreDataNeeded(dateDate, monitoring);
         }
     }
 }
@@ -915,11 +915,27 @@ Chart.prototype.renderTextChart = function(){
     });*/
     document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
         this.loadNewDataAfterZoom(eventdata);
-        if (synched && !("chart_zoomed_first" in eventdata)) {
+        console.log(this.name,eventdata);
+        if(!("chart_zoomed_first" in eventdata))
+        {
+            if(!eventdata["autosize"])
+                setActivePlotByName(this.name);
+            if((eventdata["yaxis.autorange"]) && ("xaxis.range" in eventdata))
+            {
+                this.setRange(eventdata["xaxis.range"]);
+            }
+            this.addZoomHistory(eventdata.autosize);
+            if(synched)
+            {
+                eventdata["chart_zoomed_first"] = this.name;
+                relayoutAllPlots(eventdata);
+            }
+        }
+        /*if (synched && !("chart_zoomed_first" in eventdata)) {
             setActivePlotByName(this.name);
             eventdata["chart_zoomed_first"] = this.name;
             relayoutAllPlots(eventdata);
-        }
+        }*/
         $(document).trigger("zoomed");
     });
 }
@@ -1390,7 +1406,7 @@ function monitorAllCharts() {
     for (var name in charts) {
         var chart = charts[name];
         if(chart.range.length >=1 && moment(chart.range[1])>moment()){
-            charts[name].redrawChannels([chart.range[0],chart.range[1]]);
+            charts[name].redrawChannels([chart.range[0],chart.range[1]],true);
         }
     }
 }
@@ -1657,6 +1673,13 @@ function removeOrder(ordernum) {
     defaultCursor();
 }
 
+function checkIfMonitoring(ordernum) {
+    var order = orders.filter(obj => { return obj.number === ordernum })[0];
+    console.log("checkifmonitorn",ordernum,order);
+    if(!order) return false;
+    return order.monitoring;
+}
+
 //добавляет холст
 function addChart(e) {
     addChartBeforeTarget(e.target);
@@ -1759,7 +1782,7 @@ function getRandomInt(min, max) {
 
 
 //посылает запрос к серверу на данные о канале с помощью объекта канала channel_object
-function loadChannelDataObject(channel_object, time, chartname) {
+function loadChannelDataObject(channel_object, time, chartname, monitoring = false) {
     console.log("loadChannelDataObject",chartname,time);
     var msg = {
         type: "get_full_channel_data",
@@ -1776,11 +1799,15 @@ function loadChannelDataObject(channel_object, time, chartname) {
         parts_num: null,
         chart: chartname,
         last_displayed: null,
-        parts: []
+        parts: [],
+        monitoring: monitoring
     })
     orders_max_n++;
     //document.body.style.cursor = 'wait';
-    waitCursor();
+    if(!monitoring)
+    {
+        waitCursor();
+    }
     sendMessageToServer(JSON.stringify(msg));
     msg = null;
 }
