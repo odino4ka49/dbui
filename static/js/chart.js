@@ -411,7 +411,7 @@ Chart.prototype.addZoomHistory = function (autosize) {
         this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
         if((this.zoom_history.length != 0) && synched) allChartsAddZoomHistory(this.name);
     }
-    console.log("addZoomHistory",this);
+    console.log("addZoomHistory",charts);
 }
 Chart.prototype.setZoomHistory = function(zhistory) {
     console.log("setZoomHistory",this);
@@ -446,6 +446,7 @@ Chart.prototype.takeStepBack = function () {
     {
         this.zoom_history_index--;
         var newrange = this.zoom_history[this.zoom_history_index];
+        console.log("takestepback");
         this.setXYRange(newrange.xaxisrange,newrange.yaxisrange);
     }
 }
@@ -814,6 +815,7 @@ Chart.prototype.extendLine = function (channel, data) {
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime, monitoring = false) {
+    console.log(this,monitoring);
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
     var channels_by_plotly = this.getPlotlyDataData();
@@ -1588,7 +1590,8 @@ function addChannelDataInOrder(json) {
             }
         }
         if (no_data) {
-            alertify.error("Sorry, no data to display for "+json.fullname);
+            if(!order.monitoring)
+                alertify.error("Sorry, no data to display for "+json.fullname);
         }
         orders.splice(orders.indexOf(order), 1);
         defaultCursor();
@@ -1675,7 +1678,7 @@ function removeOrder(ordernum) {
 
 function checkIfMonitoring(ordernum) {
     var order = orders.filter(obj => { return obj.number === ordernum })[0];
-    console.log("checkifmonitorn",ordernum,order);
+    //console.log("checkifmonitorn",ordernum,order);
     if(!order) return false;
     return order.monitoring;
 }
@@ -1783,7 +1786,7 @@ function getRandomInt(min, max) {
 
 //посылает запрос к серверу на данные о канале с помощью объекта канала channel_object
 function loadChannelDataObject(channel_object, time, chartname, monitoring = false) {
-    console.log("loadChannelDataObject",chartname,time);
+    //console.log("loadChannelDataObject",chartname,time);
     var msg = {
         type: "get_full_channel_data",
         hierarchy: channel_object.hierarchy,
@@ -1933,7 +1936,8 @@ function saveTextChartData(name){
 
 function takeStepBackOnChart(name)
 {
-    if(isSynchedMode()) 
+    var chart = charts[name];
+    if(isSynchedMode() && (chart.type != "orbit")) 
     {
         allChartsStepBack();
     }
@@ -1945,13 +1949,13 @@ function takeStepBackOnChart(name)
 }
 function takeStepForwardOnChart(name)
 {
-    if(isSynchedMode()) 
+        var chart = charts[name];
+    if(isSynchedMode() && (chart.type != "orbit")) 
     {
         allChartsStepForward();
     }
     else
     {
-        var chart = charts[name];
         chart.takeStepForward();
     }
 }
