@@ -125,6 +125,12 @@ ChartChannel.prototype.setDisplayId = function(id){
 }*/
 
 ChartChannel.prototype.addData = function (newdata, datetime) {
+    //если datetime заканчивается меньше, чем за 30 секунд до now, обрубить по последней записи либо по 30 сек до now
+    var timenow = new Date().getTime();
+    if(datetime[1] > timenow-30000)
+    {
+        console.log("ADDATA",datetime,timenow);
+    }
     var data_str = { 'period': datetime, 'data': newdata };/*[newdata[0][t],newdata[newdata.length-1][t]]*/
     for (var i = 0; i < this.data.length; i++) {
         var piece = this.data[i];
@@ -170,7 +176,7 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
 }
 
 ChartChannel.prototype.checkIfMoreDataNeeded = function (time, monitoring = false) {        
-    //console.log("moredataneeded0", [moment(time[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time[1]).format('YYYY-MM-DD HH:mm:ss')]);
+    //console.log("MOREDATANEEDED0", [moment(time[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time[1]).format('YYYY-MM-DD HH:mm:ss')]);
     //if(this.data.length>0)
     //    console.log("moredataneeded1", [moment(this.data[0].period[0]).format('YYYY-MM-DD HH:mm:ss'), moment(this.data[0].period[1]).format('YYYY-MM-DD HH:mm:ss')]);
     //отрезки времени, которые мы будем догружать
@@ -204,7 +210,7 @@ ChartChannel.prototype.checkIfMoreDataNeeded = function (time, monitoring = fals
             }
         }
     }
-    //console.log("moredataneeded1", this.data, [moment(time_to_cut[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_cut[1]).format('YYYY-MM-DD HH:mm:ss')]);
+    //console.log("MOREDATANEEDED1", this.data, [moment(time_to_cut[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time_to_cut[1]).format('YYYY-MM-DD HH:mm:ss')]);
     if(time_to_cut){
         if(time_to_cut[1]>moment()){
             time_to_cut = [time_to_cut[0],moment()];
@@ -815,7 +821,6 @@ Chart.prototype.extendLine = function (channel, data) {
 
 //перерисовать все графики
 Chart.prototype.redrawChannels = function (datetime, monitoring = false) {
-    console.log(this,monitoring);
     var dateDate = [Date.parse(datetime[0]), Date.parse(datetime[1])];
 
     var channels_by_plotly = this.getPlotlyDataData();
@@ -1534,10 +1539,13 @@ function relayoutAllPlots(ed) {
         delete ed["yaxis.range[1]"];
     }
     if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)||("xaxis.range" in ed)){
-        //console.log(charts[ed.chart_zoomed_first].getRange());
         for (var chart in charts) {
             //if(ed.autosize) return;
-            if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
+            if(chart.type == "orbit") {
+                console.log("here",chart);
+                charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
+            }
+            else if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
                 //if(charts[chart].type=="orbit"){
                     charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
                 //}
