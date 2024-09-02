@@ -12,7 +12,7 @@
         "name": "v4_Jun2019-July2024",
         "user": "vepp4",
         "port": 5432,
-        "host": "192.168.144.33",
+        "host": "192.168.144.83",
         "database": "v4",
         "type": "v4",
         "active": true
