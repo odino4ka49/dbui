@@ -10,9 +10,11 @@
 <script src="/static/js/eventsorbits.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/js/color.js"></script>
+<script src="/static/js/alertify.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dragula.css" rel="stylesheet">
+<link href="/static/css/alertify.css" rel="stylesheet">
 
 <!--input id="v3v4dtr" type="text" name="datetimes" />
 <input id="v4dtr" type="text" name="datetimes" />
@@ -96,87 +98,107 @@
     'use strict';
     document.title = "DBUI: Orbits"
     window.WebSocket = window.WebSocket || window.MozWebSocket;
-
-    var connection = new WebSocket('ws://'+window.location.hostname+':1337');//192.168.144.71:1337');//
-// nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
-
-
-    connection.onopen = function () {
-        console.log("connection is opened")
-        var urlParams = new URLSearchParams(window.location.search); // supported on most modern browsers
-        var system_id = urlParams.get('system');
-        if (system_id==null) system_id = "v3v4";
-        setTabs(system_id);
-        //loadOrbitsLastTime(system_id);
-        //loadStartSystemTable(system_id);
-        // connection is opened and ready to use
-    };
-
-    connection.onclose = function () {
-        console.log("connection is closed")
-        // an error occurred when sending/receiving data
-    };
-
-    connection.onerror = function (error) {
-        console.log("connection error")
-        // an error occurred when sending/receiving data
-    };
-
-    connection.onmessage = function (message) {
-        document.body.style.cursor='default';
-        try {
-            var json = JSON.parse(message.data);
-            //console.log("got message "+json.title)
-            switch (json.title) {
-                /*case "tree_data":
-                    console.log("tree_data",json)
-                    refreshTree(json.database,json.data);
-                    break;*/
-                case "v3v4_calendar":
-                    console.log("v3v4_calendar",json)
-                    setV3V4Calendar("v3v4",json);
-                    break;
-                case "v3v4chan_orbits_data":
-                    console.log("v3v4chan_orbits_data",json)
-                    if(json.last){
-                        initV3V4Time("v3v4",json.data[0].t);
-                    }
-                    refreshV3V4OrbitTable("v3v4",parseToTableData("v3v4",json.data));
-                    break;
-                /*case "v4_orbits_data":
-                    console.log("v4_orbits_data",json)
-                    if(json.last){
-                        initV3V4Time("v4",json.data[0].t);
-                    }
-                    refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
-                    break;*/
-                case "v3v4_firstrecord":
-                    console.log("v3v4_firstrecord",json)
-                    setFirstRecTime(json.system,json.data);
-                    break;
-                case "v3v4chan_pkppos_data":
-                    console.log("system,az",json)
-                    setV3V4PkpData(json.system,json.data);
-                    break;
-                case "v4orbits_start_data":
-                    console.log("v4orbits_start_data",json)
-                    setV4OrbitsNames(json.data);
-                    break;
-                case "error":
-                    alertError(json.data);
-                    break;
-            }
-            json = null;
-        } catch (e) {
-            console.log(e);
+    var connection;
+    var connection_attempts = 0;
+    
+    function connect()
+    {
+        if(connection_attempts > 5)
+        {
+            alert("Five unsucsessfull attempts to reconnect. Probably need to reload the server.");
             return;
         }
-    };
+        connection_attempts++;
+
+        connection = new WebSocket('ws://'+window.location.hostname+':1337');//192.168.144.71:1337');//
+        // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
+
+        connection.onopen = function () {
+            if(connection_attempts > 1)
+                alertify.success("Successfull connection to server");
+            else
+            {
+                var urlParams = new URLSearchParams(window.location.search); // supported on most modern browsers
+                var system_id = urlParams.get('system');
+                if (system_id==null) system_id = "v3v4";
+                setTabs(system_id);
+            }
+            connection_attempts = 0;
+            // connection is opened and ready to use
+        };
+
+        connection.onclose = function () {
+            alertify.error("Connection with server is closed. Reconnection...");
+            setTimeout(function() {
+                connect();
+            }, 10000);
+            // an error occurred when sending/receiving data
+        };
+
+
+        connection.onerror = function (error) {
+            console.log("connection error")
+            // an error occurred when sending/receiving data
+        };
+
+        connection.onmessage = function (message) {
+            document.body.style.cursor='default';
+            try {
+                var json = JSON.parse(message.data);
+                //console.log("got message "+json.title)
+                switch (json.title) {
+                    /*case "tree_data":
+                        console.log("tree_data",json)
+                        refreshTree(json.database,json.data);
+                        break;*/
+                    case "v3v4_calendar":
+                        console.log("v3v4_calendar",json)
+                        setV3V4Calendar("v3v4",json);
+                        break;
+                    case "v3v4chan_orbits_data":
+                        console.log("v3v4chan_orbits_data",json)
+                        if(json.last){
+                            initV3V4Time("v3v4",json.data[0].t);
+                        }
+                        refreshV3V4OrbitTable("v3v4",parseToTableData("v3v4",json.data));
+                        break;
+                    /*case "v4_orbits_data":
+                        console.log("v4_orbits_data",json)
+                        if(json.last){
+                            initV3V4Time("v4",json.data[0].t);
+                        }
+                        refreshV3V4OrbitTable("v4",parseToTableData("v4",json.data));
+                        break;*/
+                    case "v3v4_firstrecord":
+                        console.log("v3v4_firstrecord",json)
+                        setFirstRecTime(json.system,json.data);
+                        break;
+                    case "v3v4chan_pkppos_data":
+                        console.log("system,az",json)
+                        setV3V4PkpData(json.system,json.data);
+                        break;
+                    case "v4orbits_start_data":
+                        console.log("v4orbits_start_data",json)
+                        setV4OrbitsNames(json.data);
+                        break;
+                    case "error":
+                        alertError(json.data);
+                        break;
+                }
+                json = null;
+            } catch (e) {
+                console.log(e);
+                return;
+            }
+        };
+    }
 
     function sendMessageToServer(message){
-        connection.send(message);
+        if(connection)
+            connection.send(message);
     }
     
+    connect();
     $("#menu_data_button").addClass("menu_chosen");
 
     //initPicker();

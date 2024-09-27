@@ -151,74 +151,93 @@
 <script>
     'use strict';
     window.WebSocket = window.WebSocket || window.MozWebSocket;
-    var connection = new WebSocket('ws://' + window.location.hostname + ':1337');//ws://192.168.144.71:1337');//
-    // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
-
-    connection.onopen = function () {
-        console.log("connection is opened")
-        // connection is opened and ready to use
-    };
-
-    connection.onclose = function () {
-        console.log("connection is closed")
-        // an error occurred when sending/receiving data
-    };
-
-    connection.onerror = function (error) {
-        console.log("connection error")
-        // an error occurred when sending/receiving data
-    };
-
-    connection.onmessage = function (message) {
-        defaultCursor();
-        try {
-            var json = JSON.parse(message.data);
-            //console.log("got message "+json.title)
-            switch (json.title) {
-                case "channel_data":
-                    //console.log("channel_data",json);
-                    addChannelDataInOrder(json);
-                    break;
-                case "full_channel_data":
-                    //console.log("full_channel_data",json);
-                    addChannelDataInOrder(json);
-                    break;
-                case "orbit_data":
-                    //console.log("orbit_data",json);
-                    addOrbitData(json);
-                    break;
-                case "databases":
-                    //console.log("databases",json);
-                    displayDatabases(json.data);
-                    break;
-                case "tree_data":
-                    //console.log("tree_data",json);
-                    refreshTree(json.database, json.data);
-                    break;
-                case "datatbl_range":
-                    //console.log("datatbl_range",json);
-                    break;
-                case "error":
-                    console.log("error",json);
-                    if(!checkIfMonitoring(json.ordernum))
-                        alertError(json.data);
-                    if (json.clientordernum != undefined) {
-                        removeOrder(json.clientordernum);
-                    }
-                    break;
-            }
-            json = null;
-        } catch (e) {
-            console.log(e);
+    var connection;
+    var connection_attempts = 0;
+    
+    function connect()
+    {
+        if(connection_attempts > 5)
+        {
+            alert("Five unsucsessfull attempts to reconnect. Probably need to reload the server.");
             return;
         }
-    };
+        connection_attempts++;
+        connection = new WebSocket('ws://' + window.location.hostname + ':1337');//ws://192.168.144.71:1337');//
+        // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
-    function sendMessageToServer(message) {
-        //console.log(message);
-        connection.send(message);
+        connection.onopen = function () {
+            if(connection_attempts > 1)
+                alertify.success("Successfull connection to server");
+            connection_attempts = 0;
+            // connection is opened and ready to use
+        };
+
+        connection.onclose = function () {
+            alertify.error("Connection with server is closed. Reconnection...");
+            setTimeout(function() {
+                connect();
+            }, 10000);
+            // an error occurred when sending/receiving data
+        };
+
+        connection.onerror = function (error) {
+            console.log("connection error")
+            //alertify.error("Connection with server is failed.");
+            // an error occurred when sending/receiving data
+        };
+
+        connection.onmessage = function (message) {
+            defaultCursor();
+            try {
+                var json = JSON.parse(message.data);
+                //console.log("got message "+json.title)
+                switch (json.title) {
+                    case "channel_data":
+                        //console.log("channel_data",json);
+                        addChannelDataInOrder(json);
+                        break;
+                    case "full_channel_data":
+                        //console.log("full_channel_data",json);
+                        addChannelDataInOrder(json);
+                        break;
+                    case "orbit_data":
+                        //console.log("orbit_data",json);
+                        addOrbitData(json);
+                        break;
+                    case "databases":
+                        //console.log("databases",json);
+                        displayDatabases(json.data);
+                        break;
+                    case "tree_data":
+                        //console.log("tree_data",json);
+                        refreshTree(json.database, json.data);
+                        break;
+                    case "datatbl_range":
+                        //console.log("datatbl_range",json);
+                        break;
+                    case "error":
+                        console.log("error",json);
+                        if(!checkIfMonitoring(json.ordernum))
+                            alertError(json.data);
+                        if (json.clientordernum != undefined) {
+                            removeOrder(json.clientordernum);
+                        }
+                        break;
+                }
+                json = null;
+            } catch (e) {
+                console.log(e);
+                return;
+            }
+        };
     }
 
+    function sendMessageToServer(message) {
+        if(connection)
+            connection.send(message);
+    }
+
+    connect();
     initPicker("#datetimerange");
     initCharts();
     

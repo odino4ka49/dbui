@@ -123,14 +123,29 @@ function ChartChannel(name, fullname, units, datatype, orbit, hierarchy, datatab
 ChartChannel.prototype.setDisplayId = function(id){
     this.display_id = id;
 }*/
+    
+//если datetime заканчивается меньше, чем за 30 секунд до now, обрубить по последней записи либо по 30 сек до now
+ChartChannel.prototype.checkMonitoringData = function(newdata,datetime)
+{
+    var timenow = new Date().getTime();
+    if(datetime[1] >= timenow-30000)
+    {
+        if(newdata[newdata.length-1].t >= timenow - 30000)
+        {
+            datetime[1] = newdata[newdata.length-1].t;
+        }
+        else
+        {
+            datetime[1] = timenow-30000;
+        }
+    }
+    return datetime;
+}
 
+//добавляет новый промежуток с данными
 ChartChannel.prototype.addData = function (newdata, datetime) {
     //если datetime заканчивается меньше, чем за 30 секунд до now, обрубить по последней записи либо по 30 сек до now
-    var timenow = new Date().getTime();
-    if(datetime[1] > timenow-30000)
-    {
-        console.log("ADDATA",datetime,timenow);
-    }
+    datetime = this.checkMonitoringData(newdata,datetime);
     var data_str = { 'period': datetime, 'data': newdata };/*[newdata[0][t],newdata[newdata.length-1][t]]*/
     for (var i = 0; i < this.data.length; i++) {
         var piece = this.data[i];
@@ -175,6 +190,7 @@ ChartChannel.prototype.addData = function (newdata, datetime) {
     }
 }
 
+//проверка, есть ли нехватка данных в нужном промежутке
 ChartChannel.prototype.checkIfMoreDataNeeded = function (time, monitoring = false) {        
     //console.log("MOREDATANEEDED0", [moment(time[0]).format('YYYY-MM-DD HH:mm:ss'), moment(time[1]).format('YYYY-MM-DD HH:mm:ss')]);
     //if(this.data.length>0)
@@ -250,6 +266,7 @@ ChartChannel.prototype.getFirstBefore = function(time){
     return result;
 }
 
+//возвращает нужные данные за промежуток времени
 ChartChannel.prototype.getData = function (time) {
     var result = [];
     //put in result all the needed data
@@ -279,6 +296,7 @@ ChartChannel.prototype.getData = function (time) {
     return result;
 }
 
+//возвращает усредненные по пикселям данные
 ChartChannel.prototype.getFilteredData = function (time, pixels) {
     var result = [];
     //find time for every pixel
@@ -417,7 +435,7 @@ Chart.prototype.addZoomHistory = function (autosize) {
         this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
         if((this.zoom_history.length != 0) && synched) allChartsAddZoomHistory(this.name);
     }
-    console.log("addZoomHistory",charts);
+    //console.log("addZoomHistory",charts);
 }
 Chart.prototype.setZoomHistory = function(zhistory) {
     console.log("setZoomHistory",this);
@@ -452,7 +470,7 @@ Chart.prototype.takeStepBack = function () {
     {
         this.zoom_history_index--;
         var newrange = this.zoom_history[this.zoom_history_index];
-        console.log("takestepback");
+        //console.log("takestepback");
         this.setXYRange(newrange.xaxisrange,newrange.yaxisrange);
     }
 }
@@ -465,7 +483,7 @@ Chart.prototype.takeStepForward = function () {
     }
 }
 Chart.prototype.clearZoomHistory = function () {
-    console.log("clearZoomHistory",this);
+    //console.log("clearZoomHistory",this);
     if(this.zoom_history.length <= 1) return;
     this.zoom_history = [];
     this.zoom_history_index = 0;
@@ -1002,30 +1020,45 @@ Chart.prototype.renderChart = function (channel, data) {
         'height': 600,
         'path': 'M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z'
     }
-    var config = { modeBarButtonsToAdd: [
-        {
-            name: 'back',
-            icon: icon_left,
+    var config;
+    if(this.type == "orbit")
+        config = { modeBarButtonsToAdd: [
+            {
+            name: 'text',
+            icon: Plotly.Icons.disk,
             direction: 'up',
-            click: function(gd) { takeStepBackOnChart($(gd).attr('id'));
-        }},
-        {
-            name: 'forward',
-            icon: icon_right,
+            click: function(gd) { saveTextChartData($(gd).attr('id'));
+            }}], 
+            responsive: true, 
+            doubleClickDelay: 2000,
+        };
+    else
+    {
+        config = { modeBarButtonsToAdd: [
+            {
+                name: 'back',
+                icon: icon_left,
+                direction: 'up',
+                click: function(gd) { takeStepBackOnChart($(gd).attr('id'));
+            }},
+            {
+                name: 'forward',
+                icon: icon_right,
+                direction: 'up',
+                click: function(gd) { takeStepForwardOnChart($(gd).attr('id'));
+            }},
+            {
+            name: 'text',
+            icon: Plotly.Icons.disk,
             direction: 'up',
-            click: function(gd) { takeStepForwardOnChart($(gd).attr('id'));
-        }},
-        {
-          name: 'text',
-          icon: Plotly.Icons.disk,
-          direction: 'up',
-          click: function(gd) { saveTextChartData($(gd).attr('id'));
-        }}], 
-        responsive: true, 
-        doubleClickDelay: 2000,
-        //showEditInChartStudio: true,
-        //plotlyServerURL: "https://chart-studio.plotly.com" 
-    };
+            click: function(gd) { saveTextChartData($(gd).attr('id'));
+            }}], 
+            responsive: true, 
+            doubleClickDelay: 2000,
+            //showEditInChartStudio: true,
+            //plotlyServerURL: "https://chart-studio.plotly.com" 
+        };
+    }
     var layout = {
         legend: {
             yanchor: "top",
@@ -1082,7 +1115,7 @@ Chart.prototype.renderChart = function (channel, data) {
     if(this.type != "orbit"){
         document.getElementById(this.name).on('plotly_relayout', (eventdata) => {
             this.loadNewDataAfterZoom(eventdata);
-            console.log(this.name,eventdata);
+            //console.log(this.name,eventdata);
             if(!("chart_zoomed_first" in eventdata))
             {
                 if(!eventdata["autosize"])
@@ -1531,7 +1564,7 @@ function asynchronizePlots() {
 
 //распространяет зум на все холсты
 function relayoutAllPlots(ed) {
-    //console.log(ed);
+    console.log("ed",ed);
     if("yaxis.range[0]" in ed){
         delete ed["yaxis.range[0]"];
     }
@@ -1540,9 +1573,10 @@ function relayoutAllPlots(ed) {
     }
     if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)||("xaxis.range" in ed)){
         for (var chart in charts) {
+            console.log("chart in charts",ed,chart);
             //if(ed.autosize) return;
-            if(chart.type == "orbit") {
-                console.log("here",chart);
+            if(charts[chart].type == "orbit") {
+                console.log("here",charts[ed.chart_zoomed_first].getRange());
                 charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
             }
             else if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
