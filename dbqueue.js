@@ -419,7 +419,6 @@ function loadDtAzimuths(db,data_tbl){
 //we get all channel data for a particular period of time
 function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     if(!wsServer.isOrderExist(order)) return;
-    console.log("DATETIME",datetime);
     var channel = hierarchy.channel;
     var ss;
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
@@ -455,7 +454,6 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
             dates.push(date1.addHours(12).toISOString().replace(/T/, ' ').replace(/\..+/, ''));
         }
     }
-    console.log("DATES",dates);
     if(ss.function && ss.function.startsWith("dispersion")){
         loadFullChannelData(db,datatable,ss.data_tbl_type,channel,subsystem,datetime,ordernum,order,datatype,"dispersion",0);
         return;

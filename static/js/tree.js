@@ -211,6 +211,7 @@ function loadSelectedSystemTree(){
 function displayDatabases(data){
     databases = data;
     var db_table = $("#databases");
+    db_table.children().remove();
     databases.forEach(function(db){
         var refresh_td = $('<td >').append("<div title='Refresh DB tree' class='refresh'>").delegate('div.refresh','click',refreshDatabaseTree);
         var db_tr = $('<tr>').attr('id',db.id).append("<td><div class='plus'/></td><td class='db_name'>"+db.name+"</td>").append(refresh_td).appendTo(db_table);
@@ -223,6 +224,7 @@ function displayDatabases(data){
     });
     refreshTooltips();
     db_table.children("tr").not('.inactive').children("td").children(".plus").click(showDatabaseTree);
+    
     data = null;
     db_table = null;
 

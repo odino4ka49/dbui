@@ -161,18 +161,20 @@
             alert("Five unsucsessfull attempts to reconnect. Probably need to reload the server.");
             return;
         }
-        connection_attempts++;
+        //connection_attempts++;
         connection = new WebSocket('ws://' + window.location.hostname + ':1337');//ws://192.168.144.71:1337');//
         // nvm use --delete-prefix v13.3.0 - для запуска на web-dev 
 
         connection.onopen = function () {
-            if(connection_attempts > 1)
+            if(connection_attempts > 0)
                 alertify.success("Successfull connection to server");
+            console.log("Successfull connection")
             connection_attempts = 0;
             // connection is opened and ready to use
         };
 
         connection.onclose = function () {
+            connection_attempts++;
             alertify.error("Connection with server is closed. Reconnection...");
             setTimeout(function() {
                 connect();
