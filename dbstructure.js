@@ -79,19 +79,21 @@ class SystemTree {
             if(ch.unit==null) ch.unit = "none";
             //if(!("status" in ch) || ch.status){
             var ss = this.findSS(ch.ss_id);
-            var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status,ss.data_tbl_type);
-            if(ss&&ch.gr_id){
-                var group = ss.groups.find(o => o.id === ch.gr_id);
-                if(group){
-                    group.appendChannel(channel);
+            if(ss)
+            {
+                var channel = new Channel(ch.name,ch.fullname,ch.address,ch._type,ch.unit,ch.divider,ch.status,ss.data_tbl_type);
+                if(ss&&ch.gr_id){
+                    var group = ss.groups.find(o => o.id === ch.gr_id);
+                    if(group){
+                        group.appendChannel(channel);
+                    }
+                }
+                else if(ss){
+                    ss.appendChannel(channel);
+                    if(ss.function=="orbit") channel.orbit = true;
+                    if(ss.type!="subsystem" && dbtype=="pickups") channel.orbit = true;
                 }
             }
-            else if(ss){
-                ss.appendChannel(channel);
-                if(ss.function=="orbit") channel.orbit = true;
-                if(ss.type!="subsystem" && dbtype=="pickups") channel.orbit = true;
-            }
-            //}
         }
         this.checkStatus(this.systems);
     }

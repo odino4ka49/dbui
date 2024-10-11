@@ -433,7 +433,8 @@ Chart.prototype.addZoomHistory = function (autosize) {
         //если y был null (дописать)
         this.zoom_history = this.zoom_history.slice(0,this.zoom_history_index+1);
         this.zoom_history_index = this.zoom_history.push(new_zoom)-1;
-        if((this.zoom_history.length != 0) && synched) allChartsAddZoomHistory(this.name);
+        //MAYBE WILL NEED THIS
+        //if((this.zoom_history.length != 0) && synched) allChartsAddZoomHistory(this.name);
     }
     //console.log("addZoomHistory",charts);
 }
@@ -1216,6 +1217,7 @@ Chart.prototype.setRange = function (time) {
             Plotly.update(this.name, [], relayout_data) ;
         }
         this.redrawChannels(time);
+        this.addZoomHistory(false);
     }
 }
 
@@ -1564,7 +1566,6 @@ function asynchronizePlots() {
 
 //распространяет зум на все холсты
 function relayoutAllPlots(ed) {
-    console.log("ed",ed);
     if("yaxis.range[0]" in ed){
         delete ed["yaxis.range[0]"];
     }
@@ -1573,10 +1574,8 @@ function relayoutAllPlots(ed) {
     }
     if(("xaxis.autorange" in ed)||("xaxis.range[0]" in ed)||("xaxis.range" in ed)){
         for (var chart in charts) {
-            console.log("chart in charts",ed,chart);
             //if(ed.autosize) return;
             if(charts[chart].type == "orbit") {
-                console.log("here",charts[ed.chart_zoomed_first].getRange());
                 charts[chart].setRange(charts[ed.chart_zoomed_first].getRange());
             }
             else if(("chart_zoomed_first" in ed) && chart!=ed.chart_zoomed_first){
