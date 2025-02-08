@@ -1,5 +1,6 @@
+
 var databases;
-var search_results = {};
+var search_results = [];
 var dbs_to_open;
 var channels_to_open;
 var selected_sys;
@@ -46,6 +47,7 @@ function refreshTree(dbid,data) {
             selectedColor: "white",
             selectedBackColor: "lightblue",
             multiSelect: true,
+            highlightSearchResults: false,
             onNodeSelected: function(event, node) {
                 //console.log(dbid,node);
                 if(dbid=="db1"){
@@ -89,8 +91,6 @@ function refreshTree(dbid,data) {
         });
     db_li.addClass("opened");
     if(is_new_db_tree) checkOutDb(dbid);
-    db_li = null;
-    db_tree = null;
 };
 
 //выделить нужные каналы во всех деревьях
@@ -127,6 +127,7 @@ function selectChannelsInAllTrees(channels){
         var dbchannels = channels.filter(chan => (chan.dbid==dbid));
         selectChannelsByDB(dbchannels,dbid);
     }
+    selectChannelsInSearch(channels);
 }
 
 //метаданные о канале
@@ -155,8 +156,6 @@ function getDatatable(channel,dbid){
             hierarchy[parent.type]["data_tbl_type"] = parent.data_tbl_type;
         }
     }
-    db_tree = null;
-    parent = null;
     return [data_tbl,hierarchy];
 }
 
@@ -178,8 +177,6 @@ function getDatatable(channel,dbid){
         //var channel_object = new ChartChannel(channel.name,hierarchy,datatable,dbid,channel.nodeId);
         //loadChannelDataObject(channel_object,time);
     }
-    datatable = null;
-    hierarchy = null;
 }*/
 
 //посылает запрос на данные о БД
@@ -192,7 +189,6 @@ function loadDatabaseTree(dbid){
         database: dbid
     };
     sendMessageToServer(JSON.stringify(msg));
-    msg = null;
 }
 //посылает запрос в БД о доступных данных выбранной системы
 function loadSelectedSystemTree(){
@@ -204,7 +200,6 @@ function loadSelectedSystemTree(){
         datatable: selected_sys[1].data_tbl
     };
     sendMessageToServer(JSON.stringify(msg));
-    msg = null;
 }
 
 //отрисовка дерева БД
@@ -224,9 +219,6 @@ function displayDatabases(data){
     });
     refreshTooltips();
     db_table.children("tr").not('.inactive').children("td").children(".plus").click(showDatabaseTree);
-    
-    data = null;
-    db_table = null;
 
     $(document).trigger("databasesLoaded");
 }
@@ -255,9 +247,6 @@ function showDatabaseTree(event){
     else{
         loadDatabaseTree(dbid);
     }
-    db_tr = null;
-    dbid = null;
-    db_tree = null;
 }
 
 //открывает деревья заранее
@@ -304,7 +293,6 @@ function refreshDatabaseTree(event){
     $(event.target).parent().parent().addClass("active").removeClass("inactive");
     //tries to load db tree
     loadDatabaseTree(dbid);
-    dbid = null;
 }
 
 function alertError(err){
@@ -315,25 +303,140 @@ function alertError(err){
 function searchAll(){
     var results = [];
     var isAnyDbOpened = false;
-    var results_n = 0;
+    //var results_n = 0;
     var output = "";
 
     databases.forEach(function(db){
-        results = search(db.id);
-        if(results){
+        var temp_res = search(db.id);
+        if(temp_res){
             isAnyDbOpened = true;
-            results_n+=results.length;
+            //results_n+=temp_res.length;
+            results = results.concat(temp_res);
+            for(var i=0; i<temp_res.length; i++)
+            {
+                temp_res[i].trueNodeId = temp_res[i].nodeId;
+                temp_res[i].dbid = db.id;
+            }
         }
     })
-    
+
+    search_results = results;
+
     if(isAnyDbOpened){
-        output = '<p>' + results_n + ' matches found</p>';//+output;
+        //output = '<p>' + results_n + ' matches found</p>';//+output;
+        showSearchResults(search_results);
     }
     else{
-        output = "There are no opened Databases."
+        output = "There are no loaded Databases."
+        $('#search_message').html(output);
     }
-    
-    $('#search_output').html(output);
+
+}
+
+//обновить дерево БД
+function refreshSearchTree(tree_name,data) {
+    console.log(data);
+    var db_li = $("#"+tree_name);
+    var is_new_db_tree = !(db_li.siblings("#treefor_"+tree_name).length);
+    db_li.siblings("#treefor_"+tree_name).remove();
+    var treedb_tr = $("<tr>").attr("id","treefor_"+tree_name).append("<td>");
+    var db_tree = $("<ul>").attr("id",tree_name+"_tree");
+    treedb_tr.children("td").append(db_tree);
+    db_li.after(treedb_tr);
+    db_tree.treeview(
+        {
+            data: data,//parseTree(data),
+            levels: 1,          
+            selectedColor: "white",
+            selectedBackColor: "lightblue",
+            multiSelect: true,
+            highlightSearchResults: false,
+            onNodeSelected: function(event, node) {
+                //кликнуть на канал в начальном дереве
+                clickTheChannel([node.dbid,node.trueNodeId]);
+                //console.log(dbid,node);
+                /*if(dbid=="db1"){
+                    /*if(node.name=="orbits v3v4chan"){
+                        window.open(window.location.href+"orbits?system=v3v4")
+                    }
+                    else */
+                    /*var parent = $("#"+dbid+"_tree").treeview('getParent',node);
+                    if((node.name=="v3v4chan"&&node.abscissa_tbl=="04_pkp_position")||(parent.name=="v3v4chan"&&parent.abscissa_tbl=="04_pkp_position")){
+                        window.open(window.location.origin+"/orbits?system=v3v4");
+                    }
+            }
+                if(node.type=="channel"){
+                    $(document).trigger("treeChannelChosen",[node,dbid]);
+                    //loadChannelData(node,dbid);
+                    //$("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
+                }
+                else if("data_tbl" in node)//(node.type=="system")||(node.type=="subsystem"))
+                {
+                    unselectCurrentSystemNode(); //развыбрать предыдущую выбранную систему
+                    selected_sys = [dbid,node]; //присвоить в переменную новую систему
+                    loadSelectedSystemTree();
+                    $(document).trigger("treeSystemChosen",[node,dbid]); //посылаем событие - чтобы подсветить календарь
+                }
+                else{
+                    $("#"+dbid+"_tree").treeview('unselectNode', [ node.nodeId, { silent: true } ]);
+                    $("#"+dbid+"_tree").treeview('toggleNodeExpanded', [ node.nodeId, { silent: true } ]);
+                }*/
+            },
+            //onNodeUnselected: function (event, node) {
+              //  clickTheChannel([node.dbid,node.trueNodeId]);
+                //db_tree.treeview('selectNode', [ channels[i].nodeid, { silent: true } ]);
+                /*if(node.type=="channel"){
+                    $("#"+dbid+"_tree").treeview('selectNode', [ node.nodeId, { silent: true } ]);
+                }
+                else if((node.type=="system")||(node.type=="subsystem"))
+                {   
+                    selected_sys = null;
+                    $(document).trigger("treeSystemChosen",null); //посылаем событие - чтобы подсветить календарь
+                }*/
+           // }
+        });
+    db_li.addClass("opened");
+};
+
+function showSearchResults(results)
+{
+    $('#search_message').html(null);
+    refreshSearchTree("search_result_tree",results);
+    /*$('#search_output').empty();
+    for(res of results)
+    {
+        var newdiv = document.createElement( "div" );
+        newdiv.append(res.fullname);
+        $('#search_output').append(newdiv);
+    }*/
+}
+
+//выделить нужные каналы в дереве поиска
+function selectChannelsInSearch(channels){
+    //найдем нужные каналы в дереве поиска
+    var channels_to_select = [];
+    for(var i=0; i<search_results.length; i++)
+    {
+        for(var j=0; j<channels.length; j++)
+        {
+            if(search_results[i].trueNodeId == channels[j].nodeId)
+            {
+                channels_to_select.push(search_results[i].nodeId);
+            }
+        }
+    }
+    //console.log(channels,search_results,channels_to_select);
+    //отменим выделение на всех выбранных сейчес нодах
+    var db_tree = $("#search_result_tree_tree");
+    var selectednodes = db_tree.treeview('getSelected');
+    for(var j=0; j<selectednodes.length;j++){
+        db_tree.treeview('unselectNode', [ selectednodes[j], { silent: true } ]);
+    }
+    //добавим выделение всем нужным каналам
+    for(var i = 0; i < channels_to_select.length; i++){
+        console.log(channels_to_select[i]);
+        db_tree.treeview('selectNode', [ 44,/*channels_to_select[i],*/ { silent: true } ]);
+    }
 }
 
 function getOpenedDbs(){
@@ -351,20 +454,64 @@ function getOpenedDbs(){
 function search(dbid) {
     var db_tree = $("#"+dbid+"_tree");
     //if(!db_tree.length){
-    //console.log(db_tree)
-    if((!db_tree.length)||(db_tree.is(":hidden"))){
+    if((!db_tree.length)/*||(db_tree.is(":hidden"))*/){
         return false;
     }
     var pattern = $('#input_search').val();
     var options = {
       ignoreCase: true,
       exactMatch: false,
-      revealResults: true
+      revealResults: false
     };
     db_tree.treeview('collapseAll', { silent: true });
     var result = db_tree.treeview('search', [ pattern, options ]);
     //db_tree.treeview('hideAll');
     return (result instanceof Array) ? result : [];
+}
+
+
+//переключение между системами
+function openNewTab(event){
+    $("#dbtree").hide();
+    $("#dbtree_search").hide();
+    $("#"+event.target).show();
+    /*$('#'+event.target).show();
+    $('#'+event.target+'_graphset').show();
+    $('#'+event.target+'dtr').show();
+    if(event.target=="v3v4"){
+        $("#v4").hide();
+        $("#v4_graphset").hide();
+        $("#v4dtr").hide();
+    }
+    else {
+        $("#v3v4").hide();
+        $("#v3v4_graphset").hide();
+        $("#v3v4dtr").hide();
+    }
+    if(v3v4basicdata[event.target].loaded==false){
+        loadStartSystemTable(event.target);
+        //v3v4basicdata[event.target].loaded==true;
+    }*/
+}
+
+function setActiveTab(id){
+    w2ui['tree_tabs'].click(id);
+}
+
+//создание табов для систем
+function setTabs() {
+    $('#tree_tabs').w2tabs({
+        name: 'tree_tabs',
+        active: "dbtree",
+        tabs: [
+            { id: 'dbtree', text: 'DBTree' },
+            { id: 'dbtree_search', text: 'Search' }
+        ],
+        onClick: function (event) {
+            openNewTab(event)
+        }
+    });
+    $("#dbtree_search").hide();
 }
 
 $(document).ready(function(){
@@ -374,6 +521,7 @@ $(document).ready(function(){
             searchAll();
         };
     });
+    setTabs();
 });
 
 

@@ -53,16 +53,23 @@ function addChannelToGraph(channel,graph){
     charts[graph].addChannel(channel);
 }
 
-function ChartChannel(name,hierarchy,datatable,dbid){
-    this.name = name;
-    this.hierarchy = hierarchy;
-    this.datatable = datatable;
-    this.dbid = dbid;
-    this.id = null;
-    this.displayed = false;
+class ChartChannel
+{
+    constructor(name,hierarchy,datatable,dbid)
+    {
+        this.name = name;
+        this.hierarchy = hierarchy;
+        this.datatable = datatable;
+        this.dbid = dbid;
+        this.id = null;
+        this.displayed = false;
+    }
 }
 
-function Chart (name) {
+class Chart 
+{
+    constructor(name) 
+    {
         this.name = name;
         this.is_chart_rendered = false;
         this.scales_units = new Map();
@@ -72,226 +79,89 @@ function Chart (name) {
         this.max_id = 0;
     }
 
-Chart.prototype.addChannel = function(channel){
-    this.channels.push(channel);
-}
-
-Chart.prototype.getWidth = function(){
-    return Math.ceil($("#"+this.name).width());
-}
-
-Chart.prototype.getHeight = function(){
-    return Math.ceil($("#"+this.name).parent().height());
-}
-
-Chart.prototype.addGraphData = function(json){
-    if(this.type=="orbit"){
-        return false;
+    addChannel (channel){
+        this.channels.push(channel);
     }
-    json.data.x = parseDates(json.data.x);
-    var channel = this.channels.find((element)=>(element.name==json.name));
-    var chan_name = json.name
-    if(channel){ 
-        if(channel.displayed){
-            this.extendLine(chan_name,json.data,json.units,json.fullname)
+
+    getWidth (){
+        return Math.ceil($("#"+this.name).width());
+    }
+
+    getHeight (){
+        return Math.ceil($("#"+this.name).parent().height());
+    }
+
+    addGraphData (json){
+        if(this.type=="orbit"){
+            return false;
         }
-        else{
-            if(!this.is_chart_rendered){
-                this.type = "timeseries";
-                this.renderChart(chan_name,json.data,json.units,json.mode,json.fullname);
+        json.data.x = parseDates(json.data.x);
+        var channel = this.channels.find((element)=>(element.name==json.name));
+        var chan_name = json.name
+        if(channel){ 
+            if(channel.displayed){
+                this.extendLine(chan_name,json.data,json.units,json.fullname)
             }
             else{
-                this.addPlot(chan_name,json.data,json.units,json.mode,json.fullname);
-            };
-        }
-    }
-    return true;
-}
-
-Chart.prototype.addOrbitData = function(json){
-    if(this.type=="timeseries"){
-        return false;
-    }
-    this.type = "orbit";
-    if(!this.is_chart_rendered){
-        this.renderChart(json.name,json.data,json.units,json.mode,json.fullname,json.color);
-    }
-    else{
-        this.addPlot(json.name,json.data,json.units,json.mode,json.fullname,json.color);
-    };
-    return true;
-}
-
-Chart.prototype.parseToArrayData = function(data){
-    var result = []
-    data.forEach(element => {
-        result.push([parseInt(element["date_part"])*1000,element.v4_current]);
-    });
-    data = null;
-    return result;
-}
-
-Chart.prototype.extendLine = function(channel,data,units){
-    data.name = channel;
-    var id = this.channels.find((element)=>(element.name==channel)).id;
-    Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
-}
-
-
-Chart.prototype.renderChart = function(channel,data,units,mode,fullname,color){
-    this.is_chart_rendered = true;
-    var chan_data = this.channels.find((element)=>(element.name==channel));
-    chan_data.id = this.max_id;
-    this.max_id++;
-    data.mode = mode;//'markers';//
-    data.name = channel;
-    if(fullname) data.name = fullname;
-    //auto generate line color with the right tone
-    //var color = hsvToHex(100, 80, 80)
-    data.line = { color: color }
-    data.marker = {size:3}
-    this.axis_labels = [
-        {
-            xref:'paper',
-            yref:'paper',
-            x: -0.02,
-            xanchor:'top',
-            y: 0.91,
-            yanchor:'bottom',
-            text: units,
-            textangle: -45,
-            //font: {color: color},
-            showarrow: false
-        }
-    ];
-    var chartData = [data];
-    var config = {responsive: true,doubleClickDelay: 2000};
-    var layout = {
-        legend: {
-            yanchor: "top",
-            y: 1.2,
-            xanchor: "left",
-            x: 0.04,
-            //traceorder: 'reversed',
-            font: {size: 12},
-            orientation: "h"
-        },
-        showlegend: false,
-        margin: { l: 20, r: 10, b: 40, t: 40},
-        xaxis: {
-            range: this.range,
-            domain: [0, 1],
-            type: "date",
-            //tickvals: 
-        },
-        yaxis: {
-            //color: color,
-            //linecolor: color,
-            domain: [0, 0.9],
-            zerolinecolor: "#444",
-            position: 0
-        },
-        annotations: this.axis_labels
-    };
-    if(this.type=="orbit"){
-        layout.xaxis= {
-            domain: [0, 1]
-        }
-    }
-    Plotly.react(this.name, chartData, layout, config).then(function(gd) {
-        resizeObserver.observe(gd);
-      });
-    this.scales_units.set(units,{
-        axis_n: 1
-    });
-    /*document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
-        terminatePlot(data.curveNumber)
-        return false;
-    });*/
-    chan_data.displayed = true;
-    chartData = null;
-    transform_x_scale = null;
-}
-
-Chart.prototype.loadNewDataAfterZoom = function(eventdata){
-    if('xaxis.range[0]' in eventdata){
-        setActiveGraphByName(this.name);
-        this.max_id = 0;
-        reloadChannels(this.channels,[eventdata['xaxis.range[0]'],eventdata['xaxis.range[1]']]);
-    }
-}
-
-//удаляет линию графика с осями и пр.
-Chart.prototype.terminatePlot = function(id){
-    //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    Plotly.deleteTraces(this.name, id);
-}
-
-//удаляет только линию графика с готовностью к обновлению
-Chart.prototype.removePlot = function(id){
-    //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
-    Plotly.deleteTraces(this.name, id);
-}
-
-Chart.prototype.setRange = function(time){
-    this.range = time;
-    if(this.is_chart_rendered && this.type!="orbit"){
-        var relayout_data = {
-            xaxis: {
-                range: this.range,
-                domain: [(this.scales_units.size-1)/25,1],
-                type: "date"
+                if(!this.is_chart_rendered){
+                    this.type = "timeseries";
+                    this.renderChart(chan_name,json.data,json.units,json.mode,json.fullname);
+                }
+                else{
+                    this.addPlot(chan_name,json.data,json.units,json.mode,json.fullname);
+                };
             }
         }
-        Plotly.update(this.name,[], relayout_data);
+        return true;
     }
-}
 
-Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
-    //var scale_data = this.scales_units.get(units);
-    var chan_data = this.channels.find((element)=>(element.name==channel));
-    chan_data.id = this.max_id;
-    this.max_id++;
-    if(fullname) channel = fullname;
-    /*if(!scale_data){
-        //add new scale
-        var scale_num = this.scales_units.size;
-        var yaxisname = "yaxis" + (scale_num+1);
-        while(scale_num>=tones.length) nextTone();
-        //var color = hsvToHex(100, 80, 80);
-        var relayout_data = {
-            xaxis: {
-                range: this.range,
-                domain: [scale_num/25,1],
-                autorange: false,
-                type: "date"
-            },
-            annotations: this.axis_labels
-        };
-        if(this.type=="orbit"){
-            relayout_data.xaxis = {
-                domain: [scale_num/25,1]
-            }
+    addOrbitData (json){
+        if(this.type=="timeseries"){
+            return false;
         }
-        relayout_data[yaxisname] = {
-            overlaying: "y",
-            //color: color,
-            //linecolor: color,
-            zerolinecolor: "#ccc",
-            anchor: 'free',
-            side: "left",
-            position: scale_num/25
+        this.type = "orbit";
+        if(!this.is_chart_rendered){
+            this.renderChart(json.name,json.data,json.units,json.mode,json.fullname,json.color);
+        }
+        else{
+            this.addPlot(json.name,json.data,json.units,json.mode,json.fullname,json.color);
         };
-        scale_data = {
-            //color: color,
-            axis_n: scale_num+1
-        };
-        this.scales_units.set(units,scale_data);
-        this.axis_labels.push(
+        return true;
+    }
+
+    parseToArrayData (data){
+        var result = []
+        data.forEach(element => {
+            result.push([parseInt(element["date_part"])*1000,element.v4_current]);
+        });
+        data = null;
+        return result;
+    }
+
+    extendLine (channel,data,units){
+        data.name = channel;
+        var id = this.channels.find((element)=>(element.name==channel)).id;
+        Plotly.extendTraces(this.name, {y:[data.y],x:[data.x]}, [id])
+    }
+
+
+    renderChart (channel,data,units,mode,fullname,color){
+        this.is_chart_rendered = true;
+        var chan_data = this.channels.find((element)=>(element.name==channel));
+        chan_data.id = this.max_id;
+        this.max_id++;
+        data.mode = mode;//'markers';//
+        data.name = channel;
+        if(fullname) data.name = fullname;
+        //auto generate line color with the right tone
+        //var color = hsvToHex(100, 80, 80)
+        data.line = { color: color }
+        data.marker = {size:3}
+        this.axis_labels = [
             {
                 xref:'paper',
                 yref:'paper',
-                x: scale_num/25-0.02,
+                x: -0.02,
                 xanchor:'top',
                 y: 0.91,
                 yanchor:'bottom',
@@ -300,22 +170,157 @@ Chart.prototype.addPlot = function(channel,data,units,mode,fullname,color){
                 //font: {color: color},
                 showarrow: false
             }
-        )
-        Plotly.update(this.name,[], relayout_data);
-        scale_num = null;
+        ];
+        var chartData = [data];
+        var config = {responsive: true,doubleClickDelay: 2000};
+        var layout = {
+            legend: {
+                yanchor: "top",
+                y: 1.2,
+                xanchor: "left",
+                x: 0.04,
+                //traceorder: 'reversed',
+                font: {size: 12},
+                orientation: "h"
+            },
+            showlegend: false,
+            margin: { l: 20, r: 10, b: 40, t: 40},
+            xaxis: {
+                range: this.range,
+                domain: [0, 1],
+                type: "date",
+                //tickvals: 
+            },
+            yaxis: {
+                //color: color,
+                //linecolor: color,
+                domain: [0, 0.9],
+                zerolinecolor: "#444",
+                position: 0
+            },
+            annotations: this.axis_labels
+        };
+        if(this.type=="orbit"){
+            layout.xaxis= {
+                domain: [0, 1]
+            }
+        }
+        Plotly.react(this.name, chartData, layout, config).then(function(gd) {
+            resizeObserver.observe(gd);
+        });
+        this.scales_units.set(units,{
+            axis_n: 1
+        });
+        /*document.getElementById(this.name).on('plotly_legenddoubleclick', function(data){
+            terminatePlot(data.curveNumber)
+            return false;
+        });*/
+        chan_data.displayed = true;
     }
-    else{
-        scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
-    }*/
-    var color = hsvToHex(tones[0], getRandomInt(30,100), getRandomInt(40,100));
-    data.mode = mode//'markers'; //type of plot
-    data.name = channel;
-    data.line = {color: color};
-    data.marker = {size:3}; //size of markers
-    data.yaxis = "y";//+scale_data.axis_n;
-    Plotly.addTraces(this.name, data);
-    chan_data.displayed = true;
-    //scale_data = null;
+
+    loadNewDataAfterZoom (eventdata){
+        if('xaxis.range[0]' in eventdata){
+            setActiveGraphByName(this.name);
+            this.max_id = 0;
+            reloadChannels(this.channels,[eventdata['xaxis.range[0]'],eventdata['xaxis.range[1]']]);
+        }
+    }
+
+    //удаляет линию графика с осями и пр.
+    terminatePlot (id){
+        //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
+        Plotly.deleteTraces(this.name, id);
+    }
+
+    //удаляет только линию графика с готовностью к обновлению
+    removePlot (id){
+        //this.channels.splice(this.channels.findIndex((element)=>(element.id==id)), 1);
+        Plotly.deleteTraces(this.name, id);
+    }
+
+    setRange (time){
+        this.range = time;
+        if(this.is_chart_rendered && this.type!="orbit"){
+            var relayout_data = {
+                xaxis: {
+                    range: this.range,
+                    domain: [(this.scales_units.size-1)/25,1],
+                    type: "date"
+                }
+            }
+            Plotly.update(this.name,[], relayout_data);
+        }
+    }
+
+    addPlot (channel,data,units,mode,fullname,color){
+        //var scale_data = this.scales_units.get(units);
+        var chan_data = this.channels.find((element)=>(element.name==channel));
+        chan_data.id = this.max_id;
+        this.max_id++;
+        if(fullname) channel = fullname;
+        /*if(!scale_data){
+            //add new scale
+            var scale_num = this.scales_units.size;
+            var yaxisname = "yaxis" + (scale_num+1);
+            while(scale_num>=tones.length) nextTone();
+            //var color = hsvToHex(100, 80, 80);
+            var relayout_data = {
+                xaxis: {
+                    range: this.range,
+                    domain: [scale_num/25,1],
+                    autorange: false,
+                    type: "date"
+                },
+                annotations: this.axis_labels
+            };
+            if(this.type=="orbit"){
+                relayout_data.xaxis = {
+                    domain: [scale_num/25,1]
+                }
+            }
+            relayout_data[yaxisname] = {
+                overlaying: "y",
+                //color: color,
+                //linecolor: color,
+                zerolinecolor: "#ccc",
+                anchor: 'free',
+                side: "left",
+                position: scale_num/25
+            };
+            scale_data = {
+                //color: color,
+                axis_n: scale_num+1
+            };
+            this.scales_units.set(units,scale_data);
+            this.axis_labels.push(
+                {
+                    xref:'paper',
+                    yref:'paper',
+                    x: scale_num/25-0.02,
+                    xanchor:'top',
+                    y: 0.91,
+                    yanchor:'bottom',
+                    text: units,
+                    textangle: -45,
+                    //font: {color: color},
+                    showarrow: false
+                }
+            )
+            Plotly.update(this.name,[], relayout_data);
+            scale_num = null;
+        }
+        else{
+            scale_data.color = hsvToHex(tones[scale_data.axis_n-1], getRandomInt(30,100), getRandomInt(40,100));
+        }*/
+        var color = hsvToHex(tones[0], getRandomInt(30,100), getRandomInt(40,100));
+        data.mode = mode//'markers'; //type of plot
+        data.name = channel;
+        data.line = {color: color};
+        data.marker = {size:3}; //size of markers
+        data.yaxis = "y";//+scale_data.axis_n;
+        Plotly.addTraces(this.name, data);
+        chan_data.displayed = true;
+    }
 }
 
 var charts = {'v3v4i_chart': new Chart('v3v4i_chart'),'v3v4x_chart': new Chart('v3v4x_chart'),

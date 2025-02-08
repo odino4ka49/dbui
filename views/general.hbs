@@ -10,9 +10,11 @@
 <!--script src="https://cdn.plot.ly/plotly-latest.min.js"></script-->
 <script src="/static/js/color.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
+<script type="text/javascript" src="http://w2ui.com/src/w2ui-1.5.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link href="/static/css/dragula.css" rel="stylesheet">
 <link href="/static/css/alertify.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.5.min.css" />
 <script src='/static/js/jquery.tooltip.js'></script>
 
 <dialog id="dialog">
@@ -88,11 +90,6 @@
             </td-->
             <td class="white_space"></td>
             <td>
-                <div id="search_line">
-                    <input id="input_search" placeholder="Search..." value="">
-                    <button id="btn_search" onclick="searchAll()"></button>
-                </div>
-            </div>
             </td>
         </tr>
 
@@ -101,7 +98,17 @@
 </div>
 <div id="tree_plots" class="main-panel">
     <div id="tree_part" class="nav-flex-container resizable_hor">
-        <div id="search_output"></div>
+        <div id="tree_tabs"></div>
+        <div id="dbtree_search" class="nav-flex-container">
+            <div id="search_line">
+                <input id="input_search" placeholder="Search..." value="">
+                <button id="btn_search" onclick="searchAll()"></button>
+            </div>
+            <div id="search_output" class="nav-scrollable-content">
+                <div id='search_message'></div>
+                <div id="search_result_tree"></div>
+            </div>
+        </div>
         <div id="dbtree" class="nav-scrollable-content">
             <div id="databases">
             </div>
@@ -211,7 +218,7 @@
                         displayDatabases(json.data);
                         break;
                     case "tree_data":
-                        //console.log("tree_data",json);
+                        console.log("tree_data",json);
                         refreshTree(json.database, json.data);
                         break;
                     case "datatbl_range":

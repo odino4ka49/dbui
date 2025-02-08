@@ -424,6 +424,7 @@ function getFullChannelData(dbid,datatable,hierarchy,datetime,ordernum,order){
     var datatype = channel.datatype==null ? '' : '::'+channel.datatype;
     var db = databases.get(dbid);
     var tree = db.tree;
+    if(!tree) return;
     if(hierarchy.subsystem && hierarchy.subsystem.ss_id){
         ss = tree.findSS(hierarchy.subsystem.ss_id);
     }
