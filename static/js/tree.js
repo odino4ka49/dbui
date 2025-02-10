@@ -121,7 +121,6 @@ function clickTheChannel(channel){
 }
 
 function selectChannelsInAllTrees(channels){
-    //console.log("channels",channels)
     for(var i = 0; i < databases.length; i++){
         var dbid = databases[i].id;
         var dbchannels = channels.filter(chan => (chan.dbid==dbid));
@@ -311,12 +310,17 @@ function searchAll(){
         if(temp_res){
             isAnyDbOpened = true;
             //results_n+=temp_res.length;
-            results = results.concat(temp_res);
             for(var i=0; i<temp_res.length; i++)
             {
-                temp_res[i].trueNodeId = temp_res[i].nodeId;
-                temp_res[i].dbid = db.id;
+                if(temp_res[i].type == "channel")
+                {
+                    temp_res[i].trueNodeId = temp_res[i].nodeId;
+                    temp_res[i].nodeId = i;
+                    temp_res[i].dbid = db.id;
+                    results.push(temp_res[i]);
+                }
             }
+            //results = results.concat(temp_res);
         }
     })
 
@@ -343,7 +347,7 @@ function refreshSearchTree(tree_name,data) {
     var db_tree = $("<ul>").attr("id",tree_name+"_tree");
     treedb_tr.children("td").append(db_tree);
     db_li.after(treedb_tr);
-    db_tree.treeview(
+    var test = db_tree.treeview(
         {
             data: data,//parseTree(data),
             levels: 1,          
@@ -415,11 +419,12 @@ function showSearchResults(results)
 function selectChannelsInSearch(channels){
     //найдем нужные каналы в дереве поиска
     var channels_to_select = [];
+    console.log(channels);
     for(var i=0; i<search_results.length; i++)
     {
         for(var j=0; j<channels.length; j++)
         {
-            if(search_results[i].trueNodeId == channels[j].nodeId)
+            if(search_results[i].trueNodeId == channels[j].nodeId && channels[j].dbid == search_results[i].dbid)
             {
                 channels_to_select.push(search_results[i].nodeId);
             }
@@ -433,9 +438,9 @@ function selectChannelsInSearch(channels){
         db_tree.treeview('unselectNode', [ selectednodes[j], { silent: true } ]);
     }
     //добавим выделение всем нужным каналам
+    console.log(channels_to_select);
     for(var i = 0; i < channels_to_select.length; i++){
-        console.log(channels_to_select[i]);
-        db_tree.treeview('selectNode', [ 44,/*channels_to_select[i],*/ { silent: true } ]);
+        db_tree.treeview('selectNode', [ channels_to_select[i], { silent: true } ]);
     }
 }
 
@@ -464,9 +469,15 @@ function search(dbid) {
       revealResults: false
     };
     db_tree.treeview('collapseAll', { silent: true });
-    var result = db_tree.treeview('search', [ pattern, options ]);
+    var result = [];
+    var temp_res = db_tree.treeview('search', [ pattern, options ]);
+    console.log(temp_res);
+    if(temp_res instanceof Array)
+    {
+        result = JSON.parse(JSON.stringify(temp_res));
+    }
     //db_tree.treeview('hideAll');
-    return (result instanceof Array) ? result : [];
+    return result;
 }
 
 
